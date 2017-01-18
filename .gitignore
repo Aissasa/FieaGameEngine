@@ -1,0 +1,10 @@
+*.db
+source/Library.Desktop/obj/
+source/UnitTest.Library.Desktop/bin/
+source/UnitTest.Library.Desktop/obj/Win32/Debug/UnitTest.7BC054D5.tlog/CL.read.1.tlog
+source/UnitTest.Library.Desktop/obj/
+source/Game.Desktop.OpenGL/obj/
+source/Game.Desktop.DirectX/obj/x64/Release/Game.Des.D3858F87.tlog/CL.command.1.tlog
+source/Game.Desktop.DirectX/obj/
+source/Game.Desktop.OpenGL/bin/
+source/Game.Desktop.DirectX/bin/
