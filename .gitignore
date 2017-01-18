@@ -8,3 +8,6 @@ source/Game.Desktop.OpenGL/bin/
 source/Game.Desktop.DirectX/bin/
 *.opendb
 build/ipch/
+source/Game.Desktop.OpenGL/html/
+source/Library.Desktop/html/
+source/Game.Desktop.DirectX/html/
