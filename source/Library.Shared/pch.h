@@ -7,6 +7,7 @@
 // Standard libraries
 #include <vector>
 #include <cstdint>
+#include <exception>
 
 //// C RunTime Header Files
 //#include <stdlib.h>

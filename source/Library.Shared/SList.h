@@ -2,15 +2,35 @@
 
 namespace FieaGameEngine
 {
+	template <typename T>
 	class SList
 	{
 	public:
-		SList(std::int32_t data) { mData = data; }
-
-		std::int32_t Data();
+		SList();
+		SList(const SList& rhs);
+		SList& operator=(const SList& rhs);
+		~SList();
+		void PushFront(const T& t);
+		void PopFront();
+		void PushBack(const T& t);
+		bool IsEmpty();
+		T& Front();
+		T& Back();
+		std::uint32_t Size();
+		void Clear();
 
 	private:
 
-		std::int32_t mData;
+		struct Node
+		{
+			Node* Next;
+			T Data;
+		};
+
+		Node* mFront;
+		Node* mBack;
+		std::uint32_t mSize;
 	};
+
+#include "SList.inl"
 }
