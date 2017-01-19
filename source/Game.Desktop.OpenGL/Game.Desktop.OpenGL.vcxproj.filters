@@ -4,7 +4,17 @@
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Program.cpp" />
     <ClCompile Include="pch.cpp" />
+    <ClCompile Include="Program.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{d22fe83c-7801-41db-898a-4f884a659778}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{c9f80881-8c5b-420a-ad18-d0b6a616fac3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>
