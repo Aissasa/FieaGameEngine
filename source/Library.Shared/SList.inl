@@ -37,7 +37,6 @@ SList<T>& SList<T>::operator=(const SList& rhs)
 			currentNode = currentNode->Next;
 		}
 	}
-
 	return *this;
 }
 
@@ -45,25 +44,21 @@ template <typename T>
 SList<T>::~SList()
 {
 	Clear();
-
-	delete this;
 }
 
 template <typename T>
 void SList<T>::PushFront(const T& t)
 {
-	Node newNode = new Node();
+	Node* newNode = new Node();
 
 	newNode->Data = t;
 	newNode->Next = mFront;
-
 	mFront = newNode;
 
 	if (IsEmpty())
 	{
-		mBack = newNode;
+		mBack = mFront;
 	}
-
 	mSize++;
 }
 
@@ -75,7 +70,11 @@ void SList<T>::PopFront()
 		Node* nodeToPop = mFront;
 		mFront = mFront->Next;
 
-		delete nodeToPop->Data;
+		if (mSize == 1)
+		{
+			mBack = mFront;
+		}
+
 		delete nodeToPop;
 
 		mSize--;
@@ -85,7 +84,7 @@ void SList<T>::PopFront()
 template <typename T>
 void SList<T>::PushBack(const T& t)
 {
-	Node newNode = new Node();
+	Node* newNode = new Node();
 
 	newNode->Data = t;
 	newNode->Next = nullptr;
@@ -100,7 +99,6 @@ void SList<T>::PushBack(const T& t)
 		mBack->Next = newNode;
 		mBack = mBack->Next;
 	}
-
 	mSize++;
 }
 
@@ -115,7 +113,7 @@ inline T& SList<T>::Front()
 {
 	if (IsEmpty())
 	{
-		throw exception("The list is empty!");
+		throw std::exception("The list is empty! Cannot get the front element.");
 	}
 	return mFront->Data;
 }
@@ -125,7 +123,7 @@ inline T& SList<T>::Back()
 {
 	if (IsEmpty())
 	{
-		throw exception("The list is empty!");
+		throw std::exception("The list is empty! Cannot get the back element.");
 	}
 	return mBack->Data;
 }

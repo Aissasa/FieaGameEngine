@@ -1,6 +1,6 @@
 #pragma once
 
-namespace FieaGameEngine
+namespace FieaGameEngineLibrary
 {
 	/**
 	*/
@@ -53,11 +53,13 @@ namespace FieaGameEngine
 		bool IsEmpty();
 
 		/** Returns the value of first element in the list.
+		It throws an exception if the list is empty.
 		@return First element value.
 		*/
 		T& Front();
 
 		/** Returns the value of last element in the list.
+		It throws an exception if the list is empty.
 		@return Last element value.
 		*/
 		T& Back();
