@@ -88,8 +88,10 @@ namespace FieaGameEngineLibrary
 
 		struct Node
 		{
-			Node* Next;
-			T Data;
+			Node(Node* next, const T& data) :mNext(next), mData(data) {};
+
+			Node* mNext;
+			T mData;
 		};
 
 		Node* mFront;

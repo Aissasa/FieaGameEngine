@@ -42,10 +42,7 @@ SList<T>::~SList()
 template <typename T>
 void SList<T>::PushFront(const T& t)
 {
-	Node* newNode = new Node();
-
-	newNode->Data = t;
-	newNode->Next = mFront;
+	Node* newNode = new Node(mFront, t);
 	mFront = newNode;
 
 	if (IsEmpty())
@@ -62,7 +59,7 @@ void SList<T>::PopFront()
 	if (!IsEmpty())
 	{
 		Node* nodeToPop = mFront;
-		mFront = mFront->Next;
+		mFront = mFront->mNext;
 
 		if (mSize == 1)
 		{
@@ -79,10 +76,7 @@ void SList<T>::PopFront()
 template <typename T>
 void SList<T>::PushBack(const T& t)
 {
-	Node* newNode = new Node();
-
-	newNode->Data = t;
-	newNode->Next = nullptr;
+	Node* newNode = new Node(nullptr, t);
 
 	if (IsEmpty())
 	{
@@ -91,8 +85,8 @@ void SList<T>::PushBack(const T& t)
 	}
 	else
 	{
-		mBack->Next = newNode;
-		mBack = mBack->Next;
+		mBack->mNext = newNode;
+		mBack = newNode;
 	}
 	mSize++;
 }
@@ -112,14 +106,14 @@ const T& SList<T>::Front() const
 	{
 		throw std::exception("The list is empty! Cannot get the front element.");
 	}
-	return mFront->Data;
+	return mFront->mData;
 }
 
 /************************************************************************/
 template <typename T>
 T& SList<T>::Front()
 {
-	return const_cast<T&>(static_cast<const SList&>(*this).Front());
+	return const_cast<T&>(const_cast<const SList&>(*this).Front());
 }
 
 /************************************************************************/
@@ -130,14 +124,14 @@ const T& SList<T>::Back() const
 	{
 		throw std::exception("The list is empty! Cannot get the back element.");
 	}
-	return mBack->Data;
+	return mBack->mData;
 }
 
 /************************************************************************/
 template <typename T>
 T& SList<T>::Back()
 {
-	return const_cast<T&>(static_cast<const SList&>(*this).Back());
+	return const_cast<T&>(const_cast<const SList&>(*this).Back());
 }
 
 /************************************************************************/
@@ -164,8 +158,8 @@ inline void SList<T>::DeepCopy(const SList & rhs)
 	Node* currentNode = rhs.mFront;
 	while (currentNode != nullptr)
 	{
-		PushBack(currentNode->Data);
-		currentNode = currentNode->Next;
+		PushBack(currentNode->mData);
+		currentNode = currentNode->mNext;
 	}
 }
 
