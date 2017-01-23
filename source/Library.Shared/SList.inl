@@ -8,7 +8,7 @@
 /************************************************************************/
 template <typename T>
 SList<T>::SList() :
-	mFront(nullptr), mBack(nullptr), mSize(0) 
+	mFront(nullptr), mBack(nullptr), mSize(0)
 {
 
 }
@@ -42,7 +42,7 @@ SList<T>::~SList()
 
 /************************************************************************/
 template <typename T>
-void SList<T>::PushFront(const T& t)
+typename SList<T>::SListIterator SList<T>::PushFront(const T& t)
 {
 	Node* newNode = new Node(mFront, t);
 	mFront = newNode;
@@ -52,6 +52,8 @@ void SList<T>::PushFront(const T& t)
 		mBack = mFront;
 	}
 	mSize++;
+
+	return begin();
 }
 
 /************************************************************************/
@@ -76,7 +78,7 @@ void SList<T>::PopFront()
 
 /************************************************************************/
 template <typename T>
-void SList<T>::PushBack(const T& t)
+typename SList<T>::SListIterator SList<T>::PushBack(const T& t)
 {
 	Node* newNode = new Node(nullptr, t);
 
@@ -91,6 +93,8 @@ void SList<T>::PushBack(const T& t)
 		mBack = newNode;
 	}
 	mSize++;
+
+	return SListIterator(mBack, this);
 }
 
 /************************************************************************/
@@ -155,6 +159,78 @@ void SList<T>::Clear()
 
 /************************************************************************/
 template<typename T>
+typename SList<T>::SListIterator SList<T>::begin() const
+{
+	return SListIterator(mFront, this);
+}
+
+/************************************************************************/
+template<typename T>
+typename SList<T>::SListIterator SList<T>::end() const
+{
+	if (IsEmpty())
+	{
+		return begin();
+	}
+
+	return SListIterator(mBack->mNext, this);
+}
+
+/************************************************************************/
+template<typename T>
+typename SList<T>::SListIterator SList<T>::Find(const T & value) const
+{
+	for (const SListIterator it = begin(); it != end(); ++it)
+	{
+		if (*it == value)
+		{
+			return it;
+		}
+	}
+	return end();
+}
+
+/************************************************************************/
+template<typename T>
+typename SList<T>::SListIterator SList<T>::InsertAfter(const T & value, const SListIterator& iterator)
+{
+	if (iterator == end())
+	{
+		SListIterator itBack = PushBack(value);
+		return itBack;
+	}
+	else
+	{
+		SListIterator it = iterator;
+		Node* newNode = new Node(it.mNode->mNext, value);
+		it.mNode->mNext = newNode;
+		return ++it;
+	}
+}
+
+/************************************************************************/
+template<typename T>
+bool SList<T>::Remove(const T & value)
+{
+	Node* previousNode = mFront;
+	for (const SListIterator it = begin(); it != end(); ++it)
+	{
+		if (*it == value)
+		{
+			Node* nodeToRemove = it.mNode;
+			previousNode->mNext = nodeToRemove->mNext;
+			delete nodeToRemove;
+			return true;
+		}
+
+		previousNode = it.mNode;
+	}
+
+	return false;
+}
+
+/************************************************************************/
+template<typename T>
 void SList<T>::DeepCopy(const SList & rhs)
 {
 	Node* currentNode = rhs.mFront;
@@ -178,13 +254,6 @@ SList<T>::SListIterator::SListIterator() :
 template<typename T>
 SList<T>::SListIterator::SListIterator(Node* node, const SList* owner) :
 	mNode(node), mOwner(owner)
-{
-
-}
-
-/************************************************************************/
-template<typename T>
-SList<T>::SListIterator::~SListIterator()
 {
 }
 
