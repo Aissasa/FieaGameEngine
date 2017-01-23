@@ -154,11 +154,11 @@ namespace UnitTestLibraryDesktop
 			SList<int> intList;
 			intList.PushFront(*number1);
 			Assert::IsFalse(intList.IsEmpty());
-			Assert::AreEqual(intList.Size(), (uint32_t)1);
+			Assert::AreEqual(intList.Size(), 1U);
 			Assert::AreEqual(intList.Back(), intList.Front());
 
 			intList.PushFront(*number2);
-			Assert::AreEqual(intList.Size(), (uint32_t)2);
+			Assert::AreEqual(intList.Size(), 2U);
 			Assert::AreNotEqual(intList.Back(), intList.Front());
 			Assert::AreEqual(*number2, intList.Front());
 			Assert::AreEqual(*number1, intList.Back());
@@ -167,11 +167,11 @@ namespace UnitTestLibraryDesktop
 			SList<int*> intPtrList;
 			intPtrList.PushFront(number1);
 			Assert::IsFalse(intPtrList.IsEmpty());
-			Assert::AreEqual(intPtrList.Size(), (uint32_t)1);
+			Assert::AreEqual(intPtrList.Size(), 1U);
 			Assert::AreEqual(intPtrList.Back(), intPtrList.Front());
 
 			intPtrList.PushFront(number2);
-			Assert::AreEqual(intPtrList.Size(), (uint32_t)2);
+			Assert::AreEqual(intPtrList.Size(), 2U);
 			Assert::AreNotEqual(intPtrList.Back(), intPtrList.Front());
 			Assert::AreEqual(number2, intPtrList.Front());
 			Assert::AreEqual(number1, intPtrList.Back());
@@ -185,11 +185,11 @@ namespace UnitTestLibraryDesktop
 			SList<Foo> fooList;
 			fooList.PushFront(foo1);
 			Assert::IsFalse(fooList.IsEmpty());
-			Assert::AreEqual(fooList.Size(), (uint32_t)1);
+			Assert::AreEqual(fooList.Size(), 1U);
 			Assert::IsTrue(fooList.Back() == fooList.Front());
 
 			fooList.PushFront(foo2);
-			Assert::AreEqual(fooList.Size(), (uint32_t)2);
+			Assert::AreEqual(fooList.Size(), 2U);
 			Assert::IsFalse(fooList.Back() == fooList.Front());
 			Assert::IsTrue(foo2 == fooList.Front());
 			Assert::IsTrue(foo1 == fooList.Back());
@@ -207,7 +207,7 @@ namespace UnitTestLibraryDesktop
 			intList.PushFront(*number2);
 			intList.PopFront();
 
-			Assert::AreEqual(intList.Size(), (uint32_t)1);
+			Assert::AreEqual(intList.Size(), 1U);
 			Assert::AreEqual(intList.Back(), intList.Front());
 			Assert::AreEqual(*number1, intList.Front());
 
@@ -225,7 +225,7 @@ namespace UnitTestLibraryDesktop
 			intPtrList.PushFront(number2);
 			intPtrList.PopFront();
 
-			Assert::AreEqual(intPtrList.Size(), (uint32_t)1);
+			Assert::AreEqual(intPtrList.Size(), 1U);
 			Assert::AreEqual(intPtrList.Back(), intPtrList.Front());
 			Assert::AreEqual(number1, intPtrList.Front());
 
@@ -248,7 +248,7 @@ namespace UnitTestLibraryDesktop
 			fooList.PushFront(foo2);
 			fooList.PopFront();
 
-			Assert::AreEqual(fooList.Size(), (uint32_t)1);
+			Assert::AreEqual(fooList.Size(), 1U);
 			Assert::IsTrue(fooList.Back() == fooList.Front());
 			Assert::IsTrue(foo1 == fooList.Front());
 
@@ -270,11 +270,11 @@ namespace UnitTestLibraryDesktop
 			SList<int> intList;
 			intList.PushBack(*number1);
 			Assert::IsFalse(intList.IsEmpty());
-			Assert::AreEqual(intList.Size(), (uint32_t)1);
+			Assert::AreEqual(intList.Size(), 1U);
 			Assert::AreEqual(intList.Back(), intList.Front());
 
 			intList.PushBack(*number2);
-			Assert::AreEqual(intList.Size(), (uint32_t)2);
+			Assert::AreEqual(intList.Size(), 2U);
 			Assert::AreNotEqual(intList.Back(), intList.Front());
 			Assert::AreEqual(*number1, intList.Front());
 			Assert::AreEqual(*number2, intList.Back());
@@ -283,11 +283,11 @@ namespace UnitTestLibraryDesktop
 			SList<int*> intPtrList;
 			intPtrList.PushBack(number1);
 			Assert::IsFalse(intPtrList.IsEmpty());
-			Assert::AreEqual(intPtrList.Size(), (uint32_t)1);
+			Assert::AreEqual(intPtrList.Size(), 1U);
 			Assert::AreEqual(intPtrList.Back(), intPtrList.Front());
 
 			intPtrList.PushBack(number2);
-			Assert::AreEqual(intPtrList.Size(), (uint32_t)2);
+			Assert::AreEqual(intPtrList.Size(), 2U);
 			Assert::AreNotEqual(intPtrList.Back(), intPtrList.Front());
 			Assert::AreEqual(number1, intPtrList.Front());
 			Assert::AreEqual(number2, intPtrList.Back());
@@ -301,11 +301,11 @@ namespace UnitTestLibraryDesktop
 			SList<Foo> fooList;
 			fooList.PushBack(foo1);
 			Assert::IsFalse(fooList.IsEmpty());
-			Assert::AreEqual(fooList.Size(), (uint32_t)1);
+			Assert::AreEqual(fooList.Size(), 1U);
 			Assert::IsTrue(fooList.Back() == fooList.Front());
 
 			fooList.PushBack(foo2);
-			Assert::AreEqual(fooList.Size(), (uint32_t)2);
+			Assert::AreEqual(fooList.Size(), 2U);
 			Assert::IsFalse(fooList.Back() == fooList.Front());
 			Assert::IsTrue(foo1 == fooList.Front());
 			Assert::IsTrue(foo2 == fooList.Back());
@@ -434,23 +434,23 @@ namespace UnitTestLibraryDesktop
 			int* number2 = new int(0);
 
 			SList<int> intList;
-			Assert::AreEqual(intList.Size(), (uint32_t)0);
+			Assert::AreEqual(intList.Size(), 0U);
 			intList.PushFront(*number1);
-			Assert::AreEqual(intList.Size(), (uint32_t)1);
+			Assert::AreEqual(intList.Size(), 1U);
 			intList.PushFront(*number2);
-			Assert::AreEqual(intList.Size(), (uint32_t)2);
+			Assert::AreEqual(intList.Size(), 2U);
 			intList.PopFront();
-			Assert::AreEqual(intList.Size(), (uint32_t)1);
+			Assert::AreEqual(intList.Size(), 1U);
 
 			// pointer type test
 			SList<int*> intPtrList;
-			Assert::AreEqual(intPtrList.Size(), (uint32_t)0);
+			Assert::AreEqual(intPtrList.Size(), 0U);
 			intPtrList.PushFront(number1);
-			Assert::AreEqual(intPtrList.Size(), (uint32_t)1);
+			Assert::AreEqual(intPtrList.Size(), 1U);
 			intPtrList.PushFront(number2);
-			Assert::AreEqual(intPtrList.Size(), (uint32_t)2);
+			Assert::AreEqual(intPtrList.Size(), 2U);
 			intPtrList.PopFront();
-			Assert::AreEqual(intPtrList.Size(), (uint32_t)1);
+			Assert::AreEqual(intPtrList.Size(), 1U);
 
 			// class type test
 			int number3 = 10;
@@ -459,13 +459,13 @@ namespace UnitTestLibraryDesktop
 			Foo foo2(number4, number2);
 
 			SList<Foo> fooList;
-			Assert::AreEqual(fooList.Size(), (uint32_t)0);
+			Assert::AreEqual(fooList.Size(), 0U);
 			fooList.PushFront(foo1);
-			Assert::AreEqual(fooList.Size(), (uint32_t)1);
+			Assert::AreEqual(fooList.Size(), 1U);
 			fooList.PushFront(foo2);
-			Assert::AreEqual(fooList.Size(), (uint32_t)2);
+			Assert::AreEqual(fooList.Size(), 2U);
 			fooList.PopFront();
-			Assert::AreEqual(fooList.Size(), (uint32_t)1);
+			Assert::AreEqual(fooList.Size(), 1U);
 		}
 
 		TEST_METHOD(ClearTest)

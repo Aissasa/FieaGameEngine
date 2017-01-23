@@ -3,6 +3,8 @@
 #include "pch.h"
 #include "SList.h"
 
+
+#pragma region SList
 /************************************************************************/
 template <typename T>
 SList<T>::SList() :
@@ -153,7 +155,7 @@ void SList<T>::Clear()
 
 /************************************************************************/
 template<typename T>
-inline void SList<T>::DeepCopy(const SList & rhs)
+void SList<T>::DeepCopy(const SList & rhs)
 {
 	Node* currentNode = rhs.mFront;
 	while (currentNode != nullptr)
@@ -162,4 +164,111 @@ inline void SList<T>::DeepCopy(const SList & rhs)
 		currentNode = currentNode->mNext;
 	}
 }
+#pragma endregion
 
+#pragma region SListIterator
+/************************************************************************/
+template<typename T>
+SList<T>::SListIterator::SListIterator() :
+	mOwner(nullptr), mNode(nullptr)
+{
+}
+
+/************************************************************************/
+template<typename T>
+SList<T>::SListIterator::SListIterator(Node* node, const SList* owner) :
+	mNode(node), mOwner(owner)
+{
+
+}
+
+/************************************************************************/
+template<typename T>
+SList<T>::SListIterator::~SListIterator()
+{
+}
+
+/************************************************************************/
+template<typename T>
+SList<T>::SListIterator::SListIterator(const SListIterator & rhs) :
+	mNode(rhs.mNode), mOwner(rhs.mOwner)
+{
+}
+
+/************************************************************************/
+template<typename T>
+typename SList<T>::SListIterator & SList<T>::SListIterator::operator=(const SListIterator & rhs)
+{
+	if (this != &rhs)
+	{
+		mNode = rhs.mNode;
+		mOwner = rhs.mOwner;
+	}
+
+	return *this;
+}
+
+/************************************************************************/
+template<typename T>
+typename SList<T>::SListIterator & SList<T>::SListIterator::operator++()
+{
+	if (mOwner == nullptr)
+	{
+		throw std::exception("The iterator is not assigned to a list.");
+	}
+	if (mNode == nullptr)
+	{
+		throw std::exception("The iterator is going out of bounds.")
+	}
+
+	mNode = mNode->mNext;
+	return *this;
+}
+
+/************************************************************************/
+template<typename T>
+typename SList<T>::SListIterator & SList<T>::SListIterator::operator++(int t)
+{
+	SListIterator temp = *this;
+	++*this;
+	return temp;
+}
+
+/************************************************************************/
+template<typename T>
+bool SList<T>::SListIterator::operator==(const SListIterator & rhs) const
+{
+	return mOwner == rhs.mOwner && mNode == rhs.mNode;
+}
+
+/************************************************************************/
+template<typename T>
+bool SList<T>::SListIterator::operator!=(const SListIterator & rhs) const
+{
+	return !(*this == rhs);
+}
+
+/************************************************************************/
+template<typename T>
+const T& SList<T>::SListIterator::operator*() const
+{
+	if (mOwner == nullptr)
+	{
+		throw std::exception("The iterator is not assigned to a list.");
+	}
+	if (mNode == nullptr)
+	{
+		throw std::exception("The list end cannot be dereferenced.")
+	}
+
+	return mNode->mData;
+}
+
+/************************************************************************/
+template<typename T>
+T& SList<T>::SListIterator::operator*()
+{
+	return const_cast<T&>(const_cast<const SListIterator&>(*this).*());
+}
+
+#pragma endregion

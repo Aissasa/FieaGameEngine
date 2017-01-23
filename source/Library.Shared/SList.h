@@ -8,7 +8,24 @@ namespace FieaGameEngineLibrary
 	template <typename T>
 	class SList
 	{
+	private:
+
+		struct Node
+		{
+			Node(Node* next, const T& data) :mNext(next), mData(data) {};
+
+			Node* mNext;
+			T mData;
+		};
+
+		Node* mFront;
+		Node* mBack;
+		std::uint32_t mSize;
+
+		void DeepCopy(const SList& rhs);
+
 	public:
+
 		/** Singly-linked list constructor.
 		 * It create and initializes an empty list.
 		 */
@@ -19,7 +36,7 @@ namespace FieaGameEngineLibrary
 		 * @param Singly-linked list to copy.
 		 */
 		SList(const SList& rhs);
-		
+
 		/** Singly-linked list assignment operator overloading method.
 		 * It allows the assignment operator to create a deep copy of the assignee list.
 		 * @param Singly-linked list to copy.
@@ -84,22 +101,32 @@ namespace FieaGameEngineLibrary
 		 */
 		void Clear();
 
-	private:
 
-		struct Node
+		class SListIterator
 		{
-			Node(Node* next, const T& data) :mNext(next), mData(data) {};
+			friend class SList;
+		public:
+			SListIterator();
+			~SListIterator();
+			SListIterator(const SListIterator& rhs);
+			SListIterator& operator=(const SListIterator& rhs);
+			SListIterator& operator++(); 
+			SListIterator& operator++(int t); 
+			bool operator==(const SListIterator& rhs) const;
+			bool operator!=(const SListIterator& rhs) const;
+			T& operator*();
+			const T& operator*() const;
 
-			Node* mNext;
-			T mData;
+		private:
+
+			SListIterator(Node* node, const SList* owner);
+			Node* mNode;
+			const SList* mOwner;
+
 		};
 
-		Node* mFront;
-		Node* mBack;
-		std::uint32_t mSize;
-
-		void DeepCopy(const SList& rhs);
 	};
 
 #include "SList.inl"
+
 }
