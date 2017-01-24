@@ -502,6 +502,239 @@ namespace UnitTestLibraryDesktop
 			fooList.Clear();
 			Assert::IsTrue(fooList.IsEmpty());
 		}
+
+		TEST_METHOD(SListBeginTest)
+		{
+			// primitive type test
+			int number1 = 3;
+			int number2 = 2;
+
+			SList<int> intList;
+			SList<int>::SListIterator it1 = intList.PushBack(number1);
+			Assert::IsTrue(it1 == intList.begin());
+			it1 = intList.PushBack(number2);
+			Assert::IsTrue(it1 != intList.begin());
+
+			// pointer type test
+			SList<int*> intPtrList;
+			SList<int*>::SListIterator it2 = intPtrList.PushBack(&number1);
+			Assert::IsTrue(it2 == intPtrList.begin());
+			it2 = intPtrList.PushBack(&number2);
+			Assert::IsTrue(it2 != intPtrList.begin());
+
+			// class type test
+			int* number3 = new int(10);
+			int* number4 = new int(6);
+			Foo foo1(number1, number3);
+			Foo foo2(number2, number4);
+
+			SList<Foo> fooList;
+			SList<Foo>::SListIterator it3 = fooList.PushBack(foo1);
+			Assert::IsTrue(it3 == fooList.begin());
+			it3 = fooList.PushBack(foo2);
+			Assert::IsTrue(it3 != fooList.begin());
+		}
+
+		TEST_METHOD(SListEndTest)
+		{
+			// primitive type test
+			int number1 = 3;
+
+			SList<int> intList;
+			Assert::IsTrue(intList.begin() == intList.end());
+
+			SList<int>::SListIterator it1 = intList.PushBack(number1);
+			Assert::IsTrue(it1 != intList.end());
+			Assert::IsTrue(++it1 == intList.end());
+
+			// pointer type test
+			SList<int*> intPtrList;
+			Assert::IsTrue(intPtrList.begin() == intPtrList.end());
+
+			SList<int*>::SListIterator it2 = intPtrList.PushBack(&number1);
+			Assert::IsTrue(it2 != intPtrList.end());
+			Assert::IsTrue(++it2 == intPtrList.end());
+
+			// class type test
+			int* number2 = new int(10);
+			Foo foo1(number1, number2);
+
+			SList<Foo> fooList;
+			Assert::IsTrue(fooList.begin() == fooList.end());
+
+			SList<Foo>::SListIterator it3 = fooList.PushBack(foo1);
+			Assert::IsTrue(it3 != fooList.end());
+			Assert::IsTrue(++it3 == fooList.end());
+		}
+
+		TEST_METHOD(SListFindTest)
+		{
+			// primitive type test
+			int number1 = 3;
+			int number2 = 2;
+			int number0 = 9;
+
+			SList<int> intList;
+			SList<int>::SListIterator it0 = intList.Find(number0);
+			Assert::IsTrue(it0 == intList.end());
+
+			intList.PushBack(number1);
+			intList.PushBack(number2);
+			it0 = intList.Find(number0);
+			Assert::IsTrue(it0 == intList.end());
+
+			it0 = intList.Find(number2);
+			Assert::IsTrue(*it0 == number2);
+
+			// pointer type test
+			SList<int*> intPtrList;
+			SList<int*>::SListIterator it1 = intPtrList.Find(&number0);
+			Assert::IsTrue(it1 == intPtrList.end());
+
+			intPtrList.PushBack(&number1);
+			intPtrList.PushBack(&number2);
+			it1 = intPtrList.Find(&number0);
+			Assert::IsTrue(it1 == intPtrList.end());
+
+			it1 = intPtrList.Find(&number2);
+			Assert::IsTrue(*it1 == &number2);
+
+			// class type test
+			int* number3 = new int(10);
+			int* number4 = new int(6);
+			int* number5 = new int(98);
+
+			Foo foo1(number1, number3);
+			Foo foo2(number2, number4);
+			Foo foo0(number0, number5);
+
+			SList<Foo> fooList;
+			SList<Foo>::SListIterator it2 = fooList.Find(foo0);
+			Assert::IsTrue(it2 == fooList.end());
+
+			fooList.PushBack(foo1);
+			fooList.PushBack(foo2);
+			it2 = fooList.Find(foo0);
+			Assert::IsTrue(it2 == fooList.end());
+
+			it2 = fooList.Find(foo2);
+			Assert::IsTrue(*it2 == foo2);
+		}
+
+		TEST_METHOD(SListInsertAfterTest)
+		{
+			// primitive type test
+			int number1 = 3;
+			int number2 = 2;
+			int number0 = 9;
+
+			SList<int> intList;
+			SList<int>::SListIterator it0 = intList.PushBack(number1);
+			intList.PushBack(number2);
+			SList<int>::SListIterator it1 = intList.InsertAfter(number0, it0);
+			Assert::AreEqual(3U, intList.Size());
+			Assert::AreEqual(*it1, number0);
+			Assert::IsTrue(++it0 == it1);
+
+			it1 = intList.InsertAfter(number0, intList.end());
+			Assert::AreEqual(*it1, intList.Back());
+
+			// pointer type test
+			SList<int*> intPtrList;
+			SList<int*>::SListIterator it2 = intPtrList.PushBack(&number1);
+			intPtrList.PushBack(&number2);
+			SList<int*>::SListIterator it3 = intPtrList.InsertAfter(&number0, it2);
+			Assert::AreEqual(3U, intPtrList.Size());
+			Assert::AreEqual(*it3, &number0);
+			Assert::IsTrue(++it2 == it3);
+
+			it3 = intPtrList.InsertAfter(&number0, intPtrList.end());
+			Assert::AreEqual(*it3, intPtrList.Back());
+
+			// class type test
+			int* number3 = new int(10);
+			int* number4 = new int(6);
+			int* number5 = new int(98);
+
+			Foo foo1(number1, number3);
+			Foo foo2(number2, number4);
+			Foo foo0(number0, number5);
+
+			SList<Foo> fooList;
+			SList<Foo>::SListIterator it4 = fooList.PushBack(foo1);
+			fooList.PushBack(foo2);
+			SList<Foo>::SListIterator it5 = fooList.InsertAfter(foo0, it4);
+			Assert::AreEqual(3U, fooList.Size());
+			Assert::IsTrue(*it5 == foo0);
+			Assert::IsTrue(++it4 == it5);
+
+			it5 = fooList.InsertAfter(foo0, fooList.end());
+			Assert::IsTrue(*it5 == fooList.Back());
+		}
+
+		TEST_METHOD(SListRemoveTest)
+		{
+			// primitive type test
+			int number0 = 9;
+			int number1 = 3;
+			int number2 = 2;
+
+			SList<int> intList;
+			Assert::IsFalse(intList.Remove(number1));
+
+			intList.PushBack(number0);
+			intList.PushBack(number1);
+			intList.PushBack(number2);
+			bool theBool = intList.Remove(number1);
+			Assert::IsTrue(theBool);
+			Assert::AreEqual(intList.Size(), 2U);
+
+			theBool = intList.Remove(number1);
+			Assert::IsFalse(theBool);
+			Assert::AreEqual(intList.Size(), 2U);
+
+			// pointer type test
+			SList<int*> intPtrList;
+			Assert::IsFalse(intPtrList.Remove(&number1));
+
+			intPtrList.PushBack(&number0);
+			intPtrList.PushBack(&number1);
+			intPtrList.PushBack(&number2);
+			theBool = intPtrList.Remove(&number1);
+			Assert::IsTrue(theBool);
+			Assert::AreEqual(intPtrList.Size(), 2U);
+
+			theBool = intPtrList.Remove(&number1);
+			Assert::IsFalse(theBool);
+			Assert::AreEqual(intPtrList.Size(), 2U);
+
+			// class type test
+			int* number3 = new int(10);
+			int* number4 = new int(6);
+			int* number5 = new int(98);
+
+			Foo foo1(number1, number3);
+			Foo foo2(number2, number4);
+			Foo foo0(number0, number5);
+
+			SList<Foo> fooList;
+			Assert::IsFalse(fooList.Remove(foo1));
+
+			fooList.PushBack(foo0);
+			fooList.PushBack(foo1);
+			fooList.PushBack(foo2);
+			theBool = fooList.Remove(foo1);
+			Assert::IsTrue(theBool);
+			Assert::AreEqual(fooList.Size(), 2U);
+
+			theBool = fooList.Remove(foo1);
+			Assert::IsFalse(theBool);
+			Assert::AreEqual(fooList.Size(), 2U);
+
+		}
+
+
+
 #pragma endregion
 
 #pragma region SListIterator
@@ -509,7 +742,7 @@ namespace UnitTestLibraryDesktop
 		{
 			SList<int> list;
 			SList<int>::SListIterator it1 = list.PushBack(0);
-			SList<int>::SListIterator it2(it1); 
+			SList<int>::SListIterator it2(it1);
 			Assert::IsTrue(it1 == it2); // copy ctor
 
 			SList<int>::SListIterator it3;

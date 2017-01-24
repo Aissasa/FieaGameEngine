@@ -180,7 +180,7 @@ typename SList<T>::SListIterator SList<T>::end() const
 template<typename T>
 typename SList<T>::SListIterator SList<T>::Find(const T & value) const
 {
-	for (const SListIterator it = begin(); it != end(); ++it)
+	for (SListIterator it = begin(); it != end(); ++it)
 	{
 		if (*it == value)
 		{
@@ -204,6 +204,7 @@ typename SList<T>::SListIterator SList<T>::InsertAfter(const T & value, const SL
 		SListIterator it = iterator;
 		Node* newNode = new Node(it.mNode->mNext, value);
 		it.mNode->mNext = newNode;
+		++mSize;
 		return ++it;
 	}
 }
@@ -213,13 +214,14 @@ template<typename T>
 bool SList<T>::Remove(const T & value)
 {
 	Node* previousNode = mFront;
-	for (const SListIterator it = begin(); it != end(); ++it)
+	for (SListIterator it = begin(); it != end(); ++it)
 	{
 		if (*it == value)
 		{
 			Node* nodeToRemove = it.mNode;
 			previousNode->mNext = nodeToRemove->mNext;
 			delete nodeToRemove;
+			--mSize;
 			return true;
 		}
 
