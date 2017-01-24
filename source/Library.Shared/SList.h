@@ -34,7 +34,7 @@ namespace FieaGameEngineLibrary
 			friend class SList;
 		public:
 			/** SListIterator constructor.
-			* It creates and initializes an iterator that points to null.
+			* It creates and initializes an iterator that points to null and belong to no list.
 			*/
 			SListIterator();
 
@@ -59,7 +59,7 @@ namespace FieaGameEngineLibrary
 			* It throws an exception if the iterator has no owner list or the list is empty.
 			* @return Incremented iterator.
 			*/
-			SListIterator& operator++();
+			SListIterator operator++();
 
 			/** SListIterator postfix incrementation operator overloading method.
 			* It does a postfix incrementation of the iterator allowing it to point to the following element in the SList.
@@ -67,7 +67,7 @@ namespace FieaGameEngineLibrary
 			* @param Denotes the postfix form of the increment. Has no effect.
 			* @return Iterator before the incrementation.
 			*/
-			SListIterator& operator++(int t);
+			SListIterator operator++(int);
 
 			/** SListIterator equal operator overloading method.
 			* @param Iterator to compare to.

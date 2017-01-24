@@ -273,13 +273,12 @@ typename SList<T>::SListIterator & SList<T>::SListIterator::operator=(const SLis
 		mNode = rhs.mNode;
 		mOwner = rhs.mOwner;
 	}
-
 	return *this;
 }
 
 /************************************************************************/
 template<typename T>
-typename SList<T>::SListIterator & SList<T>::SListIterator::operator++()
+typename SList<T>::SListIterator SList<T>::SListIterator::operator++()
 {
 	if (mOwner == nullptr)
 	{
@@ -287,7 +286,7 @@ typename SList<T>::SListIterator & SList<T>::SListIterator::operator++()
 	}
 	if (mNode == nullptr)
 	{
-		throw std::exception("The iterator is going out of bounds.")
+		throw std::exception("The iterator is going out of bounds.");
 	}
 
 	mNode = mNode->mNext;
@@ -296,7 +295,7 @@ typename SList<T>::SListIterator & SList<T>::SListIterator::operator++()
 
 /************************************************************************/
 template<typename T>
-typename SList<T>::SListIterator & SList<T>::SListIterator::operator++(int t)
+typename SList<T>::SListIterator SList<T>::SListIterator::operator++(int)
 {
 	SListIterator temp = *this;
 	++*this;
@@ -327,7 +326,7 @@ const T& SList<T>::SListIterator::operator*() const
 	}
 	if (mNode == nullptr)
 	{
-		throw std::exception("The list end cannot be dereferenced.")
+		throw std::exception("The list end cannot be dereferenced.");
 	}
 
 	return mNode->mData;
@@ -337,7 +336,7 @@ const T& SList<T>::SListIterator::operator*() const
 template<typename T>
 T& SList<T>::SListIterator::operator*()
 {
-	return const_cast<T&>(const_cast<const SListIterator&>(*this).*());
+	return const_cast<T&>(const_cast<const SList::SListIterator&>(*this).operator*());
 }
 
 #pragma endregion

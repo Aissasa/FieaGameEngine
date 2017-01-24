@@ -12,6 +12,7 @@ namespace UnitTestLibraryDesktop
 	{
 	public:
 
+#pragma region Memory leak check
 		TEST_METHOD_INITIALIZE(Initialize)
 		{
 			_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF);
@@ -28,8 +29,10 @@ namespace UnitTestLibraryDesktop
 				Assert::Fail(L"Memory Leaks!");
 			}
 		}
+#pragma endregion
 
-		TEST_METHOD(ConstructorTest)
+#pragma region SList
+		TEST_METHOD(SListConstructorTest)
 		{
 			// primitive type test
 			SList<int> intList;
@@ -57,7 +60,7 @@ namespace UnitTestLibraryDesktop
 
 		}
 
-		TEST_METHOD(CopyConstructorTest)
+		TEST_METHOD(SListCopyConstructorTest)
 		{
 			// primitive type test
 			int* number1 = new int(5);
@@ -100,7 +103,7 @@ namespace UnitTestLibraryDesktop
 			//number1 and number2 are deleted within the foo destructor, so no need to add delete 
 		}
 
-		TEST_METHOD(AssignmentOperatorTest)
+		TEST_METHOD(SListAssignmentOperatorTest)
 		{
 			// primitive type test
 			int* number0 = new int(5);
@@ -145,7 +148,7 @@ namespace UnitTestLibraryDesktop
 
 		}
 
-		TEST_METHOD(PushFrontTest)
+		TEST_METHOD(SListPushFrontTest)
 		{
 			int* number1 = new int(3);
 			int* number2 = new int(7);
@@ -195,7 +198,7 @@ namespace UnitTestLibraryDesktop
 			Assert::IsTrue(foo1 == fooList.Back());
 		}
 
-		TEST_METHOD(PopFrontTest)
+		TEST_METHOD(SListPopFrontTest)
 		{
 			int* number1 = new int(3);
 			int* number2 = new int(7);
@@ -261,7 +264,7 @@ namespace UnitTestLibraryDesktop
 
 		}
 
-		TEST_METHOD(PushBackTest)
+		TEST_METHOD(SListPushBackTest)
 		{
 			int* number1 = new int(3);
 			int* number2 = new int(7);
@@ -311,7 +314,7 @@ namespace UnitTestLibraryDesktop
 			Assert::IsTrue(foo2 == fooList.Back());
 		}
 
-		TEST_METHOD(IsEmptyTest)
+		TEST_METHOD(SListIsEmptyTest)
 		{
 			// primitive type test
 			int* number1 = new int(5);
@@ -343,7 +346,7 @@ namespace UnitTestLibraryDesktop
 			Assert::IsTrue(fooList.IsEmpty());
 		}
 
-		TEST_METHOD(FrontTest)
+		TEST_METHOD(SListFrontTest)
 		{
 			// primitive type test
 			int* number1 = new int(5);
@@ -385,7 +388,7 @@ namespace UnitTestLibraryDesktop
 			Assert::IsTrue(fooList.Front() == foo2);
 		}
 
-		TEST_METHOD(BackTest)
+		TEST_METHOD(SListBackTest)
 		{
 			// primitive type test
 			int* number1 = new int(5);
@@ -427,7 +430,7 @@ namespace UnitTestLibraryDesktop
 			Assert::IsTrue(fooList.Back() == foo2);
 		}
 
-		TEST_METHOD(SizeTest)
+		TEST_METHOD(SListSizeTest)
 		{
 			// primitive type test
 			int* number1 = new int(5);
@@ -468,7 +471,7 @@ namespace UnitTestLibraryDesktop
 			Assert::AreEqual(fooList.Size(), 1U);
 		}
 
-		TEST_METHOD(ClearTest)
+		TEST_METHOD(SListClearTest)
 		{
 			// primitive type test
 			int* number1 = new int(5);
@@ -499,8 +502,98 @@ namespace UnitTestLibraryDesktop
 			fooList.Clear();
 			Assert::IsTrue(fooList.IsEmpty());
 		}
+#pragma endregion
+
+#pragma region SListIterator
+		TEST_METHOD(IteratorConstructorsAndAssignmentTest)
+		{
+			SList<int> list;
+			SList<int>::SListIterator it1 = list.PushBack(0);
+			SList<int>::SListIterator it2(it1); 
+			Assert::IsTrue(it1 == it2); // copy ctor
+
+			SList<int>::SListIterator it3;
+			SList<int>::SListIterator it4;
+			Assert::IsTrue(it3 == it4); // ctor
+
+			it3 = it1;
+			it4 = it2;
+			Assert::IsTrue(it1 == it4 && it2 == it3); // assignment operator
+		}
+
+		TEST_METHOD(IteratorPrefixIncrementationOperatorTest)
+		{
+			SList<int>::SListIterator it;
+			auto func = [&it] { ++it; };
+			Assert::ExpectException<std::exception>(func);
+
+			SList<int> list;
+			SList<int>::SListIterator it0 = list.begin();
+			auto func0 = [&it0] { ++it0; };
+			Assert::ExpectException<std::exception>(func0);
 
 
+			SList<int>::SListIterator it1 = list.PushBack(5);
+			SList<int>::SListIterator it2 = list.PushBack(10);
+			Assert::IsTrue(it1 != it2);
+
+			SList<int>::SListIterator it3 = ++it1;
+			Assert::IsTrue(it1 == it2);
+			Assert::IsTrue(it1 == it3);
+		}
+
+		TEST_METHOD(IteratorPostfixIncrementationOperatorTest)
+		{
+			SList<int>::SListIterator it;
+			auto func = [&it] { it++; };
+			Assert::ExpectException<std::exception>(func);
+
+			SList<int> list;
+			SList<int>::SListIterator it0 = list.begin();
+			auto func0 = [&it0] { it0++; };
+			Assert::ExpectException<std::exception>(func0);
+
+
+			SList<int>::SListIterator it1 = list.PushBack(5);
+			SList<int>::SListIterator it2 = list.PushBack(10);
+
+			SList<int>::SListIterator it3 = it1++;
+			Assert::IsTrue(it1 == it2);
+			Assert::IsTrue(it1 != it3);
+		}
+
+		TEST_METHOD(IteratorEqualAndNotOperatorTest)
+		{
+			SList<int> list;
+
+			SList<int>::SListIterator it1 = list.PushBack(0);
+			SList<int>::SListIterator it2 = list.PushBack(6);
+
+			Assert::IsFalse(it1 == it2);
+			Assert::IsTrue(it1 != it2);
+			++it1;
+			Assert::IsTrue(it1 == it2);
+			Assert::IsFalse(it1 != it2);
+		}
+
+		TEST_METHOD(IteratorDereferenceOperatorTest)
+		{
+			SList<int>::SListIterator it;
+			auto func = [&it] { *it; };
+			Assert::ExpectException<std::exception>(func);
+
+			SList<int> list;
+
+			SList<int>::SListIterator it1 = list.begin();
+			auto func1 = [&it1] { *it1; };
+			Assert::ExpectException<std::exception>(func1);
+
+			int number = 5;
+			SList<int>::SListIterator it2 = list.PushBack(number);
+			Assert::AreEqual(number, *it2);
+		}
+
+#pragma endregion
 	private:
 		static _CrtMemState sStartMemState;
 	};
