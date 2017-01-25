@@ -159,7 +159,7 @@ void SList<T>::Clear()
 
 /************************************************************************/
 template<typename T>
-typename SList<T>::SListIterator SList<T>::begin() const
+inline typename SList<T>::SListIterator SList<T>::begin() const
 {
 	return SListIterator(mFront, this);
 }
@@ -235,12 +235,16 @@ bool SList<T>::Remove(const T & value)
 template<typename T>
 void SList<T>::DeepCopy(const SList & rhs)
 {
-	Node* currentNode = rhs.mFront;
-	while (currentNode != nullptr)
+	for (auto& value : rhs)
 	{
-		PushBack(currentNode->mData);
-		currentNode = currentNode->mNext;
+		PushBack(value);
 	}
+	//Node* currentNode = rhs.mFront;
+	//while (currentNode != nullptr)
+	//{
+	//	PushBack(currentNode->mData);
+	//	currentNode = currentNode->mNext;
+	//}
 }
 #pragma endregion
 
