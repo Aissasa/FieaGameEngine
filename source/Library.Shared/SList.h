@@ -26,74 +26,74 @@ namespace Library
 
 	public:
 
-		/** SListIterator is an iterator class for SList.
+		/** Iterator is an iterator class for SList.
 		* This is a simple iterator implementation.
 		*/
-		class SListIterator
+		class Iterator
 		{
 			friend class SList;
 		public:
-			/** SListIterator constructor.
+			/** Iterator constructor.
 			* It creates and initializes an iterator that points to null and belong to no list.
 			*/
-			SListIterator();
+			Iterator();
 
 			/** SList iterator destructor.
 			*/
-			~SListIterator() = default;
+			~Iterator() = default;
 
-			/** SListIterator copy constructor.
-			* @param SListIterator list to copy.
+			/** Iterator copy constructor.
+			* @param Iterator list to copy.
 			*/
-			SListIterator(const SListIterator& rhs);
+			Iterator(const Iterator& rhs);
 
-			/** SListIterator assignment operator overloading method.
+			/** Iterator assignment operator overloading method.
 			* It allows the assignment operator to create a copy of the assignee iterator.
-			* @param SListIterator to copy.
+			* @param Iterator to copy.
 			* @return Result copy.
 			*/
-			SListIterator& operator=(const SListIterator& rhs); 
+			Iterator& operator=(const Iterator& rhs); 
 
-			/** SListIterator prefix incrementation operator overloading method.
+			/** Iterator prefix incrementation operator overloading method.
 			* It does a prefix incrementation of the iterator allowing it to point to the following element in the SList.
 			* It throws an exception if the iterator has no owner list or the list is empty.
 			* @return Incremented iterator.
 			*/
-			SListIterator operator++();
+			Iterator& operator++();
 
-			/** SListIterator postfix incrementation operator overloading method.
+			/** Iterator postfix incrementation operator overloading method.
 			* It does a postfix incrementation of the iterator allowing it to point to the following element in the SList.
 			* It throws an exception if the iterator has no owner list or the list is empty.
 			* @param Denotes the postfix form of the increment. Has no effect.
 			* @return Iterator before the incrementation.
 			*/
-			SListIterator operator++(int);
+			Iterator operator++(int);
 
-			/** SListIterator equal operator overloading method.
+			/** Iterator equal operator overloading method.
 			* @param Iterator to compare to.
 			* @return Result of the equality comparison.
 			*/
-			bool operator==(const SListIterator& rhs) const;
+			bool operator==(const Iterator& rhs) const;
 
-			/** SListIterator not equal operator overloading method.
+			/** Iterator not equal operator overloading method.
 			* @param Iterator to compare to.
 			* @return Result of the non equality comparison.
 			*/
-			bool operator!=(const SListIterator& rhs) const;
+			bool operator!=(const Iterator& rhs) const;
 
-			/** SListIterator dereference operator overloading method.
+			/** Iterator dereference operator overloading method.
 			* @return Data encapsulated in the node pointed to by the iterator.
 			*/
 			T& operator*();
 
-			/** SListIterator dereference operator overloading method.
+			/** Iterator dereference operator overloading method.
 			* @return Data encapsulated in the node pointed to by the iterator.
 			*/
 			const T& operator*() const;
 
 		private:
 
-			SListIterator(Node* node, const SList* owner);
+			Iterator(Node* node, const SList* owner);
 			Node* mNode;
 			const SList* mOwner;
 
@@ -126,7 +126,7 @@ namespace Library
 		 * @param Value of the element to add.
 		 * @return Iterator pointing to the node of the added value.
 		 */
-		SListIterator PushFront(const T& t);
+		Iterator PushFront(const T& t);
 
 		/** Deletes the first element of the list.
 		 */
@@ -136,7 +136,7 @@ namespace Library
 		 * @param Value of the element to add.
 		 * @return Iterator pointing to the node of the added value.
 		 */
-		SListIterator PushBack(const T& t);
+		Iterator PushBack(const T& t);
 
 		/** Determines if the list is empty.
 		 */
@@ -179,19 +179,19 @@ namespace Library
 		/** Returns an iterator pointing to the first element in the list.
 		* @return Iterator to the first element in the list.
 		*/
-		SListIterator begin() const;
+		Iterator begin() const;
 
 		/** Returns an iterator pointing to the past-the-end element in the list.
 		* @return Iterator to the past-the-end element in the list.
 		*/
-		SListIterator end() const;
+		Iterator end() const;
 
 		/** Finds an element in the list and returns an iterator pointing to it.
 		* If the list is empty or the element is not found, the past-the-end iterator is returned.
 		* @parameter Value to find in the list.
 		* @return Iterator to the found element in the list.
 		*/
-		SListIterator Find(const T& value) const;
+		Iterator Find(const T& value) const;
 
 		/** Adds a value as an element to the list, just after the iterator element passed as argument.
 		* If the iterator is the past-the-end iterator, the value is added at the end of the list.
@@ -199,7 +199,7 @@ namespace Library
 		* @parameter Iterator to the element to add after.
 		* @return Iterator to the added element.
 		*/
-		SListIterator InsertAfter(const T& value, const SListIterator& iterator);
+		Iterator InsertAfter(const T& value, const Iterator& iterator);
 
 		/** Finds an element in the list and removes it.
 		* If the element is not found, nothing happens.

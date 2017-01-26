@@ -9,26 +9,26 @@ namespace Library
 		;
 
 	public:
-		class VectorIterator
+		class Iterator
 		{
 			friend class Vector;
 		public:
-			VectorIterator();
-			~VectorIterator() = default;
-			VectorIterator(const VectorIterator & rhs);
-			VectorIterator& operator=(const VectorIterator& rhs);
+			Iterator();
+			~Iterator() = default;
+			Iterator(const Iterator & rhs);
+			Iterator& operator=(const Iterator& rhs);
 
-			VectorIterator operator++();
-			VectorIterator operator++(int);
-			VectorIterator operator--();
-			VectorIterator operator--(int);
-			bool operator==(const VectorIterator& rhs) const;
-			bool operator!=(const VectorIterator& rhs) const;
+			Iterator& operator++();
+			Iterator operator++(int);
+			Iterator operator--();
+			Iterator operator--(int);
+			bool operator==(const Iterator& rhs) const;
+			bool operator!=(const Iterator& rhs) const;
 			const T& operator*() const;
 			T& operator*();
 
 		private:
-			VectorIterator(Vector owner, std::uint32_t index);
+			Iterator(Vector owner, std::uint32_t index);
 			Vector mOwner;
 			std::uint32_t mIndex;
 		};
@@ -52,16 +52,16 @@ namespace Library
 		T& Front();
 		const T& Back() const;
 		T& Back();
-		VectorIterator Find(const T& t) const;
+		Iterator Find(const T& t) const;
 
-		VectorIterator PushBack(const T& t);
+		Iterator PushBack(const T& t);
 		void PopBack();
 		bool Remove(const T& t);
-		bool Remove(const VectorIterator& first, const VectorIterator& last);
+		bool Remove(const Iterator& first, const Iterator& last);
 		void Clear();
 
-		VectorIterator begin();
-		VectorIterator end();
+		Iterator begin();
+		Iterator end();
 
 	private:
 		void DeepCopy(const Vector& rhs);
@@ -227,9 +227,9 @@ namespace Library
 
 	/************************************************************************/
 	template<typename T>
-	typename Vector<T>::VectorIterator Vector<T>::Find(const T & t) const
+	typename Vector<T>::Iterator Vector<T>::Find(const T & t) const
 	{
-		VectorIterator it = begin();
+		Iterator it = begin();
 		for (; it != end(); ++it)
 		{
 			if (*it == t)
@@ -242,7 +242,7 @@ namespace Library
 
 	/************************************************************************/
 	template<typename T>
-	typename Vector<T>::VectorIterator Vector<T>::PushBack(const T & t)
+	typename Vector<T>::Iterator Vector<T>::PushBack(const T & t)
 	{
 		if (mSize == mCapacity)
 		{
@@ -251,7 +251,7 @@ namespace Library
 		mFront[mSize] = new(mFront + mSize) T;
 		++mSize;
 
-		return VectorIterator(this, mSize - 1);
+		return Iterator(this, mSize - 1);
 	}
 
 	/************************************************************************/
@@ -260,8 +260,7 @@ namespace Library
 	{
 		if (!IsEmpty())
 		{
-			delete (mFront + (mSize - 1));
-			--mSize;
+			mFront[--mSize].~T();
 		}
 	}
 
@@ -269,14 +268,14 @@ namespace Library
 	template<typename T>
 	bool Vector<T>::Remove(const T & t)
 	{
-		VectorIterator it = Find(t);
+		Iterator it = Find(t);
 		if (it == end())
 		{
 			return false;
 		}
 		else
 		{
-			VectorIterator last(this, mSize - 1);
+			Iterator last(this, mSize - 1);
 			while (it != last)
 			{
 				*it = *(++it);
@@ -288,7 +287,7 @@ namespace Library
 
 	/************************************************************************/
 	template<typename T>
-	bool Vector<T>::Remove(const VectorIterator & first, const VectorIterator & last)
+	bool Vector<T>::Remove(const Iterator & first, const Iterator & last)
 	{
 		if (first.mIndex >= mSize || last.mIndex > mSize)
 		{
@@ -328,20 +327,20 @@ namespace Library
 
 	/************************************************************************/
 	template<typename T>
-	typename Vector<T>::VectorIterator Vector<T>::begin()
+	typename Vector<T>::Iterator Vector<T>::begin()
 	{
-		return VectorIterator(this, 0);
+		return Iterator(this, 0);
 	}
 
 	/************************************************************************/
 	template<typename T>
-	typename Vector<T>::VectorIterator Vector<T>::end()
+	typename Vector<T>::Iterator Vector<T>::end()
 	{
 		if (IsEmpty())
 		{
 			return begin();
 		}
-		return VectorIterator(this, mSize);
+		return Iterator(this, mSize);
 	}
 
 	/************************************************************************/
@@ -353,5 +352,4 @@ namespace Library
 			PushBack(value);
 		}
 	}
-
 }

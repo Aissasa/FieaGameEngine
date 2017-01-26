@@ -3,31 +3,31 @@
 #include "pch.h"
 #include "Vector.h"
 
-#pragma region Vector Iterator
+#pragma region Iterator
 /************************************************************************/
 template<typename T>
-Vector<T>::VectorIterator::VectorIterator(Vector owner, std::uint32_t index) :
+Vector<T>::Iterator::Iterator(Vector owner, std::uint32_t index) :
 	mOwner(owner), mIndex(index)
 {
 }
 
 /************************************************************************/
 template<typename T>
-Vector<T>::VectorIterator::VectorIterator() :
-	VectorIterator(nullptr, 0)
+Vector<T>::Iterator::Iterator() :
+	Iterator(nullptr, 0)
 {
 }
 
 /************************************************************************/
 template<typename T>
-Vector<T>::VectorIterator::VectorIterator(const VectorIterator & rhs) :
-	VectorIterator(rhs.mOwner, rhs.mIndex)
+Vector<T>::Iterator::Iterator(const Iterator & rhs) :
+	Iterator(rhs.mOwner, rhs.mIndex)
 {
 }
 
 /************************************************************************/
 template<typename T>
-typename Vector<T>::VectorIterator & Vector<T>::VectorIterator::operator=(const VectorIterator & rhs)
+typename Vector<T>::Iterator & Vector<T>::Iterator::operator=(const Iterator & rhs)
 {
 	if (this != &rhs)
 	{
@@ -39,7 +39,7 @@ typename Vector<T>::VectorIterator & Vector<T>::VectorIterator::operator=(const 
 
 /************************************************************************/
 template<typename T>
-typename Vector<T>::VectorIterator Vector<T>::VectorIterator::operator++()
+typename Vector<T>::Iterator& Vector<T>::Iterator::operator++()
 {
 	if (mOwner == nullptr)
 	{
@@ -56,16 +56,16 @@ typename Vector<T>::VectorIterator Vector<T>::VectorIterator::operator++()
 
 /************************************************************************/
 template<typename T>
-typename Vector<T>::VectorIterator Vector<T>::VectorIterator::operator++(int)
+typename Vector<T>::Iterator Vector<T>::Iterator::operator++(int)
 {
-	VectorIterator temp = *this;
+	Iterator temp = *this;
 	++(*this);
 	return temp;
 }
 
 /************************************************************************/
 template<typename T>
-typename Vector<T>::VectorIterator Vector<T>::VectorIterator::operator--()
+typename Vector<T>::Iterator Vector<T>::Iterator::operator--()
 {
 	if (mOwner == nullptr)
 	{
@@ -82,30 +82,30 @@ typename Vector<T>::VectorIterator Vector<T>::VectorIterator::operator--()
 
 /************************************************************************/
 template<typename T>
-typename Vector<T>::VectorIterator Vector<T>::VectorIterator::operator--(int)
+typename Vector<T>::Iterator Vector<T>::Iterator::operator--(int)
 {
-	VectorIterator temp = *this;
+	Iterator temp = *this;
 	--(*this);
 	return temp;
 }
 
 /************************************************************************/
 template<typename T>
-inline bool Vector<T>::VectorIterator::operator==(const VectorIterator & rhs) const
+inline bool Vector<T>::Iterator::operator==(const Iterator & rhs) const
 {
 	return mOwner == rhs.mOwner && mIndex == rhs.mIndex;
 }
 
 /************************************************************************/
 template<typename T>
-inline bool Vector<T>::VectorIterator::operator!=(const VectorIterator & rhs) const
+inline bool Vector<T>::Iterator::operator!=(const Iterator & rhs) const
 {
 	return !(*this == rhs);
 }
 
 /************************************************************************/
 template<typename T>
-const T & Vector<T>::VectorIterator::operator*() const
+const T & Vector<T>::Iterator::operator*() const
 {
 	if (mOwner == nullptr)
 	{
@@ -117,9 +117,9 @@ const T & Vector<T>::VectorIterator::operator*() const
 
 /************************************************************************/
 template<typename T>
-T & Vector<T>::VectorIterator::operator*()
+T & Vector<T>::Iterator::operator*()
 {
-	return const_cast<T&>(const_cast<const Vector<T>::VectorIterator&>(*this).operator*());
+	return const_cast<T&>(const_cast<const Vector<T>::Iterator&>(*this).operator*());
 }
 
 #pragma endregion

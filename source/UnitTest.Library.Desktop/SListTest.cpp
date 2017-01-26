@@ -510,14 +510,14 @@ namespace UnitTestLibraryDesktop
 			int number2 = 2;
 
 			SList<int> intList;
-			SList<int>::SListIterator it1 = intList.PushBack(number1);
+			SList<int>::Iterator it1 = intList.PushBack(number1);
 			Assert::IsTrue(it1 == intList.begin());
 			it1 = intList.PushBack(number2);
 			Assert::IsTrue(it1 != intList.begin());
 
 			// pointer type test
 			SList<int*> intPtrList;
-			SList<int*>::SListIterator it2 = intPtrList.PushBack(&number1);
+			SList<int*>::Iterator it2 = intPtrList.PushBack(&number1);
 			Assert::IsTrue(it2 == intPtrList.begin());
 			it2 = intPtrList.PushBack(&number2);
 			Assert::IsTrue(it2 != intPtrList.begin());
@@ -529,7 +529,7 @@ namespace UnitTestLibraryDesktop
 			Foo foo2(number2, number4);
 
 			SList<Foo> fooList;
-			SList<Foo>::SListIterator it3 = fooList.PushBack(foo1);
+			SList<Foo>::Iterator it3 = fooList.PushBack(foo1);
 			Assert::IsTrue(it3 == fooList.begin());
 			it3 = fooList.PushBack(foo2);
 			Assert::IsTrue(it3 != fooList.begin());
@@ -543,7 +543,7 @@ namespace UnitTestLibraryDesktop
 			SList<int> intList;
 			Assert::IsTrue(intList.begin() == intList.end());
 
-			SList<int>::SListIterator it1 = intList.PushBack(number1);
+			SList<int>::Iterator it1 = intList.PushBack(number1);
 			Assert::IsTrue(it1 != intList.end());
 			Assert::IsTrue(++it1 == intList.end());
 
@@ -551,7 +551,7 @@ namespace UnitTestLibraryDesktop
 			SList<int*> intPtrList;
 			Assert::IsTrue(intPtrList.begin() == intPtrList.end());
 
-			SList<int*>::SListIterator it2 = intPtrList.PushBack(&number1);
+			SList<int*>::Iterator it2 = intPtrList.PushBack(&number1);
 			Assert::IsTrue(it2 != intPtrList.end());
 			Assert::IsTrue(++it2 == intPtrList.end());
 
@@ -562,7 +562,7 @@ namespace UnitTestLibraryDesktop
 			SList<Foo> fooList;
 			Assert::IsTrue(fooList.begin() == fooList.end());
 
-			SList<Foo>::SListIterator it3 = fooList.PushBack(foo1);
+			SList<Foo>::Iterator it3 = fooList.PushBack(foo1);
 			Assert::IsTrue(it3 != fooList.end());
 			Assert::IsTrue(++it3 == fooList.end());
 		}
@@ -575,7 +575,7 @@ namespace UnitTestLibraryDesktop
 			int number0 = 9;
 
 			SList<int> intList;
-			SList<int>::SListIterator it0 = intList.Find(number0);
+			SList<int>::Iterator it0 = intList.Find(number0);
 			Assert::IsTrue(it0 == intList.end());
 
 			intList.PushBack(number1);
@@ -588,7 +588,7 @@ namespace UnitTestLibraryDesktop
 
 			// pointer type test
 			SList<int*> intPtrList;
-			SList<int*>::SListIterator it1 = intPtrList.Find(&number0);
+			SList<int*>::Iterator it1 = intPtrList.Find(&number0);
 			Assert::IsTrue(it1 == intPtrList.end());
 
 			intPtrList.PushBack(&number1);
@@ -609,7 +609,7 @@ namespace UnitTestLibraryDesktop
 			Foo foo0(number0, number5);
 
 			SList<Foo> fooList;
-			SList<Foo>::SListIterator it2 = fooList.Find(foo0);
+			SList<Foo>::Iterator it2 = fooList.Find(foo0);
 			Assert::IsTrue(it2 == fooList.end());
 
 			fooList.PushBack(foo1);
@@ -629,9 +629,9 @@ namespace UnitTestLibraryDesktop
 			int number0 = 9;
 
 			SList<int> intList;
-			SList<int>::SListIterator it0 = intList.PushBack(number1);
+			SList<int>::Iterator it0 = intList.PushBack(number1);
 			intList.PushBack(number2);
-			SList<int>::SListIterator it1 = intList.InsertAfter(number0, it0);
+			SList<int>::Iterator it1 = intList.InsertAfter(number0, it0);
 			Assert::AreEqual(3U, intList.Size());
 			Assert::AreEqual(*it1, number0);
 			Assert::IsTrue(++it0 == it1);
@@ -641,9 +641,9 @@ namespace UnitTestLibraryDesktop
 
 			// pointer type test
 			SList<int*> intPtrList;
-			SList<int*>::SListIterator it2 = intPtrList.PushBack(&number1);
+			SList<int*>::Iterator it2 = intPtrList.PushBack(&number1);
 			intPtrList.PushBack(&number2);
-			SList<int*>::SListIterator it3 = intPtrList.InsertAfter(&number0, it2);
+			SList<int*>::Iterator it3 = intPtrList.InsertAfter(&number0, it2);
 			Assert::AreEqual(3U, intPtrList.Size());
 			Assert::AreEqual(*it3, &number0);
 			Assert::IsTrue(++it2 == it3);
@@ -661,9 +661,9 @@ namespace UnitTestLibraryDesktop
 			Foo foo0(number0, number5);
 
 			SList<Foo> fooList;
-			SList<Foo>::SListIterator it4 = fooList.PushBack(foo1);
+			SList<Foo>::Iterator it4 = fooList.PushBack(foo1);
 			fooList.PushBack(foo2);
-			SList<Foo>::SListIterator it5 = fooList.InsertAfter(foo0, it4);
+			SList<Foo>::Iterator it5 = fooList.InsertAfter(foo0, it4);
 			Assert::AreEqual(3U, fooList.Size());
 			Assert::IsTrue(*it5 == foo0);
 			Assert::IsTrue(++it4 == it5);
@@ -741,12 +741,12 @@ namespace UnitTestLibraryDesktop
 		TEST_METHOD(IteratorConstructorsAndAssignmentTest)
 		{
 			SList<int> list;
-			SList<int>::SListIterator it1 = list.PushBack(0);
-			SList<int>::SListIterator it2(it1);
+			SList<int>::Iterator it1 = list.PushBack(0);
+			SList<int>::Iterator it2(it1);
 			Assert::IsTrue(it1 == it2); // copy ctor
 
-			SList<int>::SListIterator it3;
-			SList<int>::SListIterator it4;
+			SList<int>::Iterator it3;
+			SList<int>::Iterator it4;
 			Assert::IsTrue(it3 == it4); // ctor
 
 			it3 = it1;
@@ -756,41 +756,41 @@ namespace UnitTestLibraryDesktop
 
 		TEST_METHOD(IteratorPrefixIncrementationOperatorTest)
 		{
-			SList<int>::SListIterator it;
+			SList<int>::Iterator it;
 			auto func = [&it] { ++it; };
 			Assert::ExpectException<std::exception>(func);
 
 			SList<int> list;
-			SList<int>::SListIterator it0 = list.begin();
+			SList<int>::Iterator it0 = list.begin();
 			auto func0 = [&it0] { ++it0; };
 			Assert::ExpectException<std::exception>(func0);
 
 
-			SList<int>::SListIterator it1 = list.PushBack(5);
-			SList<int>::SListIterator it2 = list.PushBack(10);
+			SList<int>::Iterator it1 = list.PushBack(5);
+			SList<int>::Iterator it2 = list.PushBack(10);
 			Assert::IsTrue(it1 != it2);
 
-			SList<int>::SListIterator it3 = ++it1;
+			SList<int>::Iterator it3 = ++it1;
 			Assert::IsTrue(it1 == it2);
 			Assert::IsTrue(it1 == it3);
 		}
 
 		TEST_METHOD(IteratorPostfixIncrementationOperatorTest)
 		{
-			SList<int>::SListIterator it;
+			SList<int>::Iterator it;
 			auto func = [&it] { it++; };
 			Assert::ExpectException<std::exception>(func);
 
 			SList<int> list;
-			SList<int>::SListIterator it0 = list.begin();
+			SList<int>::Iterator it0 = list.begin();
 			auto func0 = [&it0] { it0++; };
 			Assert::ExpectException<std::exception>(func0);
 
 
-			SList<int>::SListIterator it1 = list.PushBack(5);
-			SList<int>::SListIterator it2 = list.PushBack(10);
+			SList<int>::Iterator it1 = list.PushBack(5);
+			SList<int>::Iterator it2 = list.PushBack(10);
 
-			SList<int>::SListIterator it3 = it1++;
+			SList<int>::Iterator it3 = it1++;
 			Assert::IsTrue(it1 == it2);
 			Assert::IsTrue(it1 != it3);
 		}
@@ -799,8 +799,8 @@ namespace UnitTestLibraryDesktop
 		{
 			SList<int> list;
 
-			SList<int>::SListIterator it1 = list.PushBack(0);
-			SList<int>::SListIterator it2 = list.PushBack(6);
+			SList<int>::Iterator it1 = list.PushBack(0);
+			SList<int>::Iterator it2 = list.PushBack(6);
 
 			Assert::IsFalse(it1 == it2);
 			Assert::IsTrue(it1 != it2);
@@ -811,18 +811,18 @@ namespace UnitTestLibraryDesktop
 
 		TEST_METHOD(IteratorDereferenceOperatorTest)
 		{
-			SList<int>::SListIterator it;
+			SList<int>::Iterator it;
 			auto func = [&it] { *it; };
 			Assert::ExpectException<std::exception>(func);
 
 			SList<int> list;
 
-			SList<int>::SListIterator it1 = list.begin();
+			SList<int>::Iterator it1 = list.begin();
 			auto func1 = [&it1] { *it1; };
 			Assert::ExpectException<std::exception>(func1);
 
 			int number = 5;
-			SList<int>::SListIterator it2 = list.PushBack(number);
+			SList<int>::Iterator it2 = list.PushBack(number);
 			Assert::AreEqual(number, *it2);
 		}
 

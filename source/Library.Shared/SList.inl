@@ -40,7 +40,7 @@ SList<T>::~SList()
 
 /************************************************************************/
 template <typename T>
-typename SList<T>::SListIterator SList<T>::PushFront(const T& t)
+typename SList<T>::Iterator SList<T>::PushFront(const T& t)
 {
 	Node* newNode = new Node(mFront, t);
 	mFront = newNode;
@@ -76,7 +76,7 @@ void SList<T>::PopFront()
 
 /************************************************************************/
 template <typename T>
-typename SList<T>::SListIterator SList<T>::PushBack(const T& t)
+typename SList<T>::Iterator SList<T>::PushBack(const T& t)
 {
 	Node* newNode = new Node(nullptr, t);
 
@@ -92,7 +92,7 @@ typename SList<T>::SListIterator SList<T>::PushBack(const T& t)
 	}
 	mSize++;
 
-	return SListIterator(mBack, this);
+	return Iterator(mBack, this);
 }
 
 /************************************************************************/
@@ -157,28 +157,23 @@ void SList<T>::Clear()
 
 /************************************************************************/
 template<typename T>
-inline typename SList<T>::SListIterator SList<T>::begin() const
+inline typename SList<T>::Iterator SList<T>::begin() const
 {
-	return SListIterator(mFront, this);
+	return Iterator(mFront, this);
 }
 
 /************************************************************************/
 template<typename T>
-typename SList<T>::SListIterator SList<T>::end() const
+typename SList<T>::Iterator SList<T>::end() const
 {
-	if (IsEmpty())
-	{
-		return begin();
-	}
-
-	return SListIterator(mBack->mNext, this);
+	return Iterator(nullptr, this);
 }
 
 /************************************************************************/
 template<typename T>
-typename SList<T>::SListIterator SList<T>::Find(const T & value) const
+typename SList<T>::Iterator SList<T>::Find(const T & value) const
 {
-	for (SListIterator it = begin(); it != end(); ++it)
+	for (Iterator it = begin(); it != end(); ++it)
 	{
 		if (*it == value)
 		{
@@ -190,20 +185,18 @@ typename SList<T>::SListIterator SList<T>::Find(const T & value) const
 
 /************************************************************************/
 template<typename T>
-typename SList<T>::SListIterator SList<T>::InsertAfter(const T & value, const SListIterator& iterator)
+typename SList<T>::Iterator SList<T>::InsertAfter(const T & value, const Iterator& iterator)
 {
 	if (iterator == end())
 	{
-		SListIterator itBack = PushBack(value);
-		return itBack;
+		return PushBack(value);
 	}
 	else
 	{
-		SListIterator it = iterator;
-		Node* newNode = new Node(it.mNode->mNext, value);
-		it.mNode->mNext = newNode;
+		Node* newNode = new Node(iterator.mNode->mNext, value);
+		iterator.mNode->mNext = newNode;
 		++mSize;
-		return ++it;
+		return Iterator(newNode, this);
 	}
 }
 
@@ -212,7 +205,7 @@ template<typename T>
 bool SList<T>::Remove(const T & value)
 {
 	Node* previousNode = mFront;
-	for (SListIterator it = begin(); it != end(); ++it)
+	for (Iterator it = begin(); it != end(); ++it)
 	{
 		if (*it == value)
 		{
@@ -240,31 +233,31 @@ void SList<T>::DeepCopy(const SList & rhs)
 }
 #pragma endregion
 
-#pragma region SListIterator
+#pragma region Iterator
 /************************************************************************/
 template<typename T>
-SList<T>::SListIterator::SListIterator() :
+SList<T>::Iterator::Iterator() :
 	mOwner(nullptr), mNode(nullptr)
 {
 }
 
 /************************************************************************/
 template<typename T>
-SList<T>::SListIterator::SListIterator(Node* node, const SList* owner) :
+SList<T>::Iterator::Iterator(Node* node, const SList* owner) :
 	mNode(node), mOwner(owner)
 {
 }
 
 /************************************************************************/
 template<typename T>
-SList<T>::SListIterator::SListIterator(const SListIterator & rhs) :
+SList<T>::Iterator::Iterator(const Iterator & rhs) :
 	mNode(rhs.mNode), mOwner(rhs.mOwner)
 {
 }
 
 /************************************************************************/
 template<typename T>
-typename SList<T>::SListIterator & SList<T>::SListIterator::operator=(const SListIterator & rhs)
+typename SList<T>::Iterator & SList<T>::Iterator::operator=(const Iterator & rhs)
 {
 	if (this != &rhs)
 	{
@@ -276,7 +269,7 @@ typename SList<T>::SListIterator & SList<T>::SListIterator::operator=(const SLis
 
 /************************************************************************/
 template<typename T>
-typename SList<T>::SListIterator SList<T>::SListIterator::operator++()
+typename SList<T>::Iterator& SList<T>::Iterator::operator++()
 {
 	if (mOwner == nullptr)
 	{
@@ -293,30 +286,30 @@ typename SList<T>::SListIterator SList<T>::SListIterator::operator++()
 
 /************************************************************************/
 template<typename T>
-typename SList<T>::SListIterator SList<T>::SListIterator::operator++(int)
+typename SList<T>::Iterator SList<T>::Iterator::operator++(int)
 {
-	SListIterator temp = *this;
+	Iterator temp = *this;
 	++*this;
 	return temp;
 }
 
 /************************************************************************/
 template<typename T>
-bool SList<T>::SListIterator::operator==(const SListIterator & rhs) const
+bool SList<T>::Iterator::operator==(const Iterator & rhs) const
 {
 	return mOwner == rhs.mOwner && mNode == rhs.mNode;
 }
 
 /************************************************************************/
 template<typename T>
-bool SList<T>::SListIterator::operator!=(const SListIterator & rhs) const
+bool SList<T>::Iterator::operator!=(const Iterator & rhs) const
 {
 	return !(*this == rhs);
 }
 
 /************************************************************************/
 template<typename T>
-const T& SList<T>::SListIterator::operator*() const
+const T& SList<T>::Iterator::operator*() const
 {
 	if (mOwner == nullptr)
 	{
@@ -332,9 +325,9 @@ const T& SList<T>::SListIterator::operator*() const
 
 /************************************************************************/
 template<typename T>
-T& SList<T>::SListIterator::operator*()
+T& SList<T>::Iterator::operator*()
 {
-	return const_cast<T&>(const_cast<const SList::SListIterator&>(*this).operator*());
+	return const_cast<T&>(const_cast<const SList::Iterator&>(*this).operator*());
 }
 
 #pragma endregion
