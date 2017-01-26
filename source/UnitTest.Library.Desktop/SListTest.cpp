@@ -4,7 +4,7 @@
 #include "Foo.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
-using namespace FieaGameEngineLibrary;
+using namespace Library;
 
 namespace UnitTestLibraryDesktop
 {

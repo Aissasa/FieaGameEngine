@@ -1,6 +1,6 @@
 #pragma once
 
-namespace FieaGameEngineLibrary
+namespace Library
 {
 	/** SList is a singly-linked list class.
 	 * This is a simple singly-linked list template implementation.
