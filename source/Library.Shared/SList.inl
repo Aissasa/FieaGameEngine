@@ -14,7 +14,7 @@ SList<T>::SList() :
 /************************************************************************/
 template <typename T>
 SList<T>::SList(const SList& rhs) :
-	mFront(nullptr), mBack(nullptr), mSize(0)
+	SList()
 {
 	DeepCopy(rhs);
 }
@@ -237,12 +237,6 @@ void SList<T>::DeepCopy(const SList & rhs)
 	{
 		PushBack(value);
 	}
-	//Node* currentNode = rhs.mFront;
-	//while (currentNode != nullptr)
-	//{
-	//	PushBack(currentNode->mData);
-	//	currentNode = currentNode->mNext;
-	//}
 }
 #pragma endregion
 

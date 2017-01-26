@@ -1,6 +1,7 @@
 #pragma once
 
 #include "pch.h"
+#include "Vector.h"
 
 #pragma region Vector Iterator
 /************************************************************************/
@@ -26,7 +27,7 @@ Vector<T>::VectorIterator::VectorIterator(const VectorIterator & rhs) :
 
 /************************************************************************/
 template<typename T>
-typename VectorIterator & Vector<T>::VectorIterator::operator=(const VectorIterator & rhs)
+typename Vector<T>::VectorIterator & Vector<T>::VectorIterator::operator=(const VectorIterator & rhs)
 {
 	if (this != &rhs)
 	{
@@ -38,7 +39,7 @@ typename VectorIterator & Vector<T>::VectorIterator::operator=(const VectorItera
 
 /************************************************************************/
 template<typename T>
-typename VectorIterator Vector<T>::VectorIterator::operator++()
+typename Vector<T>::VectorIterator Vector<T>::VectorIterator::operator++()
 {
 	if (mOwner == nullptr)
 	{
@@ -51,15 +52,40 @@ typename VectorIterator Vector<T>::VectorIterator::operator++()
 
 	++mIndex;
 	return *this;
-
 }
 
 /************************************************************************/
 template<typename T>
-typename VectorIterator Vector<T>::VectorIterator::operator++(int)
+typename Vector<T>::VectorIterator Vector<T>::VectorIterator::operator++(int)
 {
 	VectorIterator temp = *this;
 	++(*this);
+	return temp;
+}
+
+/************************************************************************/
+template<typename T>
+typename Vector<T>::VectorIterator Vector<T>::VectorIterator::operator--()
+{
+	if (mOwner == nullptr)
+	{
+		throw std::exception("The iterator is not assigned to a vector.");
+	}
+	if (mIndex <= 0)
+	{
+		throw std::exception("The iterator is going out of bounds.");
+	}
+
+	--mIndex;
+	return *this;
+}
+
+/************************************************************************/
+template<typename T>
+typename Vector<T>::VectorIterator Vector<T>::VectorIterator::operator--(int)
+{
+	VectorIterator temp = *this;
+	--(*this);
 	return temp;
 }
 
@@ -81,7 +107,12 @@ inline bool Vector<T>::VectorIterator::operator!=(const VectorIterator & rhs) co
 template<typename T>
 const T & Vector<T>::VectorIterator::operator*() const
 {
-	// TODO: insert return statement here
+	if (mOwner == nullptr)
+	{
+		throw std::exception("The iterator is not assigned to a list.");
+	}
+
+	return mFront[mIndex];
 }
 
 /************************************************************************/

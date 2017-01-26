@@ -8,6 +8,7 @@
 #include <vector>
 #include <cstdint>
 #include <exception>
+#include <new>
 
 //// C RunTime Header Files
 //#include <stdlib.h>

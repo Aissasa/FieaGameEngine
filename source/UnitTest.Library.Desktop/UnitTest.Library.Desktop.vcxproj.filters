@@ -8,6 +8,9 @@
     <ClCompile Include="Foo.cpp">
       <Filter>Support Classes</Filter>
     </ClCompile>
+    <ClCompile Include="VectorTest.cpp">
+      <Filter>Test Classes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Support Classes">
