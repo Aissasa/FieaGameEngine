@@ -6,7 +6,7 @@
 #pragma region Iterator
 /************************************************************************/
 template<typename T>
-Vector<T>::Iterator::Iterator(Vector* owner, std::uint32_t index) :
+Vector<T>::Iterator::Iterator(const Vector* owner, std::uint32_t index) :
 	mOwner(owner), mIndex(index)
 {
 }
@@ -45,7 +45,7 @@ typename Vector<T>::Iterator& Vector<T>::Iterator::operator++()
 	{
 		throw std::exception("The iterator is not assigned to a vector.");
 	}
-	if (mIndex + 1 >= mOwner->mSize)
+	if (mIndex + 1 > mOwner->mSize)
 	{
 		throw std::exception("The iterator is going out of bounds.");
 	}
@@ -170,6 +170,8 @@ Vector<T> & Vector<T>::operator=(const Vector & rhs)
 		Reserve(rhs.mCapacity);
 		DeepCopy(rhs);
 	}
+
+	return *this;
 }
 
 /************************************************************************/
@@ -188,7 +190,7 @@ inline std::uint32_t Vector<T>::Size() const
 
 /************************************************************************/
 template<typename T>
-inline std::uint32_t Vector<T>::Capcity() const
+inline std::uint32_t Vector<T>::Capacity() const
 {
 	return mCapacity;
 }
@@ -222,7 +224,7 @@ const T & Vector<T>::operator[](int index) const
 		throw std::exception("The vector is empty!");
 	}
 
-	if (index < 0 || index >= mSize)
+	if (index < 0 || (std::uint32_t)index >= mSize)
 	{
 		throw std::exception("Index out of bounds!");
 	}
@@ -253,9 +255,9 @@ T & Vector<T>::At(const std::uint32_t index)
 
 /************************************************************************/
 template<typename T>
-inline const T & Vector<T>::Front() const
+const T & Vector<T>::Front() const
 {
-	return *mFront;
+	return operator[](0);
 }
 
 /************************************************************************/
@@ -269,7 +271,7 @@ T & Vector<T>::Front()
 template<typename T>
 const T & Vector<T>::Back() const
 {
-	return At(mSize - 1);
+	return operator[](mSize - 1);
 }
 
 /************************************************************************/
@@ -338,12 +340,7 @@ bool Vector<T>::Remove(const T & t)
 	}
 	else
 	{
-		Iterator last(this, mSize - 1);
-		while (it != last)
-		{
-			*it = *(++it);
-		}
-
+		ShiftLeftFrom(it);
 		PopBack();
 		return true;
 	}
@@ -353,17 +350,29 @@ bool Vector<T>::Remove(const T & t)
 template<typename T>
 bool Vector<T>::Remove(const Iterator & first, const Iterator & last)
 {
+	if (first.mOwner != this || last.mOwner != this)
+	{
+		throw std::exception("Iterators don't belong to the vector!");
+	}
+
 	if (first.mIndex >= mSize || last.mIndex > mSize)
 	{
 		throw std::exception("Iterators are out of bounds!");
 	}
 
-	if (first.mIndex >= last.mIndex)
+	if (first.mIndex > last.mIndex)
 	{
 		return false;
 	}
 
-	std::uint32_t count = last.mIndex - first.index;
+	if (first == last)
+	{
+		ShiftLeftFrom(first);
+		PopBack();
+		return true;
+	}
+
+	std::uint32_t count = last.mIndex - first.mIndex;
 
 	if (last != end())
 	{
@@ -373,7 +382,7 @@ bool Vector<T>::Remove(const Iterator & first, const Iterator & last)
 		// just override the data with what's after it
 		while (lastTemp != end())
 		{
-			*lastTemp = *firstTemp;
+			 *firstTemp++ = *lastTemp++;
 		}
 	}
 
@@ -394,19 +403,20 @@ void Vector<T>::Clear()
 		PopBack();
 	}
 	free(mFront);
+	mFront = nullptr;
 	mCapacity = 0;
 }
 
 /************************************************************************/
 template<typename T>
-typename Vector<T>::Iterator Vector<T>::begin()
+typename Vector<T>::Iterator Vector<T>::begin() const
 {
 	return Iterator(this, 0);
 }
 
 /************************************************************************/
 template<typename T>
-typename Vector<T>::Iterator Vector<T>::end()
+typename Vector<T>::Iterator Vector<T>::end() const
 {
 	return Iterator(this, mSize);
 }
@@ -420,4 +430,18 @@ void Vector<T>::DeepCopy(const Vector & rhs)
 		PushBack(value);
 	}
 }
+
+/************************************************************************/
+template<typename T>
+void Vector<T>::ShiftLeftFrom(Iterator it)
+{
+	Iterator last(this, mSize - 1);
+	while (it != last)
+	{
+		auto temp = it;
+		++it;
+		*temp = *it;
+	}
+}
+
 #pragma endregion

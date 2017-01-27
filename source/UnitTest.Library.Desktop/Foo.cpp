@@ -4,11 +4,12 @@
 namespace UnitTestLibraryDesktop
 {
 	Foo::Foo():
-		mData(0), mIntPtr(nullptr)
+		Foo(0, nullptr)
 	{
 	}
 
-	Foo::Foo(int data, int * pointer):mData(data), mIntPtr(pointer)
+	Foo::Foo(int data, int * pointer):
+		mData(data), mIntPtr(pointer)
 	{
 	}
 
@@ -23,9 +24,9 @@ namespace UnitTestLibraryDesktop
 	{
 		if (this != &rhs)
 		{
+			delete mIntPtr;
 			mData = rhs.mData;
-			mIntPtr = new int;
-			*mIntPtr = *(rhs.mIntPtr);
+			mIntPtr = new int(*(rhs.mIntPtr));
 		}
 
 		return *this;

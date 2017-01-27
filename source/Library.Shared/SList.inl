@@ -164,7 +164,7 @@ inline typename SList<T>::Iterator SList<T>::begin() const
 
 /************************************************************************/
 template<typename T>
-typename SList<T>::Iterator SList<T>::end() const
+inline typename SList<T>::Iterator SList<T>::end() const
 {
 	return Iterator(nullptr, this);
 }

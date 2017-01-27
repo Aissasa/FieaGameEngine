@@ -678,14 +678,16 @@ namespace UnitTestLibraryDesktop
 			int number0 = 9;
 			int number1 = 3;
 			int number2 = 2;
+			bool theBool;
 
 			SList<int> intList;
-			Assert::IsFalse(intList.Remove(number1));
+			theBool = intList.Remove(number1);
+			Assert::IsFalse(theBool);
 
 			intList.PushBack(number0);
 			intList.PushBack(number1);
 			intList.PushBack(number2);
-			bool theBool = intList.Remove(number1);
+			theBool = intList.Remove(number1);
 			Assert::IsTrue(theBool);
 			Assert::AreEqual(intList.Size(), 2U);
 
@@ -732,8 +734,6 @@ namespace UnitTestLibraryDesktop
 			Assert::AreEqual(fooList.Size(), 2U);
 
 		}
-
-
 
 #pragma endregion
 

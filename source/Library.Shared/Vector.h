@@ -5,9 +5,6 @@ namespace Library
 	template <typename T>
 	class Vector
 	{
-	private:
-		;
-
 	public:
 		class Iterator
 		{
@@ -28,8 +25,8 @@ namespace Library
 			T& operator*();
 
 		private:
-			Iterator(Vector* owner, std::uint32_t index);
-			Vector* mOwner;
+			Iterator(const Vector* owner, std::uint32_t index);
+			const Vector* mOwner;
 			std::uint32_t mIndex;
 		};
 
@@ -41,7 +38,7 @@ namespace Library
 
 		bool IsEmpty() const;
 		std::uint32_t Size() const;
-		std::uint32_t Capcity() const;
+		std::uint32_t Capacity() const;
 		bool Reserve(std::uint32_t newCapacity);
 
 		const T& operator[](int index) const;
@@ -60,11 +57,12 @@ namespace Library
 		bool Remove(const Iterator& first, const Iterator& last);
 		void Clear();
 
-		Iterator begin();
-		Iterator end();
+		Iterator begin() const;
+		Iterator end() const;
 
 	private:
 		void DeepCopy(const Vector& rhs);
+		void ShiftLeftFrom(Iterator it);
 
 		T* mFront;
 		std::uint32_t mSize;
