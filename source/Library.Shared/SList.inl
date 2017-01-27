@@ -193,6 +193,7 @@ typename SList<T>::Iterator SList<T>::InsertAfter(const T & value, const Iterato
 	}
 	else
 	{
+		// build new node and insert after the iterator node
 		Node* newNode = new Node(iterator.mNode->mNext, value);
 		iterator.mNode->mNext = newNode;
 		++mSize;
@@ -204,6 +205,7 @@ typename SList<T>::Iterator SList<T>::InsertAfter(const T & value, const Iterato
 template<typename T>
 bool SList<T>::Remove(const T & value)
 {
+	// keep a reference to the previous node to keep the list chained
 	Node* previousNode = mFront;
 	for (Iterator it = begin(); it != end(); ++it)
 	{

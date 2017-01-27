@@ -737,7 +737,7 @@ namespace UnitTestLibraryDesktop
 
 #pragma endregion
 
-#pragma region SListIterator
+#pragma region Iterator
 		TEST_METHOD(IteratorConstructorsAndAssignmentTest)
 		{
 			SList<int> list;
@@ -827,6 +827,7 @@ namespace UnitTestLibraryDesktop
 		}
 
 #pragma endregion
+
 	private:
 		static _CrtMemState sStartMemState;
 	};
