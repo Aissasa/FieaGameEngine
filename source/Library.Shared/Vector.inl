@@ -45,7 +45,7 @@ typename Vector<T>::Iterator& Vector<T>::Iterator::operator++()
 	{
 		throw std::exception("The iterator is not assigned to a vector.");
 	}
-	if (mIndex + 1 > mOwner->mSize)
+	if (mIndex >= mOwner->mSize)
 	{
 		throw std::exception("The iterator is going out of bounds.");
 	}
@@ -109,7 +109,7 @@ const T & Vector<T>::Iterator::operator*() const
 {
 	if (mOwner == nullptr)
 	{
-		throw std::exception("The iterator is not assigned to a list.");
+		throw std::exception("The iterator is not assigned to a vector.");
 	}
 
 	if (mIndex >= mOwner->mSize || mOwner->mSize == 0)
@@ -311,6 +311,7 @@ typename Vector<T>::Iterator Vector<T>::PushBack(const T & t)
 			Reserve(mCapacity * 2);
 		}
 	}
+	// initialize a new element
 	T* temp = mFront + mSize;
 	temp = new(mFront + mSize) T;
 	*temp = t;
@@ -357,7 +358,7 @@ bool Vector<T>::Remove(const Iterator & first, const Iterator & last)
 
 	if (first.mIndex >= mSize || last.mIndex > mSize)
 	{
-		throw std::exception("Iterators are out of bounds!");
+		throw std::exception("One of the iterators is out of bounds!");
 	}
 
 	if (first.mIndex > last.mIndex)
