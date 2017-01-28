@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['front',['Front',['../class_fiea_game_engine_library_1_1_s_list.html#acfbd137cc2163be95d9125b06d0f4c58',1,'FieaGameEngineLibrary::SList::Front() const'],['../class_fiea_game_engine_library_1_1_s_list.html#a08cd6813376f0bd544588dd1c8a4a20d',1,'FieaGameEngineLibrary::SList::Front()']]]
+  ['capacity',['Capacity',['../class_library_1_1_vector.html#a5d707895c337bbc04a85fb9994a3c89f',1,'Library::Vector']]],
+  ['clear',['Clear',['../class_library_1_1_s_list.html#a5021b2b962297dd7505cac6dd00d165f',1,'Library::SList']]]
 ];

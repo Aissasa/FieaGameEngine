@@ -170,7 +170,7 @@ namespace UnitTestLibraryDesktop
 
 #pragma region Vector
 
-		TEST_METHOD(VectorConstructorTest)
+		TEST_METHOD(VectorConstructorsTest)
 		{
 			// primitive type test
 			Vector<int> intVect;
@@ -181,6 +181,10 @@ namespace UnitTestLibraryDesktop
 			auto func2 = [&intVect] { intVect.Back(); };
 			Assert::ExpectException<std::exception>(func2);
 
+			Vector<int> intVect2(2);
+			Assert::IsTrue(intVect2.IsEmpty());
+			Assert::AreEqual(intVect2.Capacity(), 2u);
+
 			// pointer type test
 			Vector<int*> intPtrVect;
 			Assert::IsTrue(intPtrVect.IsEmpty());
@@ -190,6 +194,10 @@ namespace UnitTestLibraryDesktop
 			auto func4 = [&intPtrVect] { intPtrVect.Back(); };
 			Assert::ExpectException<std::exception>(func4);
 
+			Vector<int*> intPtrVect2(2);
+			Assert::IsTrue(intPtrVect2.IsEmpty());
+			Assert::AreEqual(intPtrVect2.Capacity(), 2u);
+
 			// class type test
 			Vector<Foo> fooVect;
 			Assert::IsTrue(fooVect.IsEmpty());
@@ -198,6 +206,10 @@ namespace UnitTestLibraryDesktop
 			Assert::ExpectException<std::exception>(func5);
 			auto func6 = [&fooVect] { fooVect.Back(); };
 			Assert::ExpectException<std::exception>(func6);
+
+			Vector<Foo> fooVect2(2);
+			Assert::IsTrue(fooVect2.IsEmpty());
+			Assert::AreEqual(fooVect2.Capacity(), 2u);
 		}
 
 		TEST_METHOD(VectorCopyConstructorTest)
