@@ -30,6 +30,15 @@ namespace UnitTestLibraryDesktop
 		}
 #pragma endregion
 
+#pragma region Hash Functor
+
+		TEST_METHOD(HashFunctorTest)
+		{
+
+		}
+
+#pragma endregion
+
 #pragma region HashMap
 
 		TEST_METHOD(Ctor)
