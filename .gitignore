@@ -11,3 +11,5 @@ build/ipch/
 source/Game.Desktop.OpenGL/html/
 source/Library.Desktop/html/
 source/Game.Desktop.DirectX/html/
+build/.vs/
+build/TestResults/

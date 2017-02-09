@@ -27,7 +27,7 @@ Vector<T>::Iterator::Iterator(const Iterator & rhs) :
 
 /************************************************************************/
 template<typename T>
-typename Vector<T>::Iterator & Vector<T>::Iterator::operator=(const Iterator & rhs)
+typename Vector<T>::Iterator& Vector<T>::Iterator::operator=(const Iterator & rhs)
 {
 	if (this != &rhs)
 	{
@@ -65,7 +65,7 @@ typename Vector<T>::Iterator Vector<T>::Iterator::operator++(int)
 
 /************************************************************************/
 template<typename T>
-typename Vector<T>::Iterator Vector<T>::Iterator::operator--()
+typename Vector<T>::Iterator& Vector<T>::Iterator::operator--()
 {
 	if (mOwner == nullptr)
 	{
@@ -205,7 +205,7 @@ bool Vector<T>::Reserve(std::uint32_t newCapacity)
 	}
 	else
 	{
-		mFront = (T*)realloc(mFront, newCapacity * sizeof(T));
+		mFront = static_cast<T*>(realloc(mFront, newCapacity * sizeof(T)));
 		if (mFront == nullptr)
 		{
 			throw std::exception("Allocation failed!");
@@ -315,9 +315,8 @@ typename Vector<T>::Iterator Vector<T>::PushBack(const T & t)
 	T* temp = mFront + mSize;
 	temp = new(mFront + mSize) T;
 	*temp = t;
-	++mSize;
-
-	return Iterator(this, mSize - 1);
+	// new(mFront + mSize)T(t);
+	return Iterator(this, mSize++);
 }
 
 /************************************************************************/
@@ -341,6 +340,13 @@ bool Vector<T>::Remove(const T & t)
 	}
 	else
 	{
+		// .~T();
+		// auto size = (mSize - it.mIndex - 1)* sizeof(T);
+// 		if (size > 0)
+// 		{
+// 			memmove_s(&mFront[it.mIndex], size, &mFront[it., mIndex + 1], size);
+// 		}
+		// -- mSize;
 		ShiftLeftFrom(it);
 		PopBack();
 		return true;

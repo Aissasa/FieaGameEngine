@@ -57,7 +57,7 @@ namespace Library
 			* It throws an exception if the iterator has no owner vector or if it's going out of bounds.
 			* @return Decremented iterator.
 			*/
-			Iterator operator--();
+			Iterator& operator--();
 
 			/** Iterator postfix decrementation operator overloading method.
 			* It does a postfix decrementation of the iterator allowing it to point to the previous element in the Vector.
