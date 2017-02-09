@@ -10,7 +10,7 @@ namespace UnitTestLibraryDesktop
 	}
 
 	/************************************************************************/
-	Foo::Foo(int data, int * pointer):
+	Foo::Foo(int data, int* pointer):
 		mData(data), mIntPtr(pointer)
 	{
 	}
@@ -68,14 +68,14 @@ namespace UnitTestLibraryDesktop
 
 		std::uint32_t hash = 0;
 
-		unsigned char* pointer = reinterpret_cast<unsigned char*>(&data);
+		const unsigned char* pointer = reinterpret_cast<const unsigned char*>(&data);
 
 		for (std::uint32_t i = 0; i < sizeof(data); ++i)
 		{
 			hash = hash * 31 + pointer[i];
 		}
 
-		pointer = reinterpret_cast<unsigned char*>(dataPtr);
+		pointer = reinterpret_cast<const unsigned char*>(dataPtr);
 
 		for (std::uint32_t i = 0; i < sizeof(*dataPtr); ++i)
 		{

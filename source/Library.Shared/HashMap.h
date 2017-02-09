@@ -12,7 +12,7 @@ namespace Library
 	class DefaultHash
 	{
 	public:
-		std::uint32_t operator()(const TKey & key);
+		std::uint32_t operator()(const TKey& key);
 	};
 
 	template<>
@@ -26,7 +26,7 @@ namespace Library
 	class DefaultHash<char*>
 	{
 	public:
-		std::uint32_t operator()(const char*& key);
+		std::uint32_t operator()(const char* key);
 	};
 
 

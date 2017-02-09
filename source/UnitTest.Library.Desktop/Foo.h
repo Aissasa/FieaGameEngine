@@ -2,12 +2,6 @@
 
 namespace UnitTestLibraryDesktop
 {
-	class FooHashFunctor
-	{
-	public:
-		std::uint32_t operator()(const Foo& key);
-	};
-
 	class Foo
 	{
 	public:
@@ -25,4 +19,11 @@ namespace UnitTestLibraryDesktop
 		int mData;
 		int* mIntPtr;
 	};
+
+	class FooHashFunctor
+	{
+	public:
+		std::uint32_t operator()(const Foo& key);
+	};
+
 }

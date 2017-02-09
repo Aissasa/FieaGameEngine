@@ -4,6 +4,7 @@
 #include "Vector.h"
 
 #pragma region Iterator
+
 /************************************************************************/
 template<typename T>
 Vector<T>::Iterator::Iterator(const Vector* owner, std::uint32_t index) :
