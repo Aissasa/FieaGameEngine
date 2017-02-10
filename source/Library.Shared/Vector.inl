@@ -1,7 +1,9 @@
 #pragma once
 
-#include "pch.h"
 #include "Vector.h"
+#include <cstdint>
+#include <cstring>
+#include <exception>
 
 #pragma region Iterator
 
@@ -113,7 +115,7 @@ const T & Vector<T>::Iterator::operator*() const
 		throw std::exception("The iterator is not assigned to a vector.");
 	}
 
-	if (mIndex >= mOwner->mSize || mOwner->mSize == 0)
+	if (mIndex >= mOwner->mSize)
 	{
 		throw std::exception("Out of bounds reference.");
 	}
@@ -133,17 +135,10 @@ T & Vector<T>::Iterator::operator*()
 #pragma region Vector
 /************************************************************************/
 template<typename T>
-Vector<T>::Vector(std::uint32_t initCapacity = DEFAULT_CAPACITY) :
+Vector<T>::Vector(std::uint32_t initCapacity) :
 	mSize(0), mCapacity(0), mFront(nullptr)
 {
 	Reserve(initCapacity);
-}
-
-/************************************************************************/
-template<typename T>
-Vector<T>::Vector() :
-	Vector(DEFAULT_CAPACITY)
-{
 }
 
 /************************************************************************/
@@ -207,10 +202,7 @@ bool Vector<T>::Reserve(std::uint32_t newCapacity)
 	else
 	{
 		mFront = static_cast<T*>(realloc(mFront, newCapacity * sizeof(T)));
-		if (mFront == nullptr)
-		{
-			throw std::exception("Allocation failed!");
-		}
+		Assert::IsNotNull(mFront);
 		mCapacity = newCapacity;
 		return true;
 	}
@@ -218,14 +210,14 @@ bool Vector<T>::Reserve(std::uint32_t newCapacity)
 
 /************************************************************************/
 template<typename T>
-const T & Vector<T>::operator[](int index) const
+const T & Vector<T>::operator[](std::uint32_t index) const
 {
 	if (IsEmpty())
 	{
 		throw std::exception("The vector is empty!");
 	}
 
-	if (index < 0 || (std::uint32_t)index >= mSize)
+	if (index >= mSize)
 	{
 		throw std::exception("Index out of bounds!");
 	}
@@ -235,7 +227,7 @@ const T & Vector<T>::operator[](int index) const
 
 /************************************************************************/
 template<typename T>
-T & Vector<T>::operator[](int index)
+T & Vector<T>::operator[](std::uint32_t index)
 {
 	return const_cast<T&>(const_cast<const Vector&>(*this).operator[](index));
 }
@@ -313,10 +305,7 @@ typename Vector<T>::Iterator Vector<T>::PushBack(const T & t)
 		}
 	}
 	// initialize a new element
-	T* temp = mFront + mSize;
-	temp = new(mFront + mSize) T;
-	*temp = t;
-	// new(mFront + mSize)T(t);
+	new(mFront + mSize)T(t);
 	return Iterator(this, mSize++);
 }
 
@@ -341,6 +330,7 @@ bool Vector<T>::Remove(const T & t)
 	}
 	else
 	{
+		// todo replace remove implem
 		// .~T();
 		// auto size = (mSize - it.mIndex - 1)* sizeof(T);
 // 		if (size > 0)
@@ -380,7 +370,7 @@ bool Vector<T>::Remove(const Iterator & first, const Iterator & last)
 		return true;
 	}
 
-	std::uint32_t count = last.mIndex - first.mIndex;
+	uint count = last.mIndex - first.mIndex;
 
 	if (last != end())
 	{

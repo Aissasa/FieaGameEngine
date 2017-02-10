@@ -1,6 +1,9 @@
 #pragma once
 
-#include "pch.h"
+#include "SList.h"
+#include <cstdint>
+#include <cstring>
+#include <exception>
 
 #pragma region SList
 /************************************************************************/

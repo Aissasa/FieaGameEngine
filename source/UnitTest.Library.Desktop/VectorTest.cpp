@@ -475,8 +475,6 @@ namespace UnitTestLibraryDesktop
 			Assert::ExpectException<std::exception>(func1);
 
 			intVect.PushBack(number1);
-			auto func2 = [&intVect] { intVect[-1]; };
-			Assert::ExpectException<std::exception>(func2);
 			auto func3 = [&intVect] { intVect[1]; };
 			Assert::ExpectException<std::exception>(func3);
 			Assert::AreEqual(intVect[0], number1);
@@ -490,8 +488,6 @@ namespace UnitTestLibraryDesktop
 			Assert::ExpectException<std::exception>(func4);
 
 			intPtrVect.PushBack(&number1);
-			auto func5 = [&intPtrVect] { intPtrVect[-1]; };
-			Assert::ExpectException<std::exception>(func5);
 			auto func6 = [&intPtrVect] { intPtrVect[1]; };
 			Assert::ExpectException<std::exception>(func6);
 			Assert::AreEqual(intPtrVect[0], &number1);
@@ -510,8 +506,6 @@ namespace UnitTestLibraryDesktop
 			Assert::ExpectException<std::exception>(func7);
 
 			fooVect.PushBack(foo1);
-			auto func8 = [&fooVect] { fooVect[-1]; };
-			Assert::ExpectException<std::exception>(func8);
 			auto func9 = [&fooVect] { fooVect[1]; };
 			Assert::ExpectException<std::exception>(func9);
 			Assert::IsTrue(fooVect[0] == foo1);

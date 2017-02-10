@@ -2,6 +2,10 @@
 
 #include "SList.h"
 #include "Vector.h"
+#include <cstdint>
+#include <cstring>
+#include <exception>
+
 
 namespace Library
 {
@@ -28,7 +32,6 @@ namespace Library
 	public:
 		std::uint32_t operator()(const char* key);
 	};
-
 
 #pragma endregion
 
@@ -71,12 +74,12 @@ namespace Library
 			typename ChainType::Iterator mChainIterator;
 		};
 
-		HashMap(std::uint32_t hashTableSize);
+		HashMap(std::uint32_t hashTableSize = DEFAULT_HASH_TABLE_SIZE);
 		~HashMap();
 		HashMap(const HashMap & rhs) = default;
 		HashMap& operator=(const HashMap& rhs) = default;
 
-		Iterator Find(const TKey & key);
+		Iterator Find(const TKey & key) const;
 		Iterator Insert(const PairType & pair);
 		const TData& operator[](const TKey & key) const;
 		TData& operator[](const TKey & key);
@@ -99,4 +102,5 @@ namespace Library
 #pragma endregion
 
 #include "HashMap.inl"
+
 }

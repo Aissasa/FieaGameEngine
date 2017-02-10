@@ -1,6 +1,6 @@
 #pragma once
 
-#include "pch.h"
+#include "HashMap.h"
 
 #pragma region Iterator
 
@@ -135,7 +135,7 @@ std::pair<const TKey, TData>* HashMap<TKey, TData, HashFunctor>::Iterator::opera
 
 /************************************************************************/
 template<typename TKey, typename TData, typename HashFunctor>
-HashMap<TKey, TData, HashFunctor>::HashMap(std::uint32_t hashTableSize = DEFAULT_HASH_TABLE_SIZE) :
+HashMap<TKey, TData, HashFunctor>::HashMap(std::uint32_t hashTableSize) :
 	mBuckets(Vector<ChainType>(hashTableSize)), mSize(0), mNumBuckets(hashTableSize)
 {
 	if (hashTableSize == 0)
@@ -155,11 +155,12 @@ template<typename TKey, typename TData, typename HashFunctor>
 HashMap<TKey, TData, HashFunctor>::~HashMap()
 {
 	Clear();
+	mBuckets.Clear();
 }
 
 /************************************************************************/
 template<typename TKey, typename TData, typename HashFunctor>
-typename HashMap<TKey, TData, HashFunctor>::Iterator HashMap<TKey, TData, HashFunctor>::Find(const TKey & key)
+typename HashMap<TKey, TData, HashFunctor>::Iterator HashMap<TKey, TData, HashFunctor>::Find(const TKey& key) const
 {
 	Iterator it = begin();
 	for (; it != end(); ++it)
@@ -191,19 +192,19 @@ typename HashMap<TKey, TData, HashFunctor>::Iterator HashMap<TKey, TData, HashFu
 
 /************************************************************************/
 template<typename TKey, typename TData, typename HashFunctor>
-const TData& HashMap<TKey, TData, HashFunctor>::operator[](const TKey & key) const
+const TData& HashMap<TKey, TData, HashFunctor>::operator[](const TKey& key) const
 {
 	Iterator it = Find(key);
 	if (it == end())
 	{
 		throw std::exception("Invalid entry. This element does not exist.");
 	}
-	return *it;
+	return (*it).second;
 }
 
 /************************************************************************/
 template<typename TKey, typename TData, typename HashFunctor>
-TData& HashMap<TKey, TData, HashFunctor>::operator[](const TKey & key)
+TData& HashMap<TKey, TData, HashFunctor>::operator[](const TKey& key)
 {
 	Iterator it = Find(key);
 	if (it == end())
@@ -211,14 +212,13 @@ TData& HashMap<TKey, TData, HashFunctor>::operator[](const TKey & key)
 		PairType p(key, TData());
 		it = Insert(p);
 	}
-	return *it;
+	return (*it).second;
 }
 
 /************************************************************************/
 template<typename TKey, typename TData, typename HashFunctor>
 bool HashMap<TKey, TData, HashFunctor>::Remove(const TKey & key)
 {
-	// todo implement remove
 	Iterator it = Find(key);
 	if (it == end())
 	{
@@ -226,7 +226,8 @@ bool HashMap<TKey, TData, HashFunctor>::Remove(const TKey & key)
 	}
 	else
 	{
-		return mBuckets[it.mBucketIndex].Remove((*it).second);
+		--mSize;
+		return mBuckets[it.mBucketIndex].Remove(*it);
 	}
 }
 
@@ -234,14 +235,12 @@ bool HashMap<TKey, TData, HashFunctor>::Remove(const TKey & key)
 template<typename TKey, typename TData, typename HashFunctor>
 void HashMap<TKey, TData, HashFunctor>::Clear()
 {
-	//BucketType::Iterator it = mBuckets.begin();
-	//while (it != mBuckets.end())
-	//{
-	//	(*(it++)).Clear();
-	//}
-	mBuckets.Clear();
+	BucketType::Iterator it = mBuckets.begin();
+	while (it != mBuckets.end())
+	{
+		(*(it++)).Clear();
+	}
 	mSize = 0;
-	mNumBuckets = 0;
 }
 
 /************************************************************************/
@@ -275,8 +274,9 @@ typename HashMap<TKey, TData, HashFunctor>::Iterator HashMap<TKey, TData, HashFu
 	}
 
 	std::uint32_t index = 0;
-	while (mBuckets[index++].IsEmpty())
+	while (mBuckets[index].IsEmpty())
 	{
+		++index;
 	}
 
 	return Iterator(this, index, mBuckets[index].begin());
@@ -286,7 +286,7 @@ typename HashMap<TKey, TData, HashFunctor>::Iterator HashMap<TKey, TData, HashFu
 template<typename TKey, typename TData, typename HashFunctor>
 typename HashMap<TKey, TData, HashFunctor>::Iterator HashMap<TKey, TData, HashFunctor>::end() const
 {
-	return Iterator(this, mSize, ChainType::Iterator::Iterator());
+	return Iterator(this, mNumBuckets, ChainType::Iterator::Iterator());
 }
 
 #pragma endregion
@@ -299,7 +299,6 @@ std::uint32_t DefaultHash<TKey>::operator()(const TKey& key)
 {
 	const unsigned char* pointer = reinterpret_cast<const unsigned char*>(&key);
 	std::uint32_t hash = 0;
-
 	for (std::uint32_t i = 0; i < sizeof(key); ++i)
 	{
 		hash = hash * 31 + pointer[i];
@@ -312,7 +311,6 @@ std::uint32_t DefaultHash<TKey>::operator()(const TKey& key)
 std::uint32_t DefaultHash<std::string>::operator()(const std::string& key)
 {
 	std::uint32_t hash = 0;
-
 	for (std::uint32_t i = 0; i < key.length(); ++i)
 	{
 		hash = hash * 31 + key[i];
@@ -325,7 +323,6 @@ std::uint32_t DefaultHash<std::string>::operator()(const std::string& key)
 std::uint32_t DefaultHash<char*>::operator()(const char* key)
 {
 	std::uint32_t hash = 0;
-
 	for (std::uint32_t i = 0; i < strlen(key); ++i)
 	{
 		hash = hash * 31 + key[i];

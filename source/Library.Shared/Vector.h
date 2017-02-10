@@ -9,6 +9,9 @@ namespace Library
 	class Vector
 	{
 	public:
+
+		typedef std::uint32_t uint;
+
 		/** Iterator is an iterator class for Vector.
 		 * This is a simple iterator implementation.
 		 */
@@ -92,19 +95,14 @@ namespace Library
 		private:
 			Iterator(const Vector* owner, std::uint32_t index);
 			const Vector* mOwner;
-			std::uint32_t mIndex;
+			uint mIndex;
 		};
-
-		/** Vector constructor.
-		 * It creates an empty vector with a default capacity.
-		 */
-		Vector();
 
 		/** Vector constructor.
 		 * It creates an empty vector with an initial capacity.
 		 * @param initialCapacity: Initial capacity.
 		 */
-		Vector(std::uint32_t initCapacity);
+		Vector(uint initCapacity = DEFAULT_CAPACITY);
 
 		/** Vector destructor.
 		 * It destroys the vector and its elements.
@@ -143,7 +141,7 @@ namespace Library
 		 * @param newCapacity: New desired capacity of the vector.
 		 * @return Boolean expressing the success of the reallocation.
 		 */
-		bool Reserve(std::uint32_t newCapacity);
+		bool Reserve(uint newCapacity);
 
 		/** Vector bracket operator overloading method.
 		 * It returns the value of the indexed element on the vector.
@@ -151,7 +149,7 @@ namespace Library
 		 * @param index: Index of the element on the vector.
 		 * @return Value of the indexed element on the vector.
 		 */
-		const T& operator[](int index) const;
+		const T& operator[](uint index) const;
 
 		/** Vector bracket operator overloading method.
 		 * It returns the value of the indexed element on the vector.
@@ -159,21 +157,21 @@ namespace Library
 		 * @param index: Index of the element on the vector.
 		 * @return Value of the indexed element on the vector.
 		 */
-		T& operator[](int index);
+		T& operator[](uint index);
 
 		/** Returns the value of the indexed element on the vector.
 		 * It throws an exception if the vector is empty or the index is out of bounds.
 		 * @param index: Index of the element on the vector.
 		 * @return Value of the indexed element on the vector.
 		 */
-		const T& At(const std::uint32_t index) const;
+		const T& At(const uint index) const;
 
 		/** Returns the value of the indexed element on the vector.
 		 * It throws an exception if the vector is empty or the index is out of bounds.
 		 * @param index: Index of the element on the vector.
 		 * @return Value of the indexed element on the vector.
 		 */
-		T& At(const std::uint32_t index);
+		T& At(const uint index);
 
 		/** Returns the value of the first element on the vector.
 		 * It throws an exception if the vector is empty.
@@ -257,10 +255,10 @@ namespace Library
 		void ShiftLeftFrom(Iterator it);
 
 		T* mFront;
-		std::uint32_t mSize;
-		std::uint32_t mCapacity;
+		uint mSize;
+		uint mCapacity;
 
-		const static std::uint32_t DEFAULT_CAPACITY = 4U;
+		const static uint DEFAULT_CAPACITY = 4U;
 	};
 #include "Vector.inl"
 

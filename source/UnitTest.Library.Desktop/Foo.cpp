@@ -19,8 +19,11 @@ namespace UnitTestLibraryDesktop
 	Foo::Foo(const Foo& rhs):
 		mData(rhs.mData), mIntPtr(nullptr)
 	{
-		mIntPtr = new int;
-		*mIntPtr = *(rhs.mIntPtr);
+		if (rhs.mIntPtr != nullptr)
+		{
+			mIntPtr = new int;
+			*mIntPtr = *(rhs.mIntPtr);
+		}
 	}
 
 	/************************************************************************/
@@ -75,11 +78,14 @@ namespace UnitTestLibraryDesktop
 			hash = hash * 31 + pointer[i];
 		}
 
-		pointer = reinterpret_cast<const unsigned char*>(dataPtr);
-
-		for (std::uint32_t i = 0; i < sizeof(*dataPtr); ++i)
+		if (dataPtr)
 		{
-			hash = hash * 31 + pointer[i];
+			pointer = reinterpret_cast<const unsigned char*>(dataPtr);
+
+			for (std::uint32_t i = 0; i < sizeof(*dataPtr); ++i)
+			{
+				hash = hash * 31 + pointer[i];
+			}
 		}
 
 		return hash;
