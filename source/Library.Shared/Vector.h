@@ -24,7 +24,8 @@ namespace Library
 			*/
 			Iterator();
 
-			/** Vector iterator destructor.
+			/** Iterator destructor.
+			* It's the default implementation provided by the compiler.
 			*/
 			~Iterator() = default;
 
@@ -42,14 +43,16 @@ namespace Library
 
 			/** Iterator prefix incrementation operator overloading method.
 			* It does a prefix incrementation of the iterator allowing it to point to the following element in the Vector.
-			* It throws an exception if the iterator has no owner vector or if it's going out of bounds.
+			* @exception It throws an exception if it does not belong to a vector.
+			* @exception It throws an exception if the iterator is going out of bounds.
 			* @return Incremented iterator.
 			*/
 			Iterator& operator++();
 
 			/** Iterator postfix incrementation operator overloading method.
 			* It does a postfix incrementation of the iterator allowing it to point to the following element in the Vector.
-			* It throws an exception if the iterator has no owner vector or if it's going out of bounds.
+			* @exception It throws an exception if it does not belong to a vector.
+			* @exception It throws an exception if it's going out of bounds.
 			* @param i: Denotes the postfix form of the increment. Has no effect.
 			* @return Iterator before the incrementation.
 			*/
@@ -57,14 +60,16 @@ namespace Library
 
 			/** Iterator prefix decrementation operator overloading method.
 			* It does a prefix decrementation of the iterator allowing it to point to the previous element in the Vector.
-			* It throws an exception if the iterator has no owner vector or if it's going out of bounds.
+			* @exception It throws an exception if it does not belong to a vector.
+			* @exception It throws an exception if it's going out of bounds.
 			* @return Decremented iterator.
 			*/
 			Iterator& operator--();
 
 			/** Iterator postfix decrementation operator overloading method.
 			* It does a postfix decrementation of the iterator allowing it to point to the previous element in the Vector.
-			* It throws an exception if the iterator has no owner vector or if it's going out of bounds.
+			* @exception It throws an exception if it does not belong to a vector.
+			* @exception It throws an exception if it's going out of bounds.
 			* @param i: Denotes the postfix form of the decrement. Has no effect.
 			* @return Iterator before the decrementation.
 			*/
@@ -83,11 +88,15 @@ namespace Library
 			bool operator!=(const Iterator& rhs) const;
 
 			/** Iterator dereference operator overloading method.
+			* @exception It throws an exception if it does not belong to a vector.
+			* @exception It throws an exception if it's trying to access an invalid slot.
 			* @return Data pointed to by the iterator.
 			*/
 			const T& operator*() const;
 
 			/** Iterator dereference operator overloading method.
+			* @exception It throws an exception if it does not belong to a vector.
+			* @exception It throws an exception if it's trying to access an invalid slot.
 			* @return Data pointed to by the iterator.
 			*/
 			T& operator*();
@@ -153,14 +162,16 @@ namespace Library
 
 		/** Vector bracket operator overloading method.
 		 * It returns the value of the indexed element on the vector.
-		 * It throws an exception if the vector is empty or the index is out of bounds.
+		 * @exception It throws an exception if the vector is empty.
+		 * @exception It throws an exception if the index is out of bounds.
 		 * @param index: Index of the element on the vector.
 		 * @return Value of the indexed element on the vector.
 		 */
 		T& operator[](uint index);
 
 		/** Returns the value of the indexed element on the vector.
-		 * It throws an exception if the vector is empty or the index is out of bounds.
+		 * @exception It throws an exception if the vector is empty.
+		 * @exception It throws an exception if the index is out of bounds.
 		 * @param index: Index of the element on the vector.
 		 * @return Value of the indexed element on the vector.
 		 */
@@ -227,8 +238,8 @@ namespace Library
 		/** Removes a range of elements in the vector.
 		 * It keeps the data contiguous after removing the elements.
 		 * It removes the elements in [first, last[
-		 * It throws an exception if one of the iterators is invalid.
 		 * It fails if first > last.
+		 * @exception It throws an exception if one of the iterators is invalid.
 		 * @param first: Iterator of the first element.
 		 * @param last: Iterator of the last element.
 		 * @return Boolean that represents the success or failure of the method.
@@ -236,7 +247,7 @@ namespace Library
 		bool Remove(const Iterator& first, const Iterator& last);
 
 		/** Vector clear method.
-		* It goes through the list and deletes its elements.
+		* It goes through the vector and deletes its elements.
 		*/
 		void Clear();
 
