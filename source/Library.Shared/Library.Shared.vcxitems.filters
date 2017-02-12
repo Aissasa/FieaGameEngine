@@ -11,13 +11,25 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)HashMap.h">
       <Filter>Containers</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)RTTI.h">
+      <Filter>Runtime</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Datum.h">
+      <Filter>Runtime</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Datum.cpp">
+      <Filter>Runtime</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Containers">
       <UniqueIdentifier>{1304b70c-1789-47d7-93bf-c3297dbcfd56}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime">
+      <UniqueIdentifier>{da521358-85a0-427e-9c29-67a2ba9651af}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

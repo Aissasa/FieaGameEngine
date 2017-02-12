@@ -276,7 +276,7 @@ typename HashMap<TKey, TData, HashFunctor>::Iterator HashMap<TKey, TData, HashFu
 	std::uint32_t index = 0;
 	while (mBuckets[index].IsEmpty())
 	{
-		++index;
+		index++;
 	}
 
 	return Iterator(this, index, mBuckets[index].begin());
