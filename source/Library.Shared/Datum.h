@@ -40,20 +40,7 @@ namespace Library
 		Datum& operator=(const glm::vec4& rhs);
 		Datum& operator=(const glm::mat4x4& rhs);
 		Datum& operator=(const std::string& rhs);
-		Datum& operator=(const RTTI*& rhs);
-
-		DatumType Type() const;
-		void SetType(const DatumType type);
-		std::uint32_t Size() const;
-		void SetSize(const std::uint32_t size);
-		void Clear();
-
-		void SetStorage(const std::int32_t* table, const std::uint32_t tableSize);
-		void SetStorage(const std::float_t* table, const std::uint32_t tableSize);
-		void SetStorage(const glm::vec4* table, const std::uint32_t tableSize);
-		void SetStorage(const glm::mat4x4* table, const std::uint32_t tableSize);
-		void SetStorage(const std::string* table, const std::uint32_t tableSize);
-		void SetStorage(const RTTI** table, const std::uint32_t tableSize);
+		Datum& operator=(RTTI*const& rhs);
 
 		bool operator==(const Datum& rhs) const;
 		bool operator==(const std::int32_t& rhs) const;
@@ -71,59 +58,91 @@ namespace Library
 		bool operator!=(const std::string& rhs) const;
 		bool operator!=(const RTTI*& rhs) const;
 
-		// urgent think about template private method for set
-		void Set(const std::int32_t& rhs, std::uint32_t index = 0);
-		void Set(const std::float_t& rhs, std::uint32_t index = 0);
-		void Set(const glm::vec4& rhs, std::uint32_t index = 0);
-		void Set(const glm::mat4x4& rhs, std::uint32_t index = 0);
-		void Set(const std::string& rhs, std::uint32_t index = 0);
-		void Set(const RTTI*& rhs, std::uint32_t index = 0);
 
-	private:
+		inline DatumType Type() const;
+		void SetType(const DatumType& type);
+		inline std::uint32_t Size() const;
+		void SetSize(const std::uint32_t size);
+		void Clear();
+		void PopBack();
+
+		void SetStorage(std::int32_t*& table, const std::uint32_t tableSize);
+		void SetStorage(std::float_t*& table, const std::uint32_t tableSize);
+		void SetStorage(glm::vec4*& table, const std::uint32_t tableSize);
+		void SetStorage(glm::mat4x4*& table, const std::uint32_t tableSize);
+		void SetStorage(std::string*& table, const std::uint32_t tableSize);
+		void SetStorage(RTTI**& table, const std::uint32_t tableSize);
+
+		void Set(const std::int32_t& rhs, const std::uint32_t index = 0);
+		void Set(const std::float_t& rhs, const std::uint32_t index = 0);
+		void Set(const glm::vec4& rhs, const std::uint32_t index = 0);
+		void Set(const glm::mat4x4& rhs, const std::uint32_t index = 0);
+		void Set(const std::string& rhs, const std::uint32_t index = 0);
+		void Set(RTTI*const & rhs, const std::uint32_t index = 0);
+
 		template<typename T>
 		const T& Get(std::uint32_t index = 0) const;
 
 		template<typename T>
 		T& Get(std::uint32_t index = 0);
-	
-	public:
-		template<>
-		const std::int32_t& Get(std::uint32_t index) const;
-		template<>
-		std::int32_t& Get(std::uint32_t index);
-
-		template<>
-		const std::float_t& Get(std::uint32_t index) const;
-		template<>
-		std::float_t& Get(std::uint32_t index);
-
-		template<>
-		const glm::vec4& Get(std::uint32_t index) const;
-		template<>
-		glm::vec4& Get(std::uint32_t index);
-
-		template<>
-		const glm::mat4x4& Get(std::uint32_t index) const;
-		template<>
-		glm::mat4x4& Get(std::uint32_t index);
-
-		template<>
-		const std::string& Get(std::uint32_t index) const;
-		template<>
-		std::string& Get(std::uint32_t index);
-
-		template<>
-		RTTI* const & Get(std::uint32_t index) const;
-		template<>
-		RTTI*& Get(std::uint32_t index);
 
 		void SetFromString(std::string str, std::uint32_t index = 0);
 		std::string ToString(std::uint32_t index = 0);
 
+		bool Reserve(std::uint32_t newCapacity);
+
+		void PushBack(const std::int32_t& rhs);
+		void PushBack(const std::float_t& rhs);
+		void PushBack(const glm::vec4& rhs);
+		void PushBack(const glm::mat4x4& rhs);
+		void PushBack(const std::string& rhs);
+		void PushBack(RTTI *const & rhs);
+
+		inline bool IsEmpty() const;
+
 	private:
+
+		// todo consider this
+		//Datum(DatumType type, std::uint32_t size, std::uint32_t capacity, bool externalStorage);
+		void Empty();
+		void DeepCopy(const Datum& rhs);
+
 		DataValues mData;
+		DatumType mCurrentType;
 		std::uint32_t mSize;
 		std::uint32_t mCapacity;
 		bool mExternalStorage;
 	};
+
+	template<>
+	const std::int32_t& Datum::Get<std::int32_t>(std::uint32_t index) const;
+	template<>
+	std::int32_t& Datum::Get<std::int32_t>(std::uint32_t index);
+
+	template<>
+	const std::float_t& Datum::Get<std::float_t>(std::uint32_t index) const;
+	template<>
+	std::float_t& Datum::Get<std::float_t>(std::uint32_t index);
+
+	template<>
+	const glm::vec4& Datum::Get<glm::vec4>(std::uint32_t index) const;
+	template<>
+	glm::vec4& Datum::Get(std::uint32_t index);
+
+	template<>
+	const glm::mat4x4& Datum::Get<glm::mat4x4>(std::uint32_t index) const;
+	template<>
+	glm::mat4x4& Datum::Get<glm::mat4x4>(std::uint32_t index);
+
+	template<>
+	const std::string& Datum::Get<std::string>(std::uint32_t index) const;
+	template<>
+	std::string& Datum::Get<std::string>(std::uint32_t index);
+
+	template<>
+	RTTI* const & Datum::Get<RTTI*>(std::uint32_t index) const;
+	template<>
+	RTTI*& Datum::Get<RTTI*>(std::uint32_t index);
+
 }
+//#include "Datum.inl"

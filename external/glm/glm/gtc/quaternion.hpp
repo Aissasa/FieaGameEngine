@@ -53,6 +53,7 @@ namespace glm
 		
 			union
 			{
+#pragma warning(suppress: 4201)
 				struct { T x, y, z, w;};
 				typename detail::storage<T, sizeof(T) * 4, detail::is_aligned<P>::value>::type data;
 			};

@@ -7,6 +7,7 @@
 // Standard libraries
 #include <vector>
 #include <cstdint>
+#include <algorithm>
 #include <cstring>
 #include <exception>
 #include <new>

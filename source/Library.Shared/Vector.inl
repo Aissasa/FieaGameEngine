@@ -330,7 +330,7 @@ bool Vector<T>::Remove(const T & t)
 	}
 	else
 	{
-		// todo replace remove implem
+		// todo replace remove implem, and go to hashmap and change the ctor
 		// .~T();
 		// auto size = (mSize - it.mIndex - 1)* sizeof(T);
 // 		if (size > 0)
