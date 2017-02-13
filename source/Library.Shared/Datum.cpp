@@ -24,13 +24,17 @@ namespace Library
 		{
 			Clear();
 		}
+		mData.theVoid = nullptr;
+		mSize = 0;
+		mCapacity = 0;
+		mExternalStorage = false;
 	}
 
 	/************************************************************************/
 	Datum::Datum(const Datum & rhs) :
 		Datum()
 	{
-		SetType(rhs.mCurrentType);
+		mCurrentType = rhs.mCurrentType;
 		Reserve(rhs.mCapacity);
 		DeepCopy(rhs);
 	}
@@ -44,10 +48,23 @@ namespace Library
 	{
 		if (this != &rhs)
 		{
-			Empty();
+			if (!mExternalStorage)
+			{
+				Empty();
+			}
 			mCurrentType = rhs.mCurrentType;
-			Reserve(rhs.mCapacity);
-			DeepCopy(rhs);
+
+			if (rhs.mExternalStorage)
+			{
+				mExternalStorage = true;
+				mData = rhs.mData;
+			}
+			else
+			{
+				mExternalStorage = false;
+				Reserve(rhs.mCapacity);
+				DeepCopy(rhs);
+			}
 		}
 
 		return *this;
@@ -56,121 +73,54 @@ namespace Library
 	/************************************************************************/
 	Datum& Datum::operator=(const std::int32_t & rhs)
 	{
-		mCurrentType = DatumType::Integer;
-		if (IsEmpty())
-		{
-			PushBack(rhs);
-		}
-		else
-		{
-			Empty();
-			Set(rhs);
-			++mSize;
-		}
-
+		Set(rhs);
 		return *this;
 	}
 
 	/************************************************************************/
 	Datum& Datum::operator=(const std::float_t & rhs)
 	{
-		mCurrentType = DatumType::Integer;
-		if (IsEmpty())
-		{
-			PushBack(rhs);
-		}
-		else
-		{
-			Empty();
-			Set(rhs);
-			++mSize;
-		}
-
+		Set(rhs);
 		return *this;
 	}
 
 	/************************************************************************/
 	Datum& Datum::operator=(const glm::vec4 & rhs)
 	{
-		mCurrentType = DatumType::Integer;
-		if (IsEmpty())
-		{
-			PushBack(rhs);
-		}
-		else
-		{
-			Empty();
-			Set(rhs);
-			++mSize;
-		}
-
+		Set(rhs);
 		return *this;
 	}
 
 	/************************************************************************/
 	Datum& Datum::operator=(const glm::mat4x4 & rhs)
 	{
-		mCurrentType = DatumType::Integer;
-		if (IsEmpty())
-		{
-			PushBack(rhs);
-		}
-		else
-		{
-			Empty();
-			Set(rhs);
-			++mSize;
-		}
-
+		Set(rhs);
 		return *this;
 	}
 
 	/************************************************************************/
 	Datum& Datum::operator=(const std::string & rhs)
 	{
-		mCurrentType = DatumType::Integer;
-		if (IsEmpty())
-		{
-			PushBack(rhs);
-		}
-		else
-		{
-			Empty();
-			Set(rhs);
-			++mSize;
-		}
-
+		Set(rhs);
 		return *this;
 	}
 
 	/************************************************************************/
 	Datum& Datum::operator=(RTTI *const& rhs)
 	{
-		mCurrentType = DatumType::Integer;
-		if (IsEmpty())
-		{
-			PushBack(rhs);
-		}
-		else
-		{
-			Empty();
-			Set(rhs);
-			++mSize;
-		}
-
+		Set(rhs);
 		return *this;
 	}
 
 #pragma endregion
 
-#pragma region opertaor== and operator!=
+#pragma region Opertaor== and operator!=
 
 	/************************************************************************/
 	bool Datum::operator==(const Datum & rhs) const
 	{
 		if (mCurrentType == DatumType::Unknown || rhs.mCurrentType == DatumType::Unknown)
 		{
-			// todo give this more thought
 			throw std::exception("Set the Datum type first!");
 		}
 
@@ -260,6 +210,11 @@ namespace Library
 			throw std::exception("Invalid data type!");
 		}
 
+		if (IsEmpty())
+		{
+			throw std::exception("The Datum is empty!");
+		}
+
 		return mData.integer[0] == rhs;
 	}
 
@@ -269,6 +224,11 @@ namespace Library
 		if (mCurrentType != DatumType::Float)
 		{
 			throw std::exception("Invalid data type!");
+		}
+
+		if (IsEmpty())
+		{
+			throw std::exception("The Datum is empty!");
 		}
 
 		return mData.floatt[0] == rhs;
@@ -282,6 +242,11 @@ namespace Library
 			throw std::exception("Invalid data type!");
 		}
 
+		if (IsEmpty())
+		{
+			throw std::exception("The Datum is empty!");
+		}
+
 		return mData.vect4[0] == rhs;
 	}
 
@@ -291,6 +256,11 @@ namespace Library
 		if (mCurrentType != DatumType::Matrix)
 		{
 			throw std::exception("Invalid data type!");
+		}
+
+		if (IsEmpty())
+		{
+			throw std::exception("The Datum is empty!");
 		}
 
 		return mData.matrix4x4[0] == rhs;
@@ -304,6 +274,11 @@ namespace Library
 			throw std::exception("Invalid data type!");
 		}
 
+		if (IsEmpty())
+		{
+			throw std::exception("The Datum is empty!");
+		}
+
 		return mData.string[0] == rhs;
 	}
 
@@ -313,6 +288,11 @@ namespace Library
 		if (mCurrentType != DatumType::Pointer)
 		{
 			throw std::exception("Invalid data type!");
+		}
+
+		if (IsEmpty())
+		{
+			throw std::exception("The Datum is empty!");
 		}
 
 		return mData.rtti[0] == rhs;
@@ -392,7 +372,6 @@ namespace Library
 	{
 		if (mCurrentType == DatumType::Unknown)
 		{
-			// todo give this more thought
 			throw std::exception("Set the Datum type first!");
 		}
 
@@ -407,55 +386,59 @@ namespace Library
 		}
 		if (size > mSize)
 		{
+			std::uint32_t diff = size - mSize;
+
 			switch (mCurrentType)
 			{
 				case DatumType::Integer:
-					for (uint32_t i = mSize; i < size; i++)
+					for (uint32_t i = 0; i < diff; ++i)
 					{
-						mData.integer[i] = std::int32_t();
+						PushBack(std::int32_t());
 					}
 					break;
 
 				case DatumType::Float:
-					for (uint32_t i = mSize; i < size; i++)
+					for (uint32_t i = 0; i < diff; ++i)
 					{
-						mData.floatt[i] = std::float_t();
+						PushBack(std::float_t());
 					}
 					break;
 
 				case DatumType::Vector:
-					for (uint32_t i = mSize; i < size; i++)
+					for (uint32_t i = 0; i < diff; ++i)
 					{
-						mData.vect4[i] = glm::vec4();
+						PushBack(glm::vec4());
 					}
 					break;
 
 				case DatumType::Matrix:
-					for (uint32_t i = mSize; i < size; i++)
+					for (uint32_t i = 0; i < diff; ++i)
 					{
-						mData.matrix4x4[i] = glm::mat4x4();
+						PushBack(glm::mat4x4());
 					}
 					break;
 
 				case DatumType::String:
-					for (uint32_t i = mSize; i < size; i++)
+					for (uint32_t i = 0; i < diff; ++i)
 					{
-						mData.string[i] = std::string();
+						PushBack(std::string());
 					}
 					break;
 
 				case DatumType::Pointer:
-					for (uint32_t i = mSize; i < size; i++)
+					for (uint32_t i = 0; i < diff; ++i)
 					{
-						mData.rtti[i] = nullptr;
+						auto r = new RTTI*();
+						PushBack(*r);
 					}
 					break;
 			}
-			mSize = size;
 		}
 		else
 		{
-			for (uint32_t i = size; i < mSize; i++)
+			std::uint32_t diff = mSize - size;
+
+			for (uint32_t i = 0; i < diff; i++)
 			{
 				PopBack();
 			}
@@ -604,23 +587,31 @@ namespace Library
 		{
 			mCurrentType = DatumType::Integer;
 		}
+
+		if (mCurrentType != DatumType::Integer)
+		{
+			throw std::exception("Invalid data type assignment!");
+		}
+
+		if (IsEmpty())
+		{
+			PushBack(rhs);
+			return;
+		}
+
 		if (index < mSize)
 		{
 			mData.integer[index] = rhs;
 		}
 		else
 		{
-			if (index < mCapacity)
+			if (index == mSize)
 			{
 				PushBack(rhs);
 			}
 			else
 			{
-				// making sure that it grows the storage only if it's internal
-				if (!mExternalStorage)
-				{
-					PushBack(rhs);
-				}
+				throw std::exception("Invalid index");
 			}
 		}
 	}
@@ -632,23 +623,31 @@ namespace Library
 		{
 			mCurrentType = DatumType::Float;
 		}
+
+		if (mCurrentType != DatumType::Float)
+		{
+			throw std::exception("Invalid data type assignment!");
+		}
+
+		if (IsEmpty())
+		{
+			PushBack(rhs);
+			return;
+		}
+
 		if (index < mSize)
 		{
 			mData.floatt[index] = rhs;
 		}
 		else
 		{
-			if (index < mCapacity)
+			if (index == mSize)
 			{
 				PushBack(rhs);
 			}
 			else
 			{
-				// making sure that it grows the storage only if it's internal
-				if (!mExternalStorage)
-				{
-					PushBack(rhs);
-				}
+				throw std::exception("Invalid index");
 			}
 		}
 	}
@@ -660,23 +659,31 @@ namespace Library
 		{
 			mCurrentType = DatumType::Vector;
 		}
+
+		if (mCurrentType != DatumType::Vector)
+		{
+			throw std::exception("Invalid data type assignment!");
+		}
+
+		if (IsEmpty())
+		{
+			PushBack(rhs);
+			return;
+		}
+
 		if (index < mSize)
 		{
 			mData.vect4[index] = rhs;
 		}
 		else
 		{
-			if (index < mCapacity)
+			if (index == mSize)
 			{
 				PushBack(rhs);
 			}
 			else
 			{
-				// making sure that it grows the storage only if it's internal
-				if (!mExternalStorage)
-				{
-					PushBack(rhs);
-				}
+				throw std::exception("Invalid index");
 			}
 		}
 	}
@@ -688,23 +695,31 @@ namespace Library
 		{
 			mCurrentType = DatumType::Matrix;
 		}
+
+		if (mCurrentType != DatumType::Matrix)
+		{
+			throw std::exception("Invalid data type assignment!");
+		}
+
+		if (IsEmpty())
+		{
+			PushBack(rhs);
+			return;
+		}
+
 		if (index < mSize)
 		{
 			mData.matrix4x4[index] = rhs;
 		}
 		else
 		{
-			if (index < mCapacity)
+			if (index == mSize)
 			{
 				PushBack(rhs);
 			}
 			else
 			{
-				// making sure that it grows the storage only if it's internal
-				if (!mExternalStorage)
-				{
-					PushBack(rhs);
-				}
+				throw std::exception("Invalid index");
 			}
 		}
 	}
@@ -716,23 +731,31 @@ namespace Library
 		{
 			mCurrentType = DatumType::String;
 		}
+
+		if (mCurrentType != DatumType::String)
+		{
+			throw std::exception("Invalid data type assignment!");
+		}
+
+		if (IsEmpty())
+		{
+			PushBack(rhs);
+			return;
+		}
+
 		if (index < mSize)
 		{
 			mData.string[index] = rhs;
 		}
 		else
 		{
-			if (index < mCapacity)
+			if (index == mSize)
 			{
 				PushBack(rhs);
 			}
 			else
 			{
-				// making sure that it grows the storage only if it's internal
-				if (!mExternalStorage)
-				{
-					PushBack(rhs);
-				}
+				throw std::exception("Invalid index");
 			}
 		}
 	}
@@ -744,23 +767,31 @@ namespace Library
 		{
 			mCurrentType = DatumType::Pointer;
 		}
+
+		if (mCurrentType != DatumType::Pointer)
+		{
+			throw std::exception("Invalid data type assignment!");
+		}
+
+		if (IsEmpty())
+		{
+			PushBack(rhs);
+			return;
+		}
+
 		if (index < mSize)
 		{
 			mData.rtti[index] = rhs;
 		}
 		else
 		{
-			if (index < mCapacity)
+			if (index == mSize)
 			{
 				PushBack(rhs);
 			}
 			else
 			{
-				// making sure that it grows the storage only if it's internal
-				if (!mExternalStorage)
-				{
-					PushBack(rhs);
-				}
+				throw std::exception("Invalid index");
 			}
 		}
 	}
@@ -895,7 +926,7 @@ namespace Library
 			Reserve(std::max(mCapacity * 2, 1u));
 		}
 		// todo fix this
-		new(mData.rtti + mSize)RTTI(rhs);
+		new(mData.rtti + mSize)RTTI*(rhs);
 		++mSize;
 	}
 
@@ -925,8 +956,6 @@ namespace Library
 		}
 
 		return mData.integer[index];
-		// todo change to const call
-		//return const_cast<std::int32_t&>(const_cast<const Datum&>(*this).Get(index));
 	}
 
 	/************************************************************************/
@@ -951,7 +980,6 @@ namespace Library
 		}
 
 		return mData.floatt[index];
-		// todo change to const call
 	}
 
 	/************************************************************************/
@@ -976,7 +1004,6 @@ namespace Library
 		}
 
 		return mData.vect4[index];
-		// todo change to const call
 	}
 
 	/************************************************************************/
@@ -1001,7 +1028,6 @@ namespace Library
 		}
 
 		return mData.matrix4x4[index];
-		// todo change to const call
 	}
 
 	/************************************************************************/
@@ -1026,7 +1052,6 @@ namespace Library
 		}
 
 		return mData.string[index];
-		// todo change to const call
 	}
 
 	/************************************************************************/
@@ -1051,12 +1076,9 @@ namespace Library
 		}
 
 		return mData.rtti[index];
-		// todo change to const call
 	}
 
-
 #pragma endregion
-
 
 	/************************************************************************/
 	inline bool Datum::IsEmpty() const
@@ -1076,7 +1098,7 @@ namespace Library
 	/************************************************************************/
 	void Datum::DeepCopy(const Datum & rhs)
 	{
-		switch (mCurrentType)
+		switch (rhs.mCurrentType)
 		{
 			case DatumType::Integer:
 				for (std::uint32_t i = 0; i < rhs.mSize; i++)
