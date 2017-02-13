@@ -283,7 +283,7 @@ namespace Library
 	}
 
 	/************************************************************************/
-	bool Datum::operator==(const RTTI *& rhs) const
+	bool Datum::operator==(const RTTI *const& rhs) const
 	{
 		if (mCurrentType != DatumType::Pointer)
 		{
@@ -335,7 +335,7 @@ namespace Library
 	}
 
 	/************************************************************************/
-	bool Datum::operator!=(const RTTI *& rhs) const
+	bool Datum::operator!=(const RTTI *const& rhs) const
 	{
 		return !(operator==(rhs));
 	}
@@ -450,7 +450,10 @@ namespace Library
 	/************************************************************************/
 	void Datum::Clear()
 	{
-		// todo test on mexternal : maybe throw exception
+		if (mExternalStorage)
+		{
+			throw std::exception("This datum has external storage. Cannot free external storage.");
+		}
 		Empty();
 		free(mData.theVoid);
 		mCapacity = 0;
@@ -799,15 +802,99 @@ namespace Library
 #pragma endregion
 
 	/************************************************************************/
-	void Datum::SetFromString(std::string str, std::uint32_t index)
+	void Datum::SetFromString(const std::string& str, const std::uint32_t index)
 	{
-		UNREFERENCED_PARAMETER(str);
-		UNREFERENCED_PARAMETER(index);
-		// todo implement set from string
+		int result;
+
+		switch (mCurrentType)
+		{
+			case DatumType::Unknown:
+				throw std::exception("Cannot set this datum. Its type should be set first.");
+				break;
+			
+			case DatumType::Integer:
+				std::int32_t integer;
+				result = sscanf_s(str.c_str(), "%d", &integer);
+				if (result == EOF || result != 1)
+				{
+					throw std::exception("Invalid input.");
+				}
+				Set(integer, index);
+				break;
+			
+			case DatumType::Float:
+				std::float_t f;
+				result = sscanf_s(str.c_str(), "%f", &f);
+				if (result == EOF || result != 1)
+				{
+					throw std::exception("Invalid input.");
+				}
+				Set(f, index);
+				break;
+			
+			case DatumType::Vector:
+				glm::vec4 vect;
+				std::float_t f1, f2, f3, f4;
+				result = sscanf_s(str.c_str(), "(%f, %f, %f, %f)", &f1, &f2, &f3, &f4);
+
+				if (result == EOF || result < 4)
+				{
+					result = sscanf_s(str.c_str(), "(%f)", &f1);
+					if (result == EOF || result != 1)
+					{
+						throw std::exception("Invalid input.");
+					}
+					vect = glm::vec4(f1);
+				}
+				else
+				{
+					vect = glm::vec4(f1, f2, f3, f4);
+				}
+
+				Set(vect, index);
+				break;
+			
+			case DatumType::Matrix:
+				glm::mat4x4 mat;
+				std::float_t f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15, f16;
+				result = sscanf_s(str.c_str(), "(%f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f)",
+								  &f1, &f2, &f3, &f4, &f5, &f6, &f7, &f8, &f9, &f10, &f11, &f12, &f13, &f14, &f15, &f16);
+
+				if (result == EOF || result < 16)
+				{
+					result = sscanf_s(str.c_str(), "(%f)", &f1);
+					if (result == EOF || result != 1)
+					{
+						throw std::exception("Invalid input.");
+					}
+					mat = glm::mat4x4(f1);
+				}
+				else
+				{
+					mat = glm::mat4x4(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15, f16);
+				}
+
+				Set(mat, index);
+				break;
+
+			case DatumType::String:
+				Set(str, index);
+				break;
+
+			case DatumType::Pointer:
+				RTTI* rtti;
+				result = sscanf_s(str.c_str(), "%d", &rtti);
+				if (result == EOF || result != 1)
+				{
+					throw std::exception("Invalid input.");
+				}
+				Set(rtti, index);
+				break;
+		}
 	}
 
 	/************************************************************************/
-	std::string Datum::ToString(std::uint32_t index)
+	std::string Datum::ToString(const std::uint32_t index)
 	{
 		std::string str;
 
@@ -842,11 +929,11 @@ namespace Library
 	}
 
 	/************************************************************************/
-	bool Datum::Reserve(std::uint32_t newCapacity)
+	bool Datum::Reserve(const std::uint32_t newCapacity)
 	{
 		if (mExternalStorage)
 		{
-			throw std::exception("This datum has external storage. Invalid operation.");
+			throw std::exception("This datum has external storage. Cannot reserve memory for it.");
 		}
 
 		if (newCapacity < mCapacity)
@@ -925,7 +1012,6 @@ namespace Library
 		{
 			Reserve(std::max(mCapacity * 2, 1u));
 		}
-		// todo fix this
 		new(mData.rtti + mSize)RTTI*(rhs);
 		++mSize;
 	}
@@ -936,7 +1022,7 @@ namespace Library
 
 	/************************************************************************/
 	template<>
-	const std::int32_t& Datum::Get<std::int32_t>(std::uint32_t index) const
+	const std::int32_t& Datum::Get<std::int32_t>(const std::uint32_t index) const
 	{
 		if (index > mSize)
 		{
@@ -948,7 +1034,7 @@ namespace Library
 
 	/************************************************************************/
 	template<>
-	std::int32_t& Datum::Get<std::int32_t>(std::uint32_t index)
+	std::int32_t& Datum::Get<std::int32_t>(const std::uint32_t index)
 	{
 		if (index > mSize)
 		{
@@ -960,7 +1046,7 @@ namespace Library
 
 	/************************************************************************/
 	template<>
-	const std::float_t& Datum::Get<std::float_t>(std::uint32_t index) const
+	const std::float_t& Datum::Get<std::float_t>(const std::uint32_t index) const
 	{
 		if (index > mSize)
 		{
@@ -972,7 +1058,7 @@ namespace Library
 
 	/************************************************************************/
 	template<>
-	std::float_t& Datum::Get<std::float_t>(std::uint32_t index)
+	std::float_t& Datum::Get<std::float_t>(const std::uint32_t index)
 	{
 		if (index > mSize)
 		{
@@ -984,7 +1070,7 @@ namespace Library
 
 	/************************************************************************/
 	template<>
-	const glm::vec4& Datum::Get<glm::vec4>(std::uint32_t index) const
+	const glm::vec4& Datum::Get<glm::vec4>(const std::uint32_t index) const
 	{
 		if (index > mSize)
 		{
@@ -996,7 +1082,7 @@ namespace Library
 
 	/************************************************************************/
 	template<>
-	glm::vec4& Datum::Get(std::uint32_t index)
+	glm::vec4& Datum::Get(const std::uint32_t index)
 	{
 		if (index > mSize)
 		{
@@ -1008,7 +1094,7 @@ namespace Library
 
 	/************************************************************************/
 	template<>
-	const glm::mat4x4& Datum::Get<glm::mat4x4>(std::uint32_t index) const
+	const glm::mat4x4& Datum::Get<glm::mat4x4>(const std::uint32_t index) const
 	{
 		if (index > mSize)
 		{
@@ -1020,7 +1106,7 @@ namespace Library
 
 	/************************************************************************/
 	template<>
-	glm::mat4x4& Datum::Get<glm::mat4x4>(std::uint32_t index)
+	glm::mat4x4& Datum::Get<glm::mat4x4>(const std::uint32_t index)
 	{
 		if (index > mSize)
 		{
@@ -1032,7 +1118,7 @@ namespace Library
 
 	/************************************************************************/
 	template<>
-	const std::string& Datum::Get<std::string>(std::uint32_t index) const
+	const std::string& Datum::Get<std::string>(const std::uint32_t index) const
 	{
 		if (index > mSize)
 		{
@@ -1044,7 +1130,7 @@ namespace Library
 
 	/************************************************************************/
 	template<>
-	std::string& Datum::Get<std::string>(std::uint32_t index)
+	std::string& Datum::Get<std::string>(const std::uint32_t index)
 	{
 		if (index > mSize)
 		{
@@ -1056,7 +1142,7 @@ namespace Library
 
 	/************************************************************************/
 	template<>
-	RTTI* const & Datum::Get<RTTI*>(std::uint32_t index) const
+	RTTI* const & Datum::Get<RTTI*>(const std::uint32_t index) const
 	{
 		if (index > mSize)
 		{
@@ -1068,7 +1154,7 @@ namespace Library
 
 	/************************************************************************/
 	template<>
-	RTTI*& Datum::Get<RTTI*>(std::uint32_t index)
+	RTTI*& Datum::Get<RTTI*>(const std::uint32_t index)
 	{
 		if (index > mSize)
 		{
