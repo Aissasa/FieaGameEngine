@@ -185,6 +185,10 @@ namespace UnitTestLibraryDesktop
 			Assert::IsTrue(intVect2.IsEmpty());
 			Assert::AreEqual(intVect2.Capacity(), 2u);
 
+			Vector<int> intVect3(10, true);
+			Assert::AreEqual(intVect3.Size(), 10u);
+			intVect3[9];
+
 			// pointer type test
 			Vector<int*> intPtrVect;
 			Assert::IsTrue(intPtrVect.IsEmpty());
@@ -198,6 +202,10 @@ namespace UnitTestLibraryDesktop
 			Assert::IsTrue(intPtrVect2.IsEmpty());
 			Assert::AreEqual(intPtrVect2.Capacity(), 2u);
 
+			Vector<int*> intPtrVect3(10, true);
+			Assert::AreEqual(intPtrVect3.Size(), 10u);
+			intPtrVect3[9];
+
 			// class type test
 			Vector<Foo> fooVect;
 			Assert::IsTrue(fooVect.IsEmpty());
@@ -210,6 +218,10 @@ namespace UnitTestLibraryDesktop
 			Vector<Foo> fooVect2(2);
 			Assert::IsTrue(fooVect2.IsEmpty());
 			Assert::AreEqual(fooVect2.Capacity(), 2u);
+
+			Vector<Foo> fooVect3(10, true);
+			Assert::AreEqual(fooVect3.Size(), 10u);
+			fooVect3[9];
 		}
 
 		TEST_METHOD(VectorCopyConstructorTest)

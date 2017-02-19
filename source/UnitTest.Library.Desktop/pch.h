@@ -7,6 +7,12 @@
 // Standard libraries
 #include <vector>
 #include <cstdint>
+#include <cstring>
+
+// glm includes
+#include <glm/glm.hpp>
+#include <glm/gtx/string_cast.hpp>
+
 
 //// C RunTime Header Files
 //#include <stdlib.h>

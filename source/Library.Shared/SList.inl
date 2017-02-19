@@ -214,10 +214,22 @@ bool SList<T>::Remove(const T & value)
 	{
 		if (*it == value)
 		{
-			Node* nodeToRemove = it.mNode;
-			previousNode->mNext = nodeToRemove->mNext;
-			delete nodeToRemove;
-			--mSize;
+			if (it == begin())
+			{
+				PopFront();
+			}
+			else
+			{
+				Node* nodeToRemove = it.mNode;
+				// update back node if the node to remove is the last one
+				if (nodeToRemove == mBack)
+				{
+					mBack = previousNode;
+				}
+				previousNode->mNext = nodeToRemove->mNext;
+				delete nodeToRemove;
+				--mSize;
+			}
 			return true;
 		}
 

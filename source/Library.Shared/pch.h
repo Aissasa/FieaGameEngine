@@ -12,6 +12,10 @@
 #include <exception>
 #include <new>
 
+// glm includes
+#include <glm/glm.hpp>
+#include <glm/gtx/string_cast.hpp>
+
 //// C RunTime Header Files
 //#include <stdlib.h>
 //#include <malloc.h>

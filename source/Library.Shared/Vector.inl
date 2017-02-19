@@ -1,9 +1,6 @@
 #pragma once
 
 #include "Vector.h"
-#include <cstdint>
-#include <cstring>
-#include <exception>
 
 #pragma region Iterator
 
@@ -12,6 +9,7 @@ template<typename T>
 Vector<T>::Iterator::Iterator(const Vector* owner, std::uint32_t index) :
 	mOwner(owner), mIndex(index)
 {
+	// todo add bool fixed size that inits the vector
 }
 
 /************************************************************************/
@@ -135,10 +133,17 @@ T & Vector<T>::Iterator::operator*()
 #pragma region Vector
 /************************************************************************/
 template<typename T>
-Vector<T>::Vector(std::uint32_t initCapacity) :
+Vector<T>::Vector(std::uint32_t initCapacity, bool fixedSize) :
 	mSize(0), mCapacity(0), mFront(nullptr)
 {
 	Reserve(initCapacity);
+	if (fixedSize)
+	{
+		for (uint32_t i = 0; i < mCapacity; i++)
+		{
+			PushBack(T());
+		}
+	}
 }
 
 /************************************************************************/
@@ -295,14 +300,8 @@ typename Vector<T>::Iterator Vector<T>::PushBack(const T & t)
 {
 	if (mSize == mCapacity)
 	{
-		if (mCapacity == 0)
-		{
-			Reserve(DEFAULT_CAPACITY);
-		}
-		else
-		{
-			Reserve(mCapacity * 2);
-		}
+		// todo add functor
+		Reserve(std::max(DEFAULT_CAPACITY, mCapacity * 2));
 	}
 	// initialize a new element
 	new(mFront + mSize)T(t);
@@ -330,15 +329,15 @@ bool Vector<T>::Remove(const T & t)
 	}
 	else
 	{
-		// todo replace remove implem, and go to hashmap and change the ctor
+		// todo refactor vector remove
 		// .~T();
 		// auto size = (mSize - it.mIndex - 1)* sizeof(T);
 // 		if (size > 0)
 // 		{
-// 			memmove_s(&mFront[it.mIndex], size, &mFront[it., mIndex + 1], size);
+// 			memmove_s(&mFront[it.mIndex], size, &mFront[it.mIndex + 1], size);
 // 		}
 		// -- mSize;
-		ShiftLeftFrom(it);
+		ShiftLeftFrom(it); // note get rid of this then
 		PopBack();
 		return true;
 	}
@@ -348,6 +347,7 @@ bool Vector<T>::Remove(const T & t)
 template<typename T>
 bool Vector<T>::Remove(const Iterator & first, const Iterator & last)
 {
+	// todo refactor vector remove 2
 	if (first.mOwner != this || last.mOwner != this)
 	{
 		throw std::exception("Iterators don't belong to the vector!");
@@ -380,7 +380,7 @@ bool Vector<T>::Remove(const Iterator & first, const Iterator & last)
 		// just override the data with what's after it
 		while (lastTemp != end())
 		{
-			 *firstTemp++ = *lastTemp++;
+			*firstTemp++ = *lastTemp++;
 		}
 	}
 

@@ -1,5 +1,10 @@
 #pragma once
 
+#include <cstdint>
+#include <cstring>
+#include <exception>
+#include <algorithm>
+
 namespace Library
 {
 	/** Vector is a simple dynamic array template class.
@@ -111,7 +116,7 @@ namespace Library
 		 * It creates an empty vector with an initial capacity.
 		 * @param initialCapacity: Initial capacity.
 		 */
-		Vector(uint initCapacity = DEFAULT_CAPACITY);
+		Vector(uint initCapacity = DEFAULT_CAPACITY, bool fixedSize = false);
 
 		/** Vector destructor.
 		 * It destroys the vector and its elements.
@@ -121,6 +126,7 @@ namespace Library
 		/** Vector copy constructor.
 		 * It makes a deep copy of the right hand side vector.
 		 * @param rhs: Vector to copy.
+		 * @see Clear()
 		 */
 		Vector(const Vector & rhs);
 
@@ -269,7 +275,7 @@ namespace Library
 		uint mSize;
 		uint mCapacity;
 
-		const static uint DEFAULT_CAPACITY = 4U;
+		const static std::uint32_t DEFAULT_CAPACITY = 4U;
 	};
 #include "Vector.inl"
 

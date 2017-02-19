@@ -6,7 +6,7 @@
 
 /************************************************************************/
 template <typename TKey, typename TData, typename HashFunctor>
-HashMap<TKey, TData, HashFunctor>::Iterator::Iterator(const HashMap* owner, std::uint32_t bucketIndex, typename ChainType::Iterator chainIterator) :
+HashMap<TKey, TData, HashFunctor>::Iterator::Iterator(const HashMap* owner, std::uint32_t bucketIndex, typename const ChainType::Iterator& chainIterator) :
 	mOwner(owner), mBucketIndex(bucketIndex), mChainIterator(chainIterator)
 {
 }
@@ -57,7 +57,7 @@ typename HashMap<TKey, TData, HashFunctor>::Iterator& HashMap<TKey, TData, HashF
 
 	while (mChainIterator == mOwner->mBuckets[mBucketIndex].end())
 	{
-		if (++mBucketIndex == mOwner->mNumBuckets)
+		if (++mBucketIndex == mOwner->mBuckets.Size())
 		{
 			mChainIterator = ChainType::Iterator::Iterator();
 			break;
@@ -136,53 +136,56 @@ std::pair<const TKey, TData>* HashMap<TKey, TData, HashFunctor>::Iterator::opera
 /************************************************************************/
 template<typename TKey, typename TData, typename HashFunctor>
 HashMap<TKey, TData, HashFunctor>::HashMap(std::uint32_t hashTableSize) :
-	mBuckets(Vector<ChainType>(hashTableSize)), mSize(0), mNumBuckets(hashTableSize)
+	mBuckets(Vector<ChainType>(hashTableSize, true)), mSize(0)
 {
 	if (hashTableSize == 0)
 	{
 		throw std::exception("The hash map should have more buckets!");
 	}
-
-	// initialize the vector
-	for (uint32_t i = 0; i <mNumBuckets; ++i)
-	{
-		mBuckets.PushBack(SList<PairType>());
-	}
 }
 
 /************************************************************************/
 template<typename TKey, typename TData, typename HashFunctor>
-HashMap<TKey, TData, HashFunctor>::~HashMap()
+typename HashMap<TKey, TData, HashFunctor>::Iterator HashMap<TKey, TData, HashFunctor>::Find(const TKey& key, std::uint32_t& bucket) const
 {
-	Clear();
-	mBuckets.Clear();
-}
+	static HashFunctor hashFunc;
+	bucket = hashFunc(key) % mBuckets.Size();
 
-/************************************************************************/
-template<typename TKey, typename TData, typename HashFunctor>
-typename HashMap<TKey, TData, HashFunctor>::Iterator HashMap<TKey, TData, HashFunctor>::Find(const TKey& key) const
-{
-	Iterator it = begin();
-	for (; it != end(); ++it)
+	ChainType::Iterator it = mBuckets[bucket].begin();
+	for (; it != mBuckets[bucket].end(); ++it)
 	{
 		if ((*it).first == key)
 		{
 			break;
 		}
 	}
-	return it;
+
+	// not found
+	if (it == mBuckets[bucket].end())
+	{
+		return end();
+	}
+
+	// found
+	return Iterator(this, bucket, it);
+}
+
+/************************************************************************/
+template<typename TKey, typename TData, typename HashFunctor>
+typename HashMap<TKey, TData, HashFunctor>::Iterator HashMap<TKey, TData, HashFunctor>::Find(const TKey& key) const
+{
+	std::uint32_t u;
+	return Find(key, u);
 }
 
 /************************************************************************/
 template<typename TKey, typename TData, typename HashFunctor>
 typename HashMap<TKey, TData, HashFunctor>::Iterator HashMap<TKey, TData, HashFunctor>::Insert(const PairType & pair)
 {
-	Iterator it = Find(pair.first);
+	std::uint32_t bucket;
+	Iterator it = Find(pair.first, bucket);
 	if (it == end())
 	{
-		static HashFunctor hashFunc;
-
-		std::uint32_t bucket = hashFunc(pair.first) % mNumBuckets;
 		ChainType::Iterator chainIterator = mBuckets[bucket].PushBack(pair);
 		++mSize;
 		it = Iterator(this, bucket, chainIterator);
@@ -206,12 +209,7 @@ const TData& HashMap<TKey, TData, HashFunctor>::operator[](const TKey& key) cons
 template<typename TKey, typename TData, typename HashFunctor>
 TData& HashMap<TKey, TData, HashFunctor>::operator[](const TKey& key)
 {
-	Iterator it = Find(key);
-	if (it == end())
-	{
-		PairType p(key, TData());
-		it = Insert(p);
-	}
+	Iterator it = Insert(PairType(key, TData()));
 	return (*it).second;
 }
 
@@ -286,7 +284,7 @@ typename HashMap<TKey, TData, HashFunctor>::Iterator HashMap<TKey, TData, HashFu
 template<typename TKey, typename TData, typename HashFunctor>
 typename HashMap<TKey, TData, HashFunctor>::Iterator HashMap<TKey, TData, HashFunctor>::end() const
 {
-	return Iterator(this, mNumBuckets, ChainType::Iterator::Iterator());
+	return Iterator(this, mBuckets.Size(), ChainType::Iterator::Iterator());
 }
 
 #pragma endregion
@@ -301,7 +299,7 @@ std::uint32_t DefaultHash<TKey>::operator()(const TKey& key)
 	std::uint32_t hash = 0;
 	for (std::uint32_t i = 0; i < sizeof(key); ++i)
 	{
-		hash = hash * 31 + pointer[i];
+		hash = hash * HASH_NUMBER + pointer[i];
 	}
 
 	return hash;
@@ -313,7 +311,7 @@ std::uint32_t DefaultHash<std::string>::operator()(const std::string& key)
 	std::uint32_t hash = 0;
 	for (std::uint32_t i = 0; i < key.length(); ++i)
 	{
-		hash = hash * 31 + key[i];
+		hash = hash * HASH_NUMBER + key[i];
 	}
 
 	return hash;
@@ -325,7 +323,7 @@ std::uint32_t DefaultHash<char*>::operator()(const char* key)
 	std::uint32_t hash = 0;
 	for (std::uint32_t i = 0; i < strlen(key); ++i)
 	{
-		hash = hash * 31 + key[i];
+		hash = hash * HASH_NUMBER + key[i];
 	}
 
 	return hash;

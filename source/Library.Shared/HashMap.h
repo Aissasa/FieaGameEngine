@@ -25,6 +25,10 @@ namespace Library
 		 * @return Hash result.
 		 */
 		std::uint32_t operator()(const TKey& key);
+
+	private:
+		const static std::uint32_t HASH_NUMBER = 31U;
+
 	};
 
 	/** Standard string hash functor.
@@ -41,6 +45,10 @@ namespace Library
 		 * @return Hash result.
 		 */
 		std::uint32_t operator()(const std::string& key);
+
+	private:
+		const static std::uint32_t HASH_NUMBER = 31U;
+
 	};
 
 	/** Char* hash functor.
@@ -56,6 +64,10 @@ namespace Library
 		* @return Hash result.
 		*/
 		std::uint32_t operator()(const char* key);
+
+	private:
+		const static std::uint32_t HASH_NUMBER = 31U;
+
 	};
 
 #pragma endregion
@@ -164,7 +176,7 @@ namespace Library
 
 		private:
 
-			Iterator(const HashMap* owner, std::uint32_t bucketIndex, typename ChainType::Iterator chainIterator);
+			Iterator(const HashMap* owner, std::uint32_t bucketIndex, typename const ChainType::Iterator& chainIterator);
 
 			const HashMap* mOwner;
 			std::uint32_t mBucketIndex;
@@ -182,7 +194,7 @@ namespace Library
 		/** HashMap destructor.
 		* It destroys the HashMap and its elements.
 		*/
-		~HashMap();
+		~HashMap() = default;
 
 		/** HashMap copy constructor.
 		* It makes a deep copy of the right hand side HashMap.
@@ -196,6 +208,15 @@ namespace Library
 		* @return Result HashMap copy.
 		*/
 		HashMap& operator=(const HashMap& rhs) = default;
+
+		/** Finds a pair in the HashMap using a key.
+		* If the HashMap is empty or the key is not found, the past-the-end iterator is returned.
+		* Key act as an output to the hashed key.
+		* @param key: Key to the pair to find in the HashMap.
+		* @param bucket: The bucket that the key is in.
+		* @return Iterator to the found element in the HashMap.
+		*/
+		Iterator Find(const TKey & key, std::uint32_t& bucket) const;
 
 		/** Finds a pair in the HashMap using a key.
 		* If the HashMap is empty or the key is not found, the past-the-end iterator is returned.
@@ -268,7 +289,6 @@ namespace Library
 
 		BucketType mBuckets;
 		std::uint32_t mSize;
-		std::uint32_t mNumBuckets;
 
 		const static std::uint32_t DEFAULT_HASH_TABLE_SIZE = 16U;
 	};

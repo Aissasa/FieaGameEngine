@@ -324,7 +324,7 @@ namespace UnitTestLibraryDesktop
 			Foo foo2(n2, n4);
 
 			// default ctor
-			HashMap<Foo, Foo> hashmap;
+			HashMap<Foo, Foo, FooHashFunctor> hashmap;
 			Assert::IsTrue(hashmap.IsEmpty());
 
 			auto func1 = [] { HashMap<Foo, Foo> hashmap1(0); };
@@ -334,7 +334,7 @@ namespace UnitTestLibraryDesktop
 			std::pair<Foo, Foo> pair(foo1, foo2);
 			hashmap.Insert(pair);
 
-			HashMap<Foo, Foo> hashmap2 = hashmap;
+			HashMap<Foo, Foo, FooHashFunctor> hashmap2 = hashmap;
 			hashmap.Clear();
 			Assert::IsTrue(hashmap.IsEmpty());
 			Assert::IsFalse(hashmap2.IsEmpty());
@@ -390,7 +390,7 @@ namespace UnitTestLibraryDesktop
 			Foo foo1(n1, n3);
 			Foo foo2(n2, n4);
 
-			HashMap<Foo, Foo> hashmap;
+			HashMap<Foo, Foo, FooHashFunctor> hashmap;
 			Assert::IsTrue(hashmap.IsEmpty());
 
 			std::pair<Foo, Foo> pair(foo1, foo2);
@@ -445,7 +445,7 @@ namespace UnitTestLibraryDesktop
 			Foo foo1(n1, n3);
 			Foo foo2(n2, n4);
 
-			HashMap<Foo, Foo> hashmap;
+			HashMap<Foo, Foo, FooHashFunctor> hashmap;
 			std::pair<Foo, Foo> pair(foo1, foo2);
 			hashmap.Insert(pair);
 
@@ -494,7 +494,7 @@ namespace UnitTestLibraryDesktop
 			Foo foo1(n1, n3);
 			Foo foo2(n2, n4);
 
-			HashMap<Foo, Foo> hashmap;
+			HashMap<Foo, Foo, FooHashFunctor> hashmap;
 			std::pair<const Foo, Foo> pair(foo1, foo2);
 
 			Assert::IsTrue(hashmap.Find(foo1) == hashmap.end());
@@ -567,7 +567,7 @@ namespace UnitTestLibraryDesktop
 			Foo foo3(n3, n7);
 			Foo foo4(n4, n8);
 
-			HashMap<Foo, Foo> hashmap;
+			HashMap<Foo, Foo, FooHashFunctor> hashmap;
 			std::pair<const Foo, Foo> pair(foo1, foo3);
 			auto it = hashmap.Insert(pair);
 			Assert::AreEqual(hashmap.Size(), 1u);
@@ -643,11 +643,11 @@ namespace UnitTestLibraryDesktop
 			Foo foo2(n2, n5);
 			Foo foo3(n3, n6);
 
-			const HashMap<Foo, Foo> constHashmap;
+			const HashMap<Foo, Foo, FooHashFunctor> constHashmap;
 			auto func1 = [&constHashmap, foo1] { constHashmap[foo1]; };
 			Assert::ExpectException<std::exception>(func1);
 
-			HashMap<Foo, Foo> hashmap;
+			HashMap<Foo, Foo, FooHashFunctor> hashmap;
 			std::pair<const Foo, Foo> pair(foo2, foo3);
 			hashmap[foo1];
 
@@ -655,7 +655,7 @@ namespace UnitTestLibraryDesktop
 			Assert::IsTrue(hashmap.ContainsKey(foo1));
 
 			hashmap.Insert(pair);
-			const HashMap<Foo, Foo>constHashmap2 = hashmap;
+			const HashMap<Foo, Foo, FooHashFunctor>constHashmap2 = hashmap;
 
 			Assert::AreEqual(constHashmap2.Size(), 2u);
 			Assert::IsTrue(constHashmap2[foo2] == foo3);
@@ -704,7 +704,7 @@ namespace UnitTestLibraryDesktop
 			Foo foo1(n1, n3);
 			Foo foo2(n2, n4);
 
-			HashMap<Foo, Foo> hashmap;
+			HashMap<Foo, Foo, FooHashFunctor> hashmap;
 			std::pair<const Foo, Foo> pair(foo1, foo2);
 
 			hashmap.Insert(pair);

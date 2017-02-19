@@ -1,8 +1,4 @@
 #include "pch.h"
-#include "glm/vec4.hpp"
-#include "glm/mat4x4.hpp"
-#include "glm/gtx/string_cast.hpp"
-#include "RTTI.h"
 #include "Datum.h"
 
 namespace Library
@@ -24,10 +20,12 @@ namespace Library
 		{
 			Clear();
 		}
-		mData.theVoid = nullptr;
-		mSize = 0;
-		mCapacity = 0;
-		mExternalStorage = false;
+		else
+		{
+			mSize = 0;
+			mCapacity = 0;
+			mExternalStorage = false;
+		}
 	}
 
 	/************************************************************************/
@@ -50,18 +48,26 @@ namespace Library
 		{
 			if (!mExternalStorage)
 			{
-				Empty();
-			}
-			mCurrentType = rhs.mCurrentType;
-
-			if (rhs.mExternalStorage)
-			{
-				mExternalStorage = true;
-				mData = rhs.mData;
+				Clear();
 			}
 			else
 			{
-				mExternalStorage = false;
+				mSize = 0;
+				mCapacity = 0;
+				mData.theVoid = nullptr;
+			}
+
+			mCurrentType = rhs.mCurrentType;
+			mExternalStorage = rhs.mExternalStorage;
+
+			if (rhs.mExternalStorage)
+			{
+				mData = rhs.mData;
+				mSize = rhs.mSize;
+				mCapacity = rhs.mCapacity;
+			}
+			else
+			{
 				Reserve(rhs.mCapacity);
 				DeepCopy(rhs);
 			}
@@ -345,7 +351,7 @@ namespace Library
 #pragma region Type and size
 
 	/************************************************************************/
-	inline Datum::DatumType Datum::Type() const
+	Datum::DatumType Datum::Type() const
 	{
 		return mCurrentType;
 	}
@@ -353,7 +359,7 @@ namespace Library
 	/************************************************************************/
 	void Datum::SetType(const DatumType & type)
 	{
-		if (mCurrentType != DatumType::Unknown)
+		if (mCurrentType != DatumType::Unknown || type == DatumType::Unknown)
 		{
 			throw std::exception("Invalid data type change!");
 		}
@@ -362,7 +368,7 @@ namespace Library
 	}
 
 	/************************************************************************/
-	inline std::uint32_t Datum::Size() const
+	std::uint32_t Datum::Size() const
 	{
 		return mSize;
 	}
@@ -447,6 +453,8 @@ namespace Library
 
 #pragma endregion
 
+#pragma region Storage Clear
+
 	/************************************************************************/
 	void Datum::Clear()
 	{
@@ -457,11 +465,17 @@ namespace Library
 		Empty();
 		free(mData.theVoid);
 		mCapacity = 0;
+		mData.theVoid = nullptr;
 	}
 
 	/************************************************************************/
 	void Datum::PopBack()
 	{
+		if (mExternalStorage)
+		{
+			throw std::exception("This datum has external storage. Cannot free external storage.");
+		}
+
 		if (!IsEmpty())
 		{
 			switch (mCurrentType)
@@ -493,6 +507,8 @@ namespace Library
 		}
 	}
 
+#pragma endregion
+
 #pragma region Set Storage
 
 	/************************************************************************/
@@ -504,6 +520,7 @@ namespace Library
 		}
 
 		mExternalStorage = true;
+		mCurrentType = DatumType::Integer;
 		mData.integer = table;
 		mSize = tableSize;
 		mCapacity = tableSize;
@@ -518,6 +535,7 @@ namespace Library
 		}
 
 		mExternalStorage = true;
+		mCurrentType = DatumType::Float;
 		mData.floatt = table;
 		mSize = tableSize;
 		mCapacity = tableSize;
@@ -532,6 +550,7 @@ namespace Library
 		}
 
 		mExternalStorage = true;
+		mCurrentType = DatumType::Vector;
 		mData.vect4 = table;
 		mSize = tableSize;
 		mCapacity = tableSize;
@@ -546,6 +565,7 @@ namespace Library
 		}
 
 		mExternalStorage = true;
+		mCurrentType = DatumType::Matrix;
 		mData.matrix4x4 = table;
 		mSize = tableSize;
 		mCapacity = tableSize;
@@ -560,6 +580,7 @@ namespace Library
 		}
 
 		mExternalStorage = true;
+		mCurrentType = DatumType::String;
 		mData.string = table;
 		mSize = tableSize;
 		mCapacity = tableSize;
@@ -574,6 +595,7 @@ namespace Library
 		}
 
 		mExternalStorage = true;
+		mCurrentType = DatumType::Pointer;
 		mData.rtti = table;
 		mSize = tableSize;
 		mCapacity = tableSize;
@@ -594,12 +616,6 @@ namespace Library
 		if (mCurrentType != DatumType::Integer)
 		{
 			throw std::exception("Invalid data type assignment!");
-		}
-
-		if (IsEmpty())
-		{
-			PushBack(rhs);
-			return;
 		}
 
 		if (index < mSize)
@@ -632,12 +648,6 @@ namespace Library
 			throw std::exception("Invalid data type assignment!");
 		}
 
-		if (IsEmpty())
-		{
-			PushBack(rhs);
-			return;
-		}
-
 		if (index < mSize)
 		{
 			mData.floatt[index] = rhs;
@@ -666,12 +676,6 @@ namespace Library
 		if (mCurrentType != DatumType::Vector)
 		{
 			throw std::exception("Invalid data type assignment!");
-		}
-
-		if (IsEmpty())
-		{
-			PushBack(rhs);
-			return;
 		}
 
 		if (index < mSize)
@@ -704,12 +708,6 @@ namespace Library
 			throw std::exception("Invalid data type assignment!");
 		}
 
-		if (IsEmpty())
-		{
-			PushBack(rhs);
-			return;
-		}
-
 		if (index < mSize)
 		{
 			mData.matrix4x4[index] = rhs;
@@ -738,12 +736,6 @@ namespace Library
 		if (mCurrentType != DatumType::String)
 		{
 			throw std::exception("Invalid data type assignment!");
-		}
-
-		if (IsEmpty())
-		{
-			PushBack(rhs);
-			return;
 		}
 
 		if (index < mSize)
@@ -776,12 +768,6 @@ namespace Library
 			throw std::exception("Invalid data type assignment!");
 		}
 
-		if (IsEmpty())
-		{
-			PushBack(rhs);
-			return;
-		}
-
 		if (index < mSize)
 		{
 			mData.rtti[index] = rhs;
@@ -801,6 +787,8 @@ namespace Library
 
 #pragma endregion
 
+#pragma region String related methods
+
 	/************************************************************************/
 	void Datum::SetFromString(const std::string& str, const std::uint32_t index)
 	{
@@ -811,7 +799,7 @@ namespace Library
 			case DatumType::Unknown:
 				throw std::exception("Cannot set this datum. Its type should be set first.");
 				break;
-			
+
 			case DatumType::Integer:
 				std::int32_t integer;
 				result = sscanf_s(str.c_str(), "%d", &integer);
@@ -821,7 +809,7 @@ namespace Library
 				}
 				Set(integer, index);
 				break;
-			
+
 			case DatumType::Float:
 				std::float_t f;
 				result = sscanf_s(str.c_str(), "%f", &f);
@@ -831,31 +819,34 @@ namespace Library
 				}
 				Set(f, index);
 				break;
-			
+
 			case DatumType::Vector:
-				glm::vec4 vect;
-				std::float_t f1, f2, f3, f4;
-				result = sscanf_s(str.c_str(), "(%f, %f, %f, %f)", &f1, &f2, &f3, &f4);
+			{
+				glm::vec4 vect(0);
+				std::float_t fv1, fv2, fv3, fv4;
+				result = sscanf_s(str.c_str(), "(%f, %f, %f, %f)", &fv1, &fv2, &fv3, &fv4);
 
 				if (result == EOF || result < 4)
 				{
-					result = sscanf_s(str.c_str(), "(%f)", &f1);
+					result = sscanf_s(str.c_str(), "(%f)", &fv1);
 					if (result == EOF || result != 1)
 					{
 						throw std::exception("Invalid input.");
 					}
-					vect = glm::vec4(f1);
+					vect = glm::vec4(fv1);
 				}
 				else
 				{
-					vect = glm::vec4(f1, f2, f3, f4);
+					vect = glm::vec4(fv1, fv2, fv3, fv4);
 				}
 
 				Set(vect, index);
 				break;
-			
+			}
+
 			case DatumType::Matrix:
-				glm::mat4x4 mat;
+			{
+				glm::mat4x4 mat(0);
 				std::float_t f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15, f16;
 				result = sscanf_s(str.c_str(), "(%f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f)",
 								  &f1, &f2, &f3, &f4, &f5, &f6, &f7, &f8, &f9, &f10, &f11, &f12, &f13, &f14, &f15, &f16);
@@ -876,19 +867,13 @@ namespace Library
 
 				Set(mat, index);
 				break;
-
+			}
 			case DatumType::String:
 				Set(str, index);
 				break;
 
 			case DatumType::Pointer:
-				RTTI* rtti;
-				result = sscanf_s(str.c_str(), "%d", &rtti);
-				if (result == EOF || result != 1)
-				{
-					throw std::exception("Invalid input.");
-				}
-				Set(rtti, index);
+				throw std::exception("Cannot set a value of this datum from a string.");
 				break;
 		}
 	}
@@ -928,6 +913,305 @@ namespace Library
 		return str;
 	}
 
+#pragma endregion
+
+#pragma region PushBack
+
+	/************************************************************************/
+	void Datum::PushBack(const std::int32_t & rhs)
+	{
+
+		if (mCurrentType == DatumType::Unknown)
+		{
+			mCurrentType = DatumType::Integer;
+		}
+
+		if (mCurrentType != DatumType::Integer)
+		{
+			throw std::exception("Invalid data type assignment!");
+		}
+
+		if (mSize == mCapacity)
+		{
+			Reserve(std::max(mCapacity * 2, 1u));
+		}
+		new(mData.integer + mSize++)std::uint32_t(rhs);
+	}
+
+	/************************************************************************/
+	void Datum::PushBack(const std::float_t & rhs)
+	{
+		if (mCurrentType == DatumType::Unknown)
+		{
+			mCurrentType = DatumType::Float;
+		}
+
+		if (mCurrentType != DatumType::Float)
+		{
+			throw std::exception("Invalid data type assignment!");
+		}
+
+		if (mSize == mCapacity)
+		{
+			Reserve(std::max(mCapacity * 2, 1u));
+		}
+		new(mData.floatt + mSize++)std::float_t(rhs);
+	}
+
+	/************************************************************************/
+	void Datum::PushBack(const glm::vec4 & rhs)
+	{
+		if (mCurrentType == DatumType::Unknown)
+		{
+			mCurrentType = DatumType::Vector;
+		}
+
+		if (mCurrentType != DatumType::Vector)
+		{
+			throw std::exception("Invalid data type assignment!");
+		}
+
+		if (mSize == mCapacity)
+		{
+			Reserve(std::max(mCapacity * 2, 1u));
+		}
+		new(mData.vect4 + mSize++)glm::vec4(rhs);
+	}
+
+	/************************************************************************/
+	void Datum::PushBack(const glm::mat4x4 & rhs)
+	{
+		if (mCurrentType == DatumType::Unknown)
+		{
+			mCurrentType = DatumType::Matrix;
+		}
+
+		if (mCurrentType != DatumType::Matrix)
+		{
+			throw std::exception("Invalid data type assignment!");
+		}
+
+		if (mSize == mCapacity)
+		{
+			Reserve(std::max(mCapacity * 2, 1u));
+		}
+		new(mData.matrix4x4 + mSize++)glm::mat4x4(rhs);
+	}
+
+	/************************************************************************/
+	void Datum::PushBack(const std::string & rhs)
+	{
+		if (mCurrentType == DatumType::Unknown)
+		{
+			mCurrentType = DatumType::String;
+		}
+
+		if (mCurrentType != DatumType::String)
+		{
+			throw std::exception("Invalid data type assignment!");
+		}
+
+		if (mSize == mCapacity)
+		{
+			Reserve(std::max(mCapacity * 2, 1u));
+		}
+		new(mData.string + mSize++)std::string(rhs);
+	}
+
+	/************************************************************************/
+	void Datum::PushBack(RTTI * const & rhs)
+	{
+		if (mCurrentType == DatumType::Unknown)
+		{
+			mCurrentType = DatumType::Pointer;
+		}
+
+		if (mCurrentType != DatumType::Pointer)
+		{
+			throw std::exception("Invalid data type assignment!");
+		}
+
+		if (mSize == mCapacity)
+		{
+			Reserve(std::max(mCapacity * 2, 1u));
+		}
+		new(mData.rtti + mSize++)RTTI*(rhs);
+	}
+
+#pragma endregion
+
+#pragma region Get
+
+	/************************************************************************/
+	template<>
+	const std::int32_t& Datum::Get<std::int32_t>(const std::uint32_t index) const
+	{
+		if (index >= mSize)
+		{
+			throw std::out_of_range("Going out of bounds!");
+		}
+
+		return mData.integer[index];
+	}
+
+	/************************************************************************/
+	template<>
+	std::int32_t& Datum::Get<std::int32_t>(const std::uint32_t index)
+	{
+		if (index >= mSize)
+		{
+			throw std::out_of_range("Going out of bounds!");
+		}
+
+		return mData.integer[index];
+	}
+
+	/************************************************************************/
+	template<>
+	const std::float_t& Datum::Get<std::float_t>(const std::uint32_t index) const
+	{
+		if (index >= mSize)
+		{
+			throw std::out_of_range("Going out of bounds!");
+		}
+
+		return mData.floatt[index];
+	}
+
+	/************************************************************************/
+	template<>
+	std::float_t& Datum::Get<std::float_t>(const std::uint32_t index)
+	{
+		if (index >= mSize)
+		{
+			throw std::out_of_range("Going out of bounds!");
+		}
+
+		return mData.floatt[index];
+	}
+
+	/************************************************************************/
+	template<>
+	const glm::vec4& Datum::Get<glm::vec4>(const std::uint32_t index) const
+	{
+		if (index >= mSize)
+		{
+			throw std::out_of_range("Going out of bounds!");
+		}
+
+		return mData.vect4[index];
+	}
+
+	/************************************************************************/
+	template<>
+	glm::vec4& Datum::Get(const std::uint32_t index)
+	{
+		if (index >= mSize)
+		{
+			throw std::out_of_range("Going out of bounds!");
+		}
+
+		return mData.vect4[index];
+	}
+
+	/************************************************************************/
+	template<>
+	const glm::mat4x4& Datum::Get<glm::mat4x4>(const std::uint32_t index) const
+	{
+		if (index >= mSize)
+		{
+			throw std::out_of_range("Going out of bounds!");
+		}
+
+		return mData.matrix4x4[index];
+	}
+
+	/************************************************************************/
+	template<>
+	glm::mat4x4& Datum::Get<glm::mat4x4>(const std::uint32_t index)
+	{
+		if (index >= mSize)
+		{
+			throw std::out_of_range("Going out of bounds!");
+		}
+
+		return mData.matrix4x4[index];
+	}
+
+	/************************************************************************/
+	template<>
+	const std::string& Datum::Get<std::string>(const std::uint32_t index) const
+	{
+		if (index >= mSize)
+		{
+			throw std::out_of_range("Going out of bounds!");
+		}
+
+		return mData.string[index];
+	}
+
+	/************************************************************************/
+	template<>
+	std::string& Datum::Get<std::string>(const std::uint32_t index)
+	{
+		if (index >= mSize)
+		{
+			throw std::out_of_range("Going out of bounds!");
+		}
+
+		return mData.string[index];
+	}
+
+	/************************************************************************/
+	template<>
+	RTTI* const & Datum::Get<RTTI*>(const std::uint32_t index) const
+	{
+		if (index >= mSize)
+		{
+			throw std::out_of_range("Going out of bounds!");
+		}
+
+		return mData.rtti[index];
+	}
+
+	/************************************************************************/
+	template<>
+	RTTI*& Datum::Get<RTTI*>(const std::uint32_t index)
+	{
+		if (index >= mSize)
+		{
+			throw std::out_of_range("Going out of bounds!");
+		}
+
+		return mData.rtti[index];
+	}
+
+#pragma endregion
+
+#pragma region Storage Checks
+
+	/************************************************************************/
+	std::uint32_t Datum::Capacity() const
+	{
+		return mCapacity;
+	}
+
+	/************************************************************************/
+	bool Datum::IsEmpty() const
+	{
+		return mSize == 0;
+	}
+
+	/************************************************************************/
+	bool Datum::HasExternalStorage() const
+	{
+		return mExternalStorage;
+	}
+
+#pragma endregion
+
+#pragma region Helper Methods
+
 	/************************************************************************/
 	bool Datum::Reserve(const std::uint32_t newCapacity)
 	{
@@ -942,234 +1226,39 @@ namespace Library
 		}
 		else
 		{
-			mData.theVoid = realloc(mData.theVoid, newCapacity * sizeof(DataValues));
+			switch (mCurrentType)
+			{
+				case DatumType::Unknown:
+					throw std::exception("The type needs to be determined before allocating memory.");
+					break;
+
+				case DatumType::Integer:
+					mData.theVoid = realloc(mData.theVoid, newCapacity * sizeof(std::int32_t));
+					break;
+
+				case DatumType::Float:
+					mData.theVoid = realloc(mData.theVoid, newCapacity * sizeof(std::float_t));
+					break;
+
+				case DatumType::Vector:
+					mData.theVoid = realloc(mData.theVoid, newCapacity * sizeof(glm::vec4));
+					break;
+
+				case DatumType::Matrix:
+					mData.theVoid = realloc(mData.theVoid, newCapacity * sizeof(glm::mat4x4));
+					break;
+
+				case DatumType::String:
+					mData.theVoid = realloc(mData.theVoid, newCapacity * sizeof(std::string));
+					break;
+
+				case DatumType::Pointer:
+					mData.theVoid = realloc(mData.theVoid, newCapacity * sizeof(RTTI*));
+					break;
+			}
 			mCapacity = newCapacity;
 			return true;
 		}
-	}
-
-#pragma region PushBack
-
-	/************************************************************************/
-	void Datum::PushBack(const std::int32_t & rhs)
-	{
-		if (mSize == mCapacity)
-		{
-			Reserve(std::max(mCapacity * 2, 1u));
-		}
-		new(mData.integer + mSize)std::uint32_t(rhs);
-		++mSize;
-	}
-
-	/************************************************************************/
-	void Datum::PushBack(const std::float_t & rhs)
-	{
-		if (mSize == mCapacity)
-		{
-			Reserve(std::max(mCapacity * 2, 1u));
-		}
-		new(mData.floatt + mSize)std::float_t(rhs);
-		++mSize;
-	}
-
-	/************************************************************************/
-	void Datum::PushBack(const glm::vec4 & rhs)
-	{
-		if (mSize == mCapacity)
-		{
-			Reserve(std::max(mCapacity * 2, 1u));
-		}
-		new(mData.vect4 + mSize)glm::vec4(rhs);
-		++mSize;
-	}
-
-	/************************************************************************/
-	void Datum::PushBack(const glm::mat4x4 & rhs)
-	{
-		if (mSize == mCapacity)
-		{
-			Reserve(std::max(mCapacity * 2, 1u));
-		}
-		new(mData.matrix4x4 + mSize)glm::mat4x4(rhs);
-		++mSize;
-	}
-
-	/************************************************************************/
-	void Datum::PushBack(const std::string & rhs)
-	{
-		if (mSize == mCapacity)
-		{
-			Reserve(std::max(mCapacity * 2, 1u));
-		}
-		new(mData.string + mSize)std::string(rhs);
-		++mSize;
-	}
-
-	/************************************************************************/
-	void Datum::PushBack(RTTI * const & rhs)
-	{
-		if (mSize == mCapacity)
-		{
-			Reserve(std::max(mCapacity * 2, 1u));
-		}
-		new(mData.rtti + mSize)RTTI*(rhs);
-		++mSize;
-	}
-
-#pragma endregion
-
-#pragma region Get
-
-	/************************************************************************/
-	template<>
-	const std::int32_t& Datum::Get<std::int32_t>(const std::uint32_t index) const
-	{
-		if (index > mSize)
-		{
-			throw std::exception("Going out of bounds!");
-		}
-
-		return mData.integer[index];
-	}
-
-	/************************************************************************/
-	template<>
-	std::int32_t& Datum::Get<std::int32_t>(const std::uint32_t index)
-	{
-		if (index > mSize)
-		{
-			throw std::exception("Going out of bounds!");
-		}
-
-		return mData.integer[index];
-	}
-
-	/************************************************************************/
-	template<>
-	const std::float_t& Datum::Get<std::float_t>(const std::uint32_t index) const
-	{
-		if (index > mSize)
-		{
-			throw std::exception("Going out of bounds!");
-		}
-
-		return mData.floatt[index];
-	}
-
-	/************************************************************************/
-	template<>
-	std::float_t& Datum::Get<std::float_t>(const std::uint32_t index)
-	{
-		if (index > mSize)
-		{
-			throw std::exception("Going out of bounds!");
-		}
-
-		return mData.floatt[index];
-	}
-
-	/************************************************************************/
-	template<>
-	const glm::vec4& Datum::Get<glm::vec4>(const std::uint32_t index) const
-	{
-		if (index > mSize)
-		{
-			throw std::exception("Going out of bounds!");
-		}
-
-		return mData.vect4[index];
-	}
-
-	/************************************************************************/
-	template<>
-	glm::vec4& Datum::Get(const std::uint32_t index)
-	{
-		if (index > mSize)
-		{
-			throw std::exception("Going out of bounds!");
-		}
-
-		return mData.vect4[index];
-	}
-
-	/************************************************************************/
-	template<>
-	const glm::mat4x4& Datum::Get<glm::mat4x4>(const std::uint32_t index) const
-	{
-		if (index > mSize)
-		{
-			throw std::exception("Going out of bounds!");
-		}
-
-		return mData.matrix4x4[index];
-	}
-
-	/************************************************************************/
-	template<>
-	glm::mat4x4& Datum::Get<glm::mat4x4>(const std::uint32_t index)
-	{
-		if (index > mSize)
-		{
-			throw std::exception("Going out of bounds!");
-		}
-
-		return mData.matrix4x4[index];
-	}
-
-	/************************************************************************/
-	template<>
-	const std::string& Datum::Get<std::string>(const std::uint32_t index) const
-	{
-		if (index > mSize)
-		{
-			throw std::exception("Going out of bounds!");
-		}
-
-		return mData.string[index];
-	}
-
-	/************************************************************************/
-	template<>
-	std::string& Datum::Get<std::string>(const std::uint32_t index)
-	{
-		if (index > mSize)
-		{
-			throw std::exception("Going out of bounds!");
-		}
-
-		return mData.string[index];
-	}
-
-	/************************************************************************/
-	template<>
-	RTTI* const & Datum::Get<RTTI*>(const std::uint32_t index) const
-	{
-		if (index > mSize)
-		{
-			throw std::exception("Going out of bounds!");
-		}
-
-		return mData.rtti[index];
-	}
-
-	/************************************************************************/
-	template<>
-	RTTI*& Datum::Get<RTTI*>(const std::uint32_t index)
-	{
-		if (index > mSize)
-		{
-			throw std::exception("Going out of bounds!");
-		}
-
-		return mData.rtti[index];
-	}
-
-#pragma endregion
-
-	/************************************************************************/
-	inline bool Datum::IsEmpty() const
-	{
-		return mSize == 0;
 	}
 
 	/************************************************************************/
@@ -1229,4 +1318,7 @@ namespace Library
 				break;
 		}
 	}
+
+#pragma endregion
+
 }

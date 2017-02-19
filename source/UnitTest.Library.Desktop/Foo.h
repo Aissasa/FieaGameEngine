@@ -1,12 +1,14 @@
 #pragma once
 
+//#include "RTTI.h"
+
 namespace UnitTestLibraryDesktop
 {
-	class Foo
+	class Foo /*: public Library::RTTI*/
 	{
 	public:
 		Foo();
-		Foo(int data, int* intPtr);
+		Foo(const int data,int* intPtr);
 		Foo(const Foo& rhs);
 		Foo& operator=(const Foo& rhs);
 		~Foo();
@@ -24,6 +26,10 @@ namespace UnitTestLibraryDesktop
 	{
 	public:
 		std::uint32_t operator()(const Foo& key);
+
+	private:
+		const static std::uint32_t HASH_NUMBER = 31U;
+
 	};
 
 }

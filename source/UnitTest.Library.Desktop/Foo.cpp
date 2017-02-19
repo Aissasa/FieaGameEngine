@@ -2,7 +2,7 @@
 #include "Foo.h"
 
 namespace UnitTestLibraryDesktop
-{
+{ 
 	/************************************************************************/
 	Foo::Foo():
 		Foo(0, nullptr)
@@ -10,7 +10,7 @@ namespace UnitTestLibraryDesktop
 	}
 
 	/************************************************************************/
-	Foo::Foo(int data, int* pointer):
+	Foo::Foo(const int data, int* pointer):
 		mData(data), mIntPtr(pointer)
 	{
 	}
@@ -75,7 +75,7 @@ namespace UnitTestLibraryDesktop
 
 		for (std::uint32_t i = 0; i < sizeof(data); ++i)
 		{
-			hash = hash * 31 + pointer[i];
+			hash = hash * HASH_NUMBER + pointer[i];
 		}
 
 		if (dataPtr)
@@ -84,7 +84,7 @@ namespace UnitTestLibraryDesktop
 
 			for (std::uint32_t i = 0; i < sizeof(*dataPtr); ++i)
 			{
-				hash = hash * 31 + pointer[i];
+				hash = hash * HASH_NUMBER + pointer[i];
 			}
 		}
 
