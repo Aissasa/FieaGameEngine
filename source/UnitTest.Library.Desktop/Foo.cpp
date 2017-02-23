@@ -2,21 +2,21 @@
 #include "Foo.h"
 
 namespace UnitTestLibraryDesktop
-{ 
+{
 	/************************************************************************/
-	Foo::Foo():
+	Foo::Foo() :
 		Foo(0, nullptr)
 	{
 	}
 
 	/************************************************************************/
-	Foo::Foo(const int data, int* pointer):
+	Foo::Foo(const int data, int* pointer) :
 		mData(data), mIntPtr(pointer)
 	{
 	}
 
 	/************************************************************************/
-	Foo::Foo(const Foo& rhs):
+	Foo::Foo(const Foo& rhs) :
 		mData(rhs.mData), mIntPtr(nullptr)
 	{
 		if (rhs.mIntPtr != nullptr)
@@ -48,7 +48,13 @@ namespace UnitTestLibraryDesktop
 	/************************************************************************/
 	bool Foo::operator==(const Foo & rhs) const
 	{
-		return mData==rhs.mData && *mIntPtr==*(rhs.mIntPtr);
+		return mData == rhs.mData && *mIntPtr == *(rhs.mIntPtr);
+	}
+
+	/************************************************************************/
+	bool Foo::operator!=(const Foo & rhs) const
+	{
+		return !(operator==(rhs));
 	}
 
 	/************************************************************************/

@@ -277,6 +277,30 @@ namespace UnitTestLibraryDesktop
 			Assert::IsTrue(hashmap.begin() == it);
 		}
 
+		/************************************************************************/
+		template<typename TKey, typename TData>
+		void HashMapEqualityNonEqualityMethod(TKey tk1, TKey tk2, TData td1, TData td2)
+		{
+			HashMap<TKey, TData> map1;
+			HashMap<TKey, TData> map2;
+
+			std::pair<const TKey, TData> pair1(tk1, td1);
+			std::pair<const TKey, TData> pair2(tk2, td2);
+
+			map1.Insert(pair1);
+			map1.Insert(pair2);
+			map2.Insert(pair1);
+			map2.Insert(pair2);
+
+			Assert::IsTrue(map1 == map2);
+			Assert::IsFalse(map1 != map2);
+
+			map2.Remove(tk1);
+			Assert::IsFalse(map1 == map2);
+			Assert::IsTrue(map1 != map2);
+		}
+
+
 #pragma endregion
 
 #pragma region Test Methods
@@ -759,13 +783,92 @@ namespace UnitTestLibraryDesktop
 			Foo foo1(n1, n3);
 			Foo foo2(n2, n4);
 
-			HashMap<Foo, Foo> hashmap;
+			HashMap<Foo, Foo, FooHashFunctor> hashmap;
 			Assert::IsTrue(hashmap.begin() == hashmap.end());
 
 			std::pair<const Foo, Foo> pair(foo1, foo2);
 			auto it = hashmap.Insert(pair);
 
 			Assert::IsTrue(hashmap.begin() == it);
+		}
+
+		/************************************************************************/
+		TEST_METHOD(HashMapEqualityNonEqualityTestMethod)
+		{
+			// uint
+			std_uint32 a1 = 5;
+			std_uint32 a2 = 6;
+			std_uint32 a3 = 9;
+			std_uint32 a4 = 2;
+			HashMapEqualityNonEqualityMethod(a1, a2, a3, a4);
+
+			// uint ptr
+			std_uint32* numPtr1 = new std_uint32(5);
+			std_uint32* numPtr2 = new std_uint32(9);
+			std_uint32* numPtr3 = new std_uint32(98);
+			std_uint32* numPtr4 = new std_uint32(45);
+			HashMapEqualityNonEqualityMethod(numPtr1, numPtr2, numPtr3, numPtr4);
+			delete numPtr1;
+			delete numPtr2;
+			delete numPtr3;
+			delete numPtr4;
+
+			// char
+			std_uchar c1 = 'g';
+			std_uchar c2 = 'p';
+			std_uchar c3 = 'v';
+			std_uchar c4 = 'a';
+			HashMapEqualityNonEqualityMethod(c1, c2, c3, c4);
+
+			// char*
+			char* ch1 = "Yo";
+			char* ch2 = "Hello World";
+			char* ch3 = "Yo yo";
+			char* ch4 = "Yo paul";
+			HashMapEqualityNonEqualityMethod(ch1, ch2, ch3, ch4);
+
+			// string
+			std::string str1 = "yo yo";
+			std::string str2 = "hello Paul";
+			std::string str3 = "yo yo yo";
+			std::string str4 = "yo yo tom";
+			HashMapEqualityNonEqualityMethod(str1, str2, str3, str4);
+
+			HashMapEqualityNonEqualityMethod(str1, str2, a1, a2);
+			HashMapEqualityNonEqualityMethod(a2, a3, str2, str3);
+
+			// foo
+			int n1 = 6;
+			int n2 = 9;
+			int n3 = 89;
+			int n4 = 5;
+			int* n5 = new int(8);
+			int* n6 = new int(564);
+			int* n7 = new int(9);
+			int* n8 = new int(1);
+
+			Foo foo1(n1, n5);
+			Foo foo2(n2, n6);
+			Foo foo3(n3, n7);
+			Foo foo4(n4, n8);
+
+			HashMap<Foo, Foo, FooHashFunctor> map1;
+			HashMap<Foo, Foo, FooHashFunctor> map2;
+
+			std::pair<const Foo, Foo> pair1(foo1, foo3);
+			std::pair<const Foo, Foo> pair2(foo2, foo4);
+
+			map1.Insert(pair1);
+			map1.Insert(pair2);
+			map2.Insert(pair1);
+			map2.Insert(pair2);
+
+			Assert::IsTrue(map1 == map2);
+			Assert::IsFalse(map1 != map2);
+
+			map2.Remove(foo1);
+			Assert::IsFalse(map1 == map2);
+			Assert::IsTrue(map1 != map2);
 		}
 
 

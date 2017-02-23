@@ -17,10 +17,16 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Datum.h">
       <Filter>Runtime</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Scope.h">
+      <Filter>Runtime</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Datum.cpp">
+      <Filter>Runtime</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Scope.cpp">
       <Filter>Runtime</Filter>
     </ClCompile>
   </ItemGroup>

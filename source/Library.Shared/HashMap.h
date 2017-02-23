@@ -232,6 +232,14 @@ namespace Library
 		*/
 		Iterator Insert(const PairType & pair);
 
+		/** Adds a new pair to the HashMap.
+		* If the HashMap already contains the passed key, an iterator to the pair of that key is returned.
+		* @param pair: Pair to add to the HashMap.
+		* @param gotInserted: Boolean that expresses if the pair got inserted or not
+		* @return Iterator to the added pair or the already existent pair.
+		*/
+		Iterator Insert(const PairType & pair, bool& gotInserted);
+
 		/** HashMap const version of the bracket operator overloading method.
 		* It returns the value of the passed key.
 		* @exception It throws an exception if the key does not exist.
@@ -274,6 +282,18 @@ namespace Library
 		/** Determines if the HashMap is empty.
 		*/
 		bool IsEmpty() const;
+
+		/** HashMap equal operator overloading method.
+		* @param rhs: HashMap to compare to.
+		* @return Result of the equality comparison.
+		*/
+		bool operator==(const HashMap& rhs) const;
+
+		/** HashMap not equal operator overloading method.
+		* @param rhs: HashMap to compare to.
+		* @return Result of the non equality comparison.
+		*/
+		bool operator!=(const HashMap& rhs) const;
 
 		/** Returns an iterator to the first pair in the HashMap.
 		* @return Iterator to the first element in the HashMap.

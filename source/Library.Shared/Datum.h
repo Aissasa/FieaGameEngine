@@ -4,6 +4,7 @@
 
 namespace Library
 {
+	class Scope;
 
 	/** Datum is a data structure that can store one of multiple types in a contiguous manner.
 	 */
@@ -20,11 +21,12 @@ namespace Library
 			glm::mat4x4* matrix4x4;
 			std::string* string;
 			RTTI** rtti;
+			Scope** scope;
 		};
 
 	public:
 
-		/** This enumeration represents the possible types data the Datum can store.
+		/** This enumeration represents the possible types of data the Datum can store.
 		 * Unknown represents the state where no type is used.
 		 */
 		enum class DatumType
@@ -35,14 +37,15 @@ namespace Library
 			Vector,
 			Matrix,
 			String,
-			Pointer
+			Pointer,
+			Table
 		};
 
 #pragma region Ctors and dtor
 		/** Datum default constructor.
 		 * It creates and initializes the datum data structure.
 		 */
-		Datum();
+		Datum(DatumType type = DatumType::Unknown);
 
 		/** Datum destructor.
 		 * If it holds internal storage, it clears it.
@@ -113,6 +116,14 @@ namespace Library
 		*/
 		Datum& operator=(RTTI *const& rhs);
 
+		/** Datum Scope Scalar Assignment Operator.
+		* It sets the first element in the datum to the right hand side Scope.
+		* @param rhs: Assignee Scope.
+		* @see Set
+		* @see Scope
+		*/
+		Datum& operator=(Scope *const& rhs);
+
 #pragma endregion
 
 #pragma region Opertaor== and operator!=
@@ -179,6 +190,16 @@ namespace Library
 		*/
 		bool operator==(const RTTI* const & rhs) const;
 
+		/** Datum Scope Scalar Equality Operator.
+		* It compares the first element in the datum to the right hand side Scope.
+		* @exception If the datum type is not Scope, an exception is thrown.
+		* @exception If the datum is empty, an exception is thrown.
+		* @param rhs: Scope to compare to.
+		* @see IsEmpty
+		* @see Scope
+		*/
+		bool operator==(const Scope* const & rhs) const;
+
 		/** Datum Non Equality Operator.
 		* It compares the type, the size and then each element of the datums to check equality.
 		* @exception If either side has an invalid type, an exception is thrown.
@@ -241,6 +262,26 @@ namespace Library
 		*/
 		bool operator!=(const RTTI* const & rhs) const;
 
+		/** Datum Scope Scalar Non Equality Operator.
+		* It compares the first element in the datum to the right hand side Scope.
+		* @exception If the datum type is not Scope, an exception is thrown.
+		* @exception If the datum is empty, an exception is thrown.
+		* @param rhs: Scope to compare to.
+		* @see IsEmpty
+		* @see Scope
+		*/
+		bool operator!=(const Scope* const & rhs) const;
+
+#pragma endregion
+
+#pragma region Special Operator[]
+
+		/** Grants access to nested scopes.
+		* @param index: Index of the nested scope to get.
+		* @return Reference to the wanted scope.
+		*/
+		Scope& operator[](std::uint32_t index);
+
 #pragma endregion
 
 #pragma region Type and size
@@ -287,6 +328,16 @@ namespace Library
 		* @exception If the datum has external storage, an exception is thrown.
 		*/
 		void PopBack();
+
+		/** Removes a certain element from the datum.
+		* If the datum is empty, nothing happens.
+		* @param index: Index of the entry to remove.
+		* @param deleteIt: Boolean determining if the entry should be deleted or not.
+		* @exception If the datum has external storage, an exception is thrown.
+		* @exception If the index is invalid, an exception is thrown.
+		*/
+		void Remove(std::uint32_t index ,bool deleteIt = true);
+
 
 #pragma endregion
 
@@ -406,15 +457,26 @@ namespace Library
 		void Set(const std::string& rhs, const std::uint32_t index = 0);
 
 		/** Sets a certain element in the datum.
-		* If the datum type is not set to a valid type yet, it is set to RTTI.
+		* If the datum type is not set to a valid type yet, it is set to Pointer.
 		* If the index points to the slot after the last element, rhs is pushed back.
-		* @exception If the datum type is not RTTI, an exception is thrown.
+		* @exception If the datum type is not Pointer, an exception is thrown.
 		* @exception If the index is invalid, an exception is thrown.
 		* @param rhs: The element to set.
 		* @param index: The slot to set. 0 by default
 		* @see PushBack
 		*/
 		void Set(RTTI*const & rhs, const std::uint32_t index = 0);
+
+		/** Sets a certain element in the datum.
+		* If the datum type is not set to a valid type yet, it is set to Table.
+		* If the index points to the slot after the last element, rhs is pushed back.
+		* @exception If the datum type is not Table, an exception is thrown.
+		* @exception If the index is invalid, an exception is thrown.
+		* @param rhs: The element to set.
+		* @param index: The slot to set. 0 by default
+		* @see PushBack
+		*/
+		void Set(Scope*const & rhs, const std::uint32_t index = 0);
 
 #pragma endregion
 
@@ -505,11 +567,19 @@ namespace Library
 
 		/** Add an element to the back of the datum.
 		* It grows the datum capacity if needed.
-		* If the datum type is not set to a valid type yet, it is set to RTTI.
-		* @exception If the datum type is not RTTI, an exception is thrown.
-		* @param rhs: The new RTTI to add.
+		* If the datum type is not set to a valid type yet, it is set to Pointer.
+		* @exception If the datum type is not Pointer, an exception is thrown.
+		* @param rhs: The new Pointer to add.
 		*/
 		void PushBack(RTTI *const & rhs);
+
+		/** Add an element to the back of the datum.
+		* It grows the datum capacity if needed.
+		* If the datum type is not set to a valid type yet, it is set to Pointer.
+		* @exception If the datum type is not Table, an exception is thrown.
+		* @param rhs: The new Table to add.
+		*/
+		void PushBack(Scope *const & rhs);
 
 #pragma endregion
 
@@ -642,6 +712,7 @@ namespace Library
 	* @exception If the index is invalid, an exception is thrown.
 	* @param index: The slot to get.
 	* @return The wanted RTTI.
+	* @see RTTI
 	*/
 	template<>
 	const RTTI* const & Datum::Get<const RTTI*>(const std::uint32_t index) const;
@@ -651,8 +722,30 @@ namespace Library
 	* @exception If the index is invalid, an exception is thrown.
 	* @param index: The slot to get.
 	* @return The wanted RTTI.
+	* @see RTTI
 	*/
 	template<>
 	RTTI*& Datum::Get<RTTI*>(const std::uint32_t index);
+
+	/** Gets an element from the datum.
+	* This is the Scope template specialization of get.
+	* @exception If the index is invalid, an exception is thrown.
+	* @param index: The slot to get.
+	* @return The wanted Scope.
+	* @see Scope
+	*/
+	template<>
+	const Scope* const & Datum::Get<const Scope*>(const std::uint32_t index) const;
+
+	/** Gets an element from the datum.
+	* This is the Scope template specialization of get.
+	* @exception If the index is invalid, an exception is thrown.
+	* @param index: The slot to get.
+	* @return The wanted Scope.
+	* @see Scope
+	*/
+	template<>
+	Scope*& Datum::Get<Scope*>(const std::uint32_t index);
+
 
 }

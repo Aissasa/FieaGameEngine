@@ -182,6 +182,15 @@ typename HashMap<TKey, TData, HashFunctor>::Iterator HashMap<TKey, TData, HashFu
 template<typename TKey, typename TData, typename HashFunctor>
 typename HashMap<TKey, TData, HashFunctor>::Iterator HashMap<TKey, TData, HashFunctor>::Insert(const PairType & pair)
 {
+	bool inserted;
+	return Insert(pair, inserted);
+}
+
+/************************************************************************/
+template<typename TKey, typename TData, typename HashFunctor>
+typename HashMap<TKey, TData, HashFunctor>::Iterator HashMap<TKey, TData, HashFunctor>::Insert(const PairType & pair, bool & gotInserted)
+{
+	gotInserted = false;
 	std::uint32_t bucket;
 	Iterator it = Find(pair.first, bucket);
 	if (it == end())
@@ -189,9 +198,18 @@ typename HashMap<TKey, TData, HashFunctor>::Iterator HashMap<TKey, TData, HashFu
 		ChainType::Iterator chainIterator = mBuckets[bucket].PushBack(pair);
 		++mSize;
 		it = Iterator(this, bucket, chainIterator);
+		gotInserted = true;
 	}
 	return it;
 }
+
+///************************************************************************/
+//template<typename TKey, typename TData, typename HashFunctor>
+//typename HashMap<TKey, TData, HashFunctor>::Iterator HashMap<TKey, TData, HashFunctor>::Replace(const PairType & pair)
+//{
+//	Remove(pair.first);
+//	return Insert(pair);
+//}
 
 /************************************************************************/
 template<typename TKey, typename TData, typename HashFunctor>
@@ -260,6 +278,37 @@ template<typename TKey, typename TData, typename HashFunctor>
 inline bool HashMap<TKey, TData, HashFunctor>::IsEmpty() const
 {
 	return mSize == 0;
+}
+
+/************************************************************************/
+template<typename TKey, typename TData, typename HashFunctor>
+bool HashMap<TKey, TData, HashFunctor>::operator==(const HashMap & rhs) const
+{
+	if (mSize != rhs.mSize)
+	{
+		return false;
+	}
+
+	bool result = true;
+	auto it2 = rhs.begin();
+	for (auto it1 = begin(); it1 != end(); ++it1)
+	{
+		if (*it1 != *it2)
+		{
+			result = false;
+			break;
+		}
+		++it2;
+	}
+
+	return result;
+}
+
+/************************************************************************/
+template<typename TKey, typename TData, typename HashFunctor>
+bool HashMap<TKey, TData, HashFunctor>::operator!=(const HashMap & rhs) const
+{
+	return !(operator==(rhs));
 }
 
 /************************************************************************/

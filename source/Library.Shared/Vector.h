@@ -253,9 +253,26 @@ namespace Library
 		bool Remove(const Iterator& first, const Iterator& last);
 
 		/** Vector clear method.
-		* It goes through the vector and deletes its elements.
+		* It goes through the vector and deletes its elements and resets the capacity.
 		*/
 		void Clear();
+
+		/** Empties the vector while keeping the capacity.
+		* It goes through the vector and deletes its elements.
+		*/
+		void Empty();
+
+		/** Vector equal operator overloading method.
+		* @param rhs: Vector to compare to.
+		* @return Result of the equality comparison.
+		*/
+		bool operator==(const Vector& rhs) const;
+
+		/** Vector not equal operator overloading method.
+		* @param rhs: Vector to compare to.
+		* @return Result of the non equality comparison.
+		*/
+		bool operator!=(const Vector& rhs) const;
 
 		/** Returns an iterator to the first element in the vector.
 		* @return Iterator to the first element in the vector.

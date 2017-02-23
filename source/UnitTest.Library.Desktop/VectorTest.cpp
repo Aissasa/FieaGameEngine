@@ -170,6 +170,30 @@ namespace UnitTestLibraryDesktop
 
 #pragma region Vector
 
+#pragma region Templates
+
+		template<typename T>
+		void EqualityAndNonEqualityTemplate(T t1, T t2)
+		{
+			Vector<T> vect;
+			Vector<T> vect2;
+
+			vect.PushBack(t1);
+			vect.PushBack(t2);
+			vect2.PushBack(t1);
+			vect2.PushBack(t2);
+
+			Assert::IsTrue(vect == vect2);
+			Assert::IsFalse(vect != vect2);
+
+			vect2.PopBack();
+			Assert::IsFalse(vect == vect2);
+			Assert::IsTrue(vect != vect2);
+
+		}
+
+#pragma endregion
+
 		TEST_METHOD(VectorConstructorsTest)
 		{
 			// primitive type test
@@ -1108,6 +1132,19 @@ namespace UnitTestLibraryDesktop
 			fooVect.PushBack(foo2);
 			fooVect.Clear();
 			Assert::IsTrue(fooVect.IsEmpty());
+		}
+
+		TEST_METHOD(EqualityAndNonEqualityTest)
+		{
+			int a1 = 5;
+			int a2 = 9;
+			int* a3 = new int(65);
+			int* a4 = new int(78);
+			Foo f1(a1, a3);
+			Foo f2(a2, a4);
+			EqualityAndNonEqualityTemplate<int>(a1, a2);
+			EqualityAndNonEqualityTemplate<int*>(&a1, &a2);
+			EqualityAndNonEqualityTemplate<Foo>(f1, f2);
 		}
 
 #pragma endregion

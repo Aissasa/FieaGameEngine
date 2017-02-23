@@ -14,6 +14,7 @@ namespace UnitTestLibraryDesktop
 		~Foo();
 
 		bool operator==(const Foo& rhs) const;
+		bool operator!=(const Foo& rhs) const;
 		int Data() const;
 		int* IntPtr() const;
 

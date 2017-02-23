@@ -9,7 +9,6 @@ template<typename T>
 Vector<T>::Iterator::Iterator(const Vector* owner, std::uint32_t index) :
 	mOwner(owner), mIndex(index)
 {
-	// todo add bool fixed size that inits the vector
 }
 
 /************************************************************************/
@@ -207,7 +206,7 @@ bool Vector<T>::Reserve(std::uint32_t newCapacity)
 	else
 	{
 		mFront = static_cast<T*>(realloc(mFront, newCapacity * sizeof(T)));
-		Assert::IsNotNull(mFront);
+		//Assert::IsNotNull(mFront);
 		mCapacity = newCapacity;
 		return true;
 	}
@@ -396,13 +395,50 @@ bool Vector<T>::Remove(const Iterator & first, const Iterator & last)
 template<typename T>
 void Vector<T>::Clear()
 {
+	Empty();
+	free(mFront);
+	mFront = nullptr;
+	mCapacity = 0;
+}
+
+/************************************************************************/
+template<typename T>
+void Vector<T>::Empty()
+{
 	while (!IsEmpty())
 	{
 		PopBack();
 	}
-	free(mFront);
-	mFront = nullptr;
-	mCapacity = 0;
+}
+
+/************************************************************************/
+template<typename T>
+bool Vector<T>::operator==(const Vector & rhs) const
+{
+	if (mSize != rhs.mSize)
+	{
+		return false;
+	}
+	bool result = true;
+	auto it2 = rhs.begin();
+	for (auto it1 = begin(); it1 != end(); ++it1)
+	{
+		if (*it1 != *it2)
+		{
+			result = false;
+			break;
+		}
+		++it2;
+	}
+
+	return result;
+}
+
+/************************************************************************/
+template<typename T>
+bool Vector<T>::operator!=(const Vector & rhs) const
+{
+	return !(operator==(rhs));
 }
 
 /************************************************************************/

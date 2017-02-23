@@ -7,8 +7,8 @@ namespace Library
 #pragma region Ctors and dtor
 
 	/************************************************************************/
-	Datum::Datum() :
-		mCurrentType(DatumType::Unknown), mSize(0), mCapacity(0), mExternalStorage(false)
+	Datum::Datum(DatumType type) :
+		mCurrentType(type), mSize(0), mCapacity(0), mExternalStorage(false)
 	{
 		mData.theVoid = nullptr;
 	}
@@ -42,7 +42,7 @@ namespace Library
 #pragma region Operator=
 
 	/************************************************************************/
-	Datum & Datum::operator=(const Datum & rhs)
+	Datum& Datum::operator=(const Datum & rhs)
 	{
 		if (this != &rhs)
 		{
@@ -113,6 +113,13 @@ namespace Library
 
 	/************************************************************************/
 	Datum& Datum::operator=(RTTI *const& rhs)
+	{
+		Set(rhs);
+		return *this;
+	}
+
+	/************************************************************************/
+	Datum & Datum::operator=(Scope * const & rhs)
 	{
 		Set(rhs);
 		return *this;
@@ -197,6 +204,17 @@ namespace Library
 				for (std::uint32_t i = 0; i < mSize; i++)
 				{
 					result = mData.rtti[i] == rhs.mData.rtti[i];
+					if (!result)
+					{
+						break;
+					}
+				}
+				break;
+
+			case DatumType::Table:
+				for (std::uint32_t i = 0; i < mSize; i++)
+				{
+					result = mData.scope[i] == rhs.mData.scope[i];
 					if (!result)
 					{
 						break;
@@ -305,6 +323,23 @@ namespace Library
 	}
 
 	/************************************************************************/
+	bool Datum::operator==(const Scope * const & rhs) const
+	{
+		if (mCurrentType != DatumType::Table)
+		{
+			throw std::exception("Invalid data type!");
+		}
+
+		if (IsEmpty())
+		{
+			throw std::exception("The Datum is empty!");
+		}
+
+		return mData.scope[0] == rhs;
+
+	}
+
+	/************************************************************************/
 	bool Datum::operator!=(const Datum & rhs) const
 	{
 		return !(operator==(rhs));
@@ -344,6 +379,22 @@ namespace Library
 	bool Datum::operator!=(const RTTI *const& rhs) const
 	{
 		return !(operator==(rhs));
+	}
+
+	/************************************************************************/
+	bool Datum::operator!=(const Scope * const & rhs) const
+	{
+		return !(operator==(rhs));
+	}
+
+#pragma endregion
+
+#pragma region Special Operator[]
+
+	/************************************************************************/
+	Scope & Datum::operator[](std::uint32_t index)
+	{
+		return *Get<Scope*>(index);
 	}
 
 #pragma endregion
@@ -438,6 +489,14 @@ namespace Library
 						PushBack(*r);
 					}
 					break;
+
+				case DatumType::Table:
+					for (uint32_t i = 0; i < diff; ++i)
+					{
+						auto r = new Scope*();
+						PushBack(*r);
+					}
+					break;
 			}
 		}
 		else
@@ -502,6 +561,117 @@ namespace Library
 
 				case DatumType::Pointer:
 					mData.rtti[--mSize]->~RTTI();
+					break;
+
+				case DatumType::Table:
+					// note: The parent scope cannot clear its children.
+					--mSize;
+					break;
+			}
+		}
+	}
+
+	/************************************************************************/
+	void Datum::Remove(std::uint32_t index, bool deleteIt)
+	{
+		if (mExternalStorage)
+		{
+			throw std::exception("This datum has external storage. Cannot free external storage.");
+		}
+
+		if (index >= mSize)
+		{
+			throw std::out_of_range("Going out of range!");
+		}
+
+		std::uint32_t size = 0;
+
+		if (!IsEmpty())
+		{
+			switch (mCurrentType)
+			{
+				case DatumType::Integer:
+					size = (mSize - index - 1) * sizeof(*mData.integer);
+					if (size > 0)
+					{
+						memmove(&mData.integer[index], &mData.integer[index + 1], size);
+					}
+					--mSize;
+					break;
+
+				case DatumType::Float:
+					size = (mSize - index - 1) * sizeof(*mData.floatt);
+					if (size > 0)
+					{
+						memmove(&mData.floatt[index], &mData.floatt[index + 1], size);
+					}
+					--mSize;
+					break;
+
+				case DatumType::Vector:
+					if (deleteIt)
+					{
+						mData.vect4[index].glm::vec4::~vec4();
+					}
+					size = (mSize - index - 1) * sizeof(*mData.vect4);
+					if (size > 0)
+					{
+						memmove(&mData.vect4[index], &mData.vect4[index + 1], size);
+					}
+					--mSize;
+
+					break;
+
+				case DatumType::Matrix:
+					if (deleteIt)
+					{
+						mData.matrix4x4[index].glm::mat4x4::~mat4x4();
+					}
+					size = (mSize - index - 1) * sizeof(*mData.matrix4x4);
+					if (size > 0)
+					{
+						memmove(&mData.matrix4x4[index], &mData.matrix4x4[index + 1], size);
+					}
+					--mSize;
+
+					break;
+
+				case DatumType::String:
+					if (deleteIt)
+					{
+						mData.string[index].std::string::~string();
+					}
+					size = (mSize - index - 1) * sizeof(*mData.string);
+					if (size > 0)
+					{
+						memmove(&mData.string[index], &mData.string[index + 1], size);
+					}
+					--mSize;
+
+					break;
+
+				case DatumType::Pointer:
+					if (deleteIt)
+					{
+						mData.rtti[index]->~RTTI();
+					}
+					size = (mSize - index - 1) * sizeof(*mData.rtti);
+					if (size > 0)
+					{
+						memmove(&mData.rtti[index], &mData.rtti[index + 1], size);
+					}
+					--mSize;
+
+					break;
+
+				case DatumType::Table:
+					// cannot call dtor from here
+					size = (mSize - index - 1) * sizeof(*mData.rtti);
+					if (size > 0)
+					{
+						memmove(&mData.rtti[index], &mData.rtti[index + 1], size);
+					}
+					--mSize;
 					break;
 			}
 		}
@@ -785,6 +955,37 @@ namespace Library
 		}
 	}
 
+	/************************************************************************/
+	void Datum::Set(Scope * const & rhs, const std::uint32_t index)
+	{
+		if (mCurrentType == DatumType::Unknown)
+		{
+			mCurrentType = DatumType::Table;
+		}
+
+		if (mCurrentType != DatumType::Table)
+		{
+			throw std::exception("Invalid data type assignment!");
+		}
+
+		if (index < mSize)
+		{
+			mData.scope[index] = rhs;
+		}
+		else
+		{
+			if (index == mSize)
+			{
+				PushBack(rhs);
+			}
+			else
+			{
+				throw std::exception("Invalid index");
+			}
+		}
+
+	}
+
 #pragma endregion
 
 #pragma region String related methods
@@ -875,6 +1076,10 @@ namespace Library
 			case DatumType::Pointer:
 				throw std::exception("Cannot set a value of this datum from a string.");
 				break;
+
+			case DatumType::Table:
+				throw std::exception("Cannot set a value of this datum from a string.");
+				break;
 		}
 	}
 
@@ -906,6 +1111,11 @@ namespace Library
 				break;
 
 			case DatumType::Pointer:
+				str = Get<RTTI*>(index)->ToString();
+				break;
+
+			case DatumType::Table:
+				// urgent using rtti to string
 				str = Get<RTTI*>(index)->ToString();
 				break;
 		}
@@ -1036,6 +1246,26 @@ namespace Library
 			Reserve(std::max(mCapacity * 2, 1u));
 		}
 		new(mData.rtti + mSize++)RTTI*(rhs);
+	}
+
+	/************************************************************************/
+	void Datum::PushBack(Scope * const & rhs)
+	{
+		if (mCurrentType == DatumType::Unknown)
+		{
+			mCurrentType = DatumType::Table;
+		}
+
+		if (mCurrentType != DatumType::Table)
+		{
+			throw std::exception("Invalid data type assignment!");
+		}
+
+		if (mSize == mCapacity)
+		{
+			Reserve(std::max(mCapacity * 2, 1u));
+		}
+		new(mData.scope + mSize++)Scope*(rhs);
 	}
 
 #pragma endregion
@@ -1185,6 +1415,31 @@ namespace Library
 
 		return mData.rtti[index];
 	}
+
+	/************************************************************************/
+	template<>
+	Scope* const & Datum::Get<Scope*>(const std::uint32_t index) const
+	{
+		if (index >= mSize)
+		{
+			throw std::out_of_range("Going out of bounds!");
+		}
+
+		return mData.scope[index];
+	}
+
+	/************************************************************************/
+	template<>
+	Scope*& Datum::Get<Scope*>(const std::uint32_t index)
+	{
+		if (index >= mSize)
+		{
+			throw std::out_of_range("Going out of bounds!");
+		}
+
+		return mData.scope[index];
+	}
+
 
 #pragma endregion
 
