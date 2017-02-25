@@ -33,8 +33,11 @@ namespace Library
 		Datum()
 	{
 		mCurrentType = rhs.mCurrentType;
-		Reserve(rhs.mCapacity);
-		DeepCopy(rhs);
+		if (mCurrentType != DatumType::Unknown)
+		{
+			Reserve(rhs.mCapacity);
+			DeepCopy(rhs);
+		}
 	}
 
 #pragma endregion
@@ -392,7 +395,7 @@ namespace Library
 #pragma region Special Operator[]
 
 	/************************************************************************/
-	Scope & Datum::operator[](std::uint32_t index)
+	Scope& Datum::operator[](std::uint32_t index)
 	{
 		return *Get<Scope*>(index);
 	}
@@ -666,11 +669,15 @@ namespace Library
 
 				case DatumType::Table:
 					// cannot call dtor from here
-					size = (mSize - index - 1) * sizeof(*mData.rtti);
+					size = (mSize - index - 1) * sizeof(*mData.scope);
 					if (size > 0)
 					{
-						memmove(&mData.rtti[index], &mData.rtti[index + 1], size);
+						memmove(&mData.scope[index], &mData.scope[index + 1], size);
 					}
+ 					else
+ 					{
+ 						mData.scope[index] = nullptr;
+ 					}
 					--mSize;
 					break;
 			}
@@ -1245,7 +1252,7 @@ namespace Library
 		{
 			Reserve(std::max(mCapacity * 2, 1u));
 		}
-		new(mData.rtti + mSize++)RTTI*(rhs);
+		mData.rtti[mSize++] = rhs;
 	}
 
 	/************************************************************************/
@@ -1265,7 +1272,7 @@ namespace Library
 		{
 			Reserve(std::max(mCapacity * 2, 1u));
 		}
-		new(mData.scope + mSize++)Scope*(rhs);
+		mData.scope[mSize++] = rhs;
 	}
 
 #pragma endregion
@@ -1470,6 +1477,10 @@ namespace Library
 	/************************************************************************/
 	bool Datum::Reserve(const std::uint32_t newCapacity)
 	{
+		if (newCapacity == 0)
+		{
+			return false;
+		}
 		if (mExternalStorage)
 		{
 			throw std::exception("This datum has external storage. Cannot reserve memory for it.");
@@ -1509,6 +1520,10 @@ namespace Library
 
 				case DatumType::Pointer:
 					mData.theVoid = realloc(mData.theVoid, newCapacity * sizeof(RTTI*));
+					break;
+
+				case DatumType::Table:
+					mData.theVoid = realloc(mData.theVoid, newCapacity * sizeof(Scope*));
 					break;
 			}
 			mCapacity = newCapacity;

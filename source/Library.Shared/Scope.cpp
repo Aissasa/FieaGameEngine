@@ -1,7 +1,5 @@
 #include "pch.h"
-#include "HashMap.h"
 #include "Vector.h"
-#include "Datum.h"
 #include "Scope.h"
 
 using namespace std;
@@ -10,9 +8,13 @@ namespace Library
 {
 	RTTI_DEFINITIONS(Scope);
 
+	typedef HashMap<std::string, Datum>::Iterator HashMapIterator;
+	typedef Vector<HashMapIterator>::Iterator VectorIterator;
+	typedef std::pair<const string, Datum> StringDatumPair;
+
 	/************************************************************************/
 	Scope::Scope(uint32_t tableSize) :
-		mTable(HashMap<const string, Datum>(tableSize)), mVect(Vector<HashMapIterator>()), mParentScope(nullptr)
+		mTable(HashMap<string, Datum>(tableSize)), mVect(Vector<HashMapIterator>()), mParentScope(nullptr)
 	{
 	}
 
@@ -23,7 +25,7 @@ namespace Library
 	}
 
 	/************************************************************************/
-	Scope::Scope(const Scope & rhs):
+	Scope::Scope(const Scope & rhs) :
 		mParentScope(nullptr)
 	{
 		operator=(rhs);
@@ -38,7 +40,7 @@ namespace Library
 			// go through all the entries in the vector
 			for (VectorIterator it = rhs.mVect.begin(); it != rhs.mVect.end(); ++it)
 			{
-				StringDatumPair p = *(*it);
+				StringDatumPair& p = *(*it);
 				if (p.second.Type() == Datum::DatumType::Table)
 				{
 					for (uint32_t i = 0; i < p.second.Size(); ++i)
@@ -51,7 +53,7 @@ namespace Library
 				}
 				else
 				{
-					Datum& dat = Append(p.first);
+					Datum& dat = Append(p.first, p.second.Type());
 					dat = p.second;
 				}
 			}
@@ -95,21 +97,24 @@ namespace Library
 		}
 		else
 		{
-			*foundScope = nullptr;
+			if (foundScope)
+			{
+				*foundScope = nullptr;
+			}
 			return nullptr;
 		}
 	}
 
 	/************************************************************************/
-	Datum& Scope::Append(const string & str)
+	Datum& Scope::Append(const string & str, Datum::DatumType type)
 	{
 		if (str.empty())
 		{
 			throw invalid_argument("The key shouldn't be an empty string.");
 		}
 		bool inserted = false;
-		HashMapIterator it = mTable.Insert(StringDatumPair(str, Datum()), inserted);
-		
+		HashMapIterator it = mTable.Insert(StringDatumPair(str, Datum(type)), inserted);
+
 		// push if actually inserted a new entry
 		if (inserted)
 		{
@@ -129,7 +134,7 @@ namespace Library
 	{
 		if (this == &scope)
 		{
-			throw exception("A scope cannot adopt itself");
+			throw invalid_argument("A scope cannot adopt itself");
 		}
 
 		if (str.empty())
@@ -138,7 +143,7 @@ namespace Library
 		}
 
 		// make sure it does not belong to another scope anymore
-		Orphan();
+		scope.Orphan();
 		AppendScope(str, &scope);
 	}
 
@@ -163,7 +168,51 @@ namespace Library
 	/************************************************************************/
 	bool Scope::operator==(const Scope & rhs) const
 	{
-		return this == &rhs || mParentScope == rhs.mParentScope && mVect == rhs.mVect;
+		if (this == &rhs)
+		{
+			return true;
+		}
+
+		if (mParentScope != rhs.mParentScope || mVect.Size() != rhs.mVect.Size())
+		{
+			return false;
+		}
+		bool same = true;
+
+		auto it1 = mVect.begin();
+		auto it2 = rhs.mVect.begin();
+
+		for (; it1 != mVect.end(); ++it1)
+		{
+			auto v1 = *(*it1);
+			auto v2 = *(*it2);
+
+			// urgent think of a better way to compare datums of scopes
+			if (v1.second.Type() == Datum::DatumType::Table && v2.second.Type() == Datum::DatumType::Table
+				&& v1.second.Size() == v2.second.Size())
+			{
+				if (v1.first != v2.first)
+				{
+					same = false;
+					break;
+				}
+
+				for (uint32_t i = 0; i < v1.second.Size(); ++i)
+				{
+					if (v1.second[i] != v2.second[i])
+					{
+						return false;
+					}
+				}
+			}
+			if (v1 != v2)
+			{
+				same = false;
+				break;
+			}
+			++it2;
+		}
+		return same;
 	}
 
 	/************************************************************************/
@@ -188,24 +237,21 @@ namespace Library
 	/************************************************************************/
 	void Scope::Clear()
 	{
-		// urgent in clear, call orphan, go through the vector, make sure it's not external, 
-		// then call delete on each one of the datums
 		Orphan();
-		
+
 		for (VectorIterator it = mVect.begin(); it != mVect.end(); ++it)
 		{
-			auto p = *(*it);
+			auto& p = *(*it);
 			if (p.second.Type() == Datum::DatumType::Table)
 			{
-				for (uint32_t i = 0; i < p.second.Size(); ++i)
+				auto size = p.second.Size();
+				for (uint32_t i = 0; i < size; ++i)
 				{
-					p.second[i].~Scope();
+					// todo figure this out
+					delete &(p.second[0]);
 				}
 			}
-			else
-			{
-				p.second.Clear();
-			}
+			p.second.Clear();
 		}
 
 		mVect.Empty();
@@ -225,7 +271,25 @@ namespace Library
 	/************************************************************************/
 	std::string Scope::ToString() const
 	{
-		return "Scope";
+		string str;
+		for (VectorIterator it = mVect.begin(); it != mVect.end(); ++it)
+		{
+			auto& dat = (*(*it)).second;
+			uint32_t size = dat.Size();
+			for (uint32_t i = 0; i < size; i++)
+			{
+				if (dat.Type() == Datum::DatumType::Table)
+				{
+					str = str + "\n" + dat.ToString(i);
+
+				}
+				else
+				{
+					str = str + dat.ToString(i) + "\n";
+				}
+			}
+		}
+		return str;
 	}
 
 	/************************************************************************/
@@ -272,8 +336,9 @@ namespace Library
 				scope = new Scope();
 			}
 			scope->mParentScope = this;
-			Datum dat = Append(str);
-			dat = scope;
+			Datum& dat = Append(str);
+			dat.PushBack(scope);
+
 			return *scope;
 		}
 	}
@@ -303,7 +368,6 @@ namespace Library
 				break;
 			}
 		}
-
 		return removed;
 	}
 }

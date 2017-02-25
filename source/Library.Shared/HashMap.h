@@ -24,7 +24,7 @@ namespace Library
 		 * @param key: Key to hash.
 		 * @return Hash result.
 		 */
-		std::uint32_t operator()(const TKey& key);
+		inline std::uint32_t operator()(const TKey& key);
 
 	private:
 		const static std::uint32_t HASH_NUMBER = 31U;
@@ -44,7 +44,7 @@ namespace Library
 		 * @param key: String to hash.
 		 * @return Hash result.
 		 */
-		std::uint32_t operator()(const std::string& key);
+		inline std::uint32_t operator()(const std::string& key);
 
 	private:
 		const static std::uint32_t HASH_NUMBER = 31U;
@@ -63,7 +63,7 @@ namespace Library
 		* @param key: Char* to hash.
 		* @return Hash result.
 		*/
-		std::uint32_t operator()(const char* key);
+		inline std::uint32_t operator()(const char* key);
 
 	private:
 		const static std::uint32_t HASH_NUMBER = 31U;
@@ -73,7 +73,6 @@ namespace Library
 #pragma endregion
 
 #pragma region HashMap
-
 
 	/** HashMap is a templated hash map that uses chaining.
 	 * HashMap is implemented using a vector of Slists containing a key and a value pair.

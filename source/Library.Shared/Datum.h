@@ -515,7 +515,7 @@ namespace Library
 		*/
 		void SetFromString(const std::string& str, const std::uint32_t index = 0);
 
-		/** Return a string representing a certain data in the datum.
+		/** Returns a string representing a certain data in the datum.
 		* @param index: The slot to print. 0 by default
 		* @see Get
 		*/

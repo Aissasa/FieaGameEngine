@@ -203,14 +203,6 @@ typename HashMap<TKey, TData, HashFunctor>::Iterator HashMap<TKey, TData, HashFu
 	return it;
 }
 
-///************************************************************************/
-//template<typename TKey, typename TData, typename HashFunctor>
-//typename HashMap<TKey, TData, HashFunctor>::Iterator HashMap<TKey, TData, HashFunctor>::Replace(const PairType & pair)
-//{
-//	Remove(pair.first);
-//	return Insert(pair);
-//}
-
 /************************************************************************/
 template<typename TKey, typename TData, typename HashFunctor>
 const TData& HashMap<TKey, TData, HashFunctor>::operator[](const TKey& key) const
