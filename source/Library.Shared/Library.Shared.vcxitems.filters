@@ -20,6 +20,9 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Scope.h">
       <Filter>Runtime</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Attributed.h">
+      <Filter>Runtime</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp" />
@@ -27,6 +30,9 @@
       <Filter>Runtime</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)Scope.cpp">
+      <Filter>Runtime</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Attributed.cpp">
       <Filter>Runtime</Filter>
     </ClCompile>
   </ItemGroup>

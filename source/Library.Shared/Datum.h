@@ -603,9 +603,16 @@ namespace Library
 
 #pragma endregion
 
-	private:
-
+		/** Reallocates memory for the Datum.
+		* It reallocates the current memory of the datum. Only succeeds if the new capacity is more than the old capacity.
+		* @exception An exception is thrown if the datum has external storage.
+		* @exception An exception is thrown if the datum has an invalid type.
+		* @param newCapacity: New desired capacity of the datum.
+		* @return Boolean expressing the success of the reallocation.
+		*/
 		bool Reserve(const std::uint32_t newCapacity);
+
+	private:
 
 		void Empty();
 		void DeepCopy(const Datum& rhs);

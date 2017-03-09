@@ -147,9 +147,9 @@ namespace Library
 		bool Equals(const RTTI* rhs) const override;
 
 	private:
-
 		HashMap<std::string, Datum> mTable;
 		Vector<HashMap<std::string, Datum>::Iterator> mVect;
+
 		Scope* mParentScope;
 		const static std::uint32_t DEFAULT_INITIAL_TABLE_SIZE = 16U;
 

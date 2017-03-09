@@ -247,11 +247,9 @@ namespace Library
 				auto size = p.second.Size();
 				for (uint32_t i = 0; i < size; ++i)
 				{
-					// todo figure this out
 					delete &(p.second[0]);
 				}
 			}
-			p.second.Clear();
 		}
 
 		mVect.Empty();

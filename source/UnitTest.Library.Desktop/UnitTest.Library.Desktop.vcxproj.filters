@@ -20,6 +20,12 @@
     <ClCompile Include="ScopeTest.cpp">
       <Filter>Test Classes</Filter>
     </ClCompile>
+    <ClCompile Include="AttributedTestcpp.cpp">
+      <Filter>Test Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="AttributedFoo.cpp">
+      <Filter>Support Classes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Support Classes">
@@ -32,6 +38,9 @@
   <ItemGroup>
     <ClInclude Include="pch.h" />
     <ClInclude Include="Foo.h">
+      <Filter>Support Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="AttributedFoo.h">
       <Filter>Support Classes</Filter>
     </ClInclude>
   </ItemGroup>

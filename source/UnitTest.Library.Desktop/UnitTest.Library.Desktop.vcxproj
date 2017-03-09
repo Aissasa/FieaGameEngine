@@ -178,6 +178,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AttributedFoo.cpp" />
+    <ClCompile Include="AttributedTestcpp.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="DatumTest.cpp">
       <SubType>
       </SubType>
@@ -204,6 +209,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AttributedFoo.h" />
     <ClInclude Include="Foo.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
