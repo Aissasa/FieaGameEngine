@@ -571,7 +571,7 @@ namespace Library
 		* @exception If the datum type is not Pointer, an exception is thrown.
 		* @param rhs: The new Pointer to add.
 		*/
-		void PushBack(RTTI *const & rhs);
+		void PushBack(RTTI *const rhs);
 
 		/** Add an element to the back of the datum.
 		* It grows the datum capacity if needed.

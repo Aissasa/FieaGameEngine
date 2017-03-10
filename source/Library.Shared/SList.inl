@@ -70,10 +70,9 @@ void SList<T>::PopFront()
 		{
 			mBack = mFront;
 		}
-
 		delete nodeToPop;
 
-		mSize--;
+		--mSize;
 	}
 }
 

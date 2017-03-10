@@ -43,7 +43,8 @@ namespace Library
 				StringDatumPair& p = *(*it);
 				if (p.second.Type() == Datum::DatumType::Table)
 				{
-					for (uint32_t i = 0; i < p.second.Size(); ++i)
+					uint32_t size = p.second.Size();
+					for (uint32_t i = 0; i < size; ++i)
 					{
 						Scope* scope = new Scope();
 						// recursive calls to populate the children scopes
@@ -187,24 +188,30 @@ namespace Library
 			auto v1 = *(*it1);
 			auto v2 = *(*it2);
 
-			// urgent think of a better way to compare datums of scopes
-			if (v1.second.Type() == Datum::DatumType::Table && v2.second.Type() == Datum::DatumType::Table
-				&& v1.second.Size() == v2.second.Size())
+			if (v1.first != v2.first)
 			{
-				if (v1.first != v2.first)
-				{
-					same = false;
-					break;
-				}
+				return false;
+			}
 
+			if (v1.second.Size() != v2.second.Size())
+			{
+				return false;
+			}
+
+			// urgent think of a better way to compare datums of scopes
+			if (v1.second.Type() == Datum::DatumType::Table && v2.second.Type() == Datum::DatumType::Table)
+			{
 				for (uint32_t i = 0; i < v1.second.Size(); ++i)
 				{
 					if (v1.second[i] != v2.second[i])
 					{
-						return false;
+						same = false;
+						break;
 					}
 				}
+				break;
 			}
+
 			if (v1 != v2)
 			{
 				same = false;

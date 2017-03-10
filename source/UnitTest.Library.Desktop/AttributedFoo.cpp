@@ -1,7 +1,6 @@
 #include "pch.h"
 #include "RTTI.h"
 #include "Scope.h"
-#include "Attributed.h"
 #include "AttributedFoo.h"
 
 using namespace std;
@@ -15,7 +14,7 @@ namespace UnitTestLibraryDesktop
 	/************************************************************************/
 	AttributedFoo::AttributedFoo() :
 		Attributed(), mExternalInteger(0), mExternalFloat(0.0f), mExternalVector(vec4()), mExternalMatrix(mat4x4()), mExternalRTTI(this),
-		mExternalIntegerArray{ 0 }, mExternalFloatArray{ 0.0f }, mExternalVectorArray{ vec4() }, mExternalMatrixArray{mat4x4()}, mExternalRTTIArray{this},
+		mExternalIntegerArray{ 0 }, mExternalFloatArray{ 0.0f }, mExternalVectorArray{ vec4() }, mExternalMatrixArray{ mat4x4() }, mExternalRTTIArray{ this },
 		mNestedScope(new Scope())
 	{
 		InitPrescribedAttributes();
@@ -25,27 +24,22 @@ namespace UnitTestLibraryDesktop
 	AttributedFoo::AttributedFoo(const AttributedFoo & rhs) :
 		Attributed(rhs)
 	{
-		InitPrescribedAttributes();
 	}
 
 	/************************************************************************/
 	AttributedFoo & AttributedFoo::operator=(const AttributedFoo & rhs)
 	{
-		Attributed::operator=(rhs);
-		InitPrescribedAttributes();
+		if (this != &rhs)
+		{
+			Attributed::operator=(rhs);
+		}
+
+		return *this;
 	}
 
 	/************************************************************************/
 	void AttributedFoo::InitPrescribedAttributes()
 	{
-		static bool isInitialized = false; // or instances number == 0
-
-		if (!isInitialized)
-		{
-			isInitialized = true;
-			sPrescribedAttributes = HashMap<uint64_t, Vector<string>>();
-		}
-
 		AddExternalAttribute("mExternalInteger", &mExternalInteger, 1);
 		AddExternalAttribute("mExternalFloat", &mExternalFloat, 1);
 		AddExternalAttribute("mExternalVector", &mExternalVector, 1);
@@ -67,13 +61,15 @@ namespace UnitTestLibraryDesktop
 		AddInternalAttribute("InternalString", "", 1);
 		AddInternalAttribute("InternalRTTI", this, 1);
 
+		AddInternalAttribute("InternalIntegerArray", 0, ARRAY_SIZE);
+		AddInternalAttribute("InternalFloatArray", 0.0f, ARRAY_SIZE);
+		AddInternalAttribute("InternalVectorArray", vec4(), ARRAY_SIZE);
+		AddInternalAttribute("InternalMatrixArray", mat4x4(), ARRAY_SIZE);
+		AddInternalAttribute("InternalStringArray", "", ARRAY_SIZE);
+		AddInternalAttribute("InternalRTTIArray", this, ARRAY_SIZE);
+
 		AddNestedScopeAttribute("NestedScope");
 		AddNestedScopeAttribute("NestedScope", mNestedScope);
-	}
-
-	/************************************************************************/
-	void AttributedFoo::UpdateExternalAttributes()
-	{
 	}
 
 }

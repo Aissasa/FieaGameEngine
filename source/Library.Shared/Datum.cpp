@@ -206,6 +206,8 @@ namespace Library
 			case DatumType::Pointer:
 				for (std::uint32_t i = 0; i < mSize; i++)
 				{
+					// urgent change this
+					// result = mData.rtti[i]->Equals(rhs.mData.rtti[i]);
 					result = mData.rtti[i] == rhs.mData.rtti[i];
 					if (!result)
 					{
@@ -488,8 +490,8 @@ namespace Library
 				case DatumType::Pointer:
 					for (uint32_t i = 0; i < diff; ++i)
 					{
-						auto r = new RTTI*();
-						PushBack(*r);
+						RTTI* r = nullptr;
+						PushBack(r);
 					}
 					break;
 
@@ -563,11 +565,10 @@ namespace Library
 					break;
 
 				case DatumType::Pointer:
-					mData.rtti[--mSize]->~RTTI();
+					--mSize;
 					break;
 
 				case DatumType::Table:
-					// note: The parent scope cannot clear its children.
 					--mSize;
 					break;
 			}
@@ -1122,7 +1123,6 @@ namespace Library
 				break;
 
 			case DatumType::Table:
-				// urgent using rtti to string
 				str = Get<RTTI*>(index)->ToString();
 				break;
 		}
@@ -1236,7 +1236,7 @@ namespace Library
 	}
 
 	/************************************************************************/
-	void Datum::PushBack(RTTI * const & rhs)
+	void Datum::PushBack(RTTI * const rhs)
 	{
 		if (mCurrentType == DatumType::Unknown)
 		{

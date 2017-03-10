@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Attributed.h"
+
 namespace UnitTestLibraryDesktop
 {
 
@@ -19,8 +21,6 @@ namespace UnitTestLibraryDesktop
 		void InitPrescribedAttributes() override;
 
 	private:
-
-		void UpdateExternalAttributes();
 
 		const static std::uint32_t ARRAY_SIZE = 3;
 

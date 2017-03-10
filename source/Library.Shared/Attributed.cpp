@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "RTTI.h"
-#include "Scope.h"
 #include "Datum.h"
 #include "HashMap.h"
 #include "Attributed.h"
@@ -9,21 +8,23 @@ using namespace std;
 using namespace glm;
 
 namespace Library
-{	
+{
 	RTTI_DEFINITIONS(Attributed);
+
+	HashMap<uint64_t, Vector<string>> Attributed::sPrescribedAttributes = HashMap<uint64_t, Vector<string>>();
 
 	/************************************************************************/
 	Attributed::Attributed() :
 		Scope()
 	{
-		(*this)["this"] = this;
+		AddInternalAttribute("this", static_cast<RTTI*>(this));
 	}
 
 	/************************************************************************/
-	Attributed::Attributed(const Attributed & rhs):
+	Attributed::Attributed(const Attributed & rhs) :
 		Scope(rhs)
 	{
-		(*this)["this"] = this;
+		(*this)["this"] = static_cast<RTTI*>(this);
 	}
 
 	Attributed& Attributed::operator=(const Attributed & rhs)
@@ -31,7 +32,7 @@ namespace Library
 		if (this != &rhs)
 		{
 			Scope::operator=(rhs);
-			(*this)["this"] = this;
+			(*this)["this"] = static_cast<RTTI*>(this);
 		}
 		return *this;
 	}
@@ -58,10 +59,10 @@ namespace Library
 		for (auto& i : sPrescribedAttributes)
 		{
 			// check current vector if it has the attribute
-			if (i.second.Find(str) == i.second.end())
+			if (i.second.Find(str) != i.second.end())
 			{
 				return true;
-			} 
+			}
 		}
 		return false;
 	}
@@ -100,6 +101,12 @@ namespace Library
 	}
 
 	/************************************************************************/
+	void Attributed::ClearCashedAttributes()
+	{
+		sPrescribedAttributes.Clear();
+	}
+
+	/************************************************************************/
 	Datum & Attributed::AddInternalAttribute(const std::string & name, const std::int32_t initValue, const std::uint32_t size)
 	{
 		if (name.empty())
@@ -110,7 +117,7 @@ namespace Library
 		Datum& datum = Append(name, Datum::DatumType::Integer);
 		InitializeDatum(datum, initValue, size);
 		AddPrescribedAttributeToHashmap(name);
-		
+
 		return datum;
 	}
 

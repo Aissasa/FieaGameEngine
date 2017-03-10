@@ -92,7 +92,7 @@ namespace Library
 		Scope* GetParent() const;
 
 		/** Brackets operator for Scope.
-		* Returns a certain Datum, or creates a new entry in the scope and returns it if none exist with the passed key.
+		* Returns a certain Datum, or creates a new entry in the scope and returns, it if none exists, with the passed key.
 		* @exception : An invalid argument exception is thrown if the passed string is empty.
 		* @param str: The key of the datum to get.
 		* @return A reference to the wanted or newly added Datum.

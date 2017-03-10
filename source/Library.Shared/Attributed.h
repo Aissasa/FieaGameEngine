@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Scope.h"
+
 namespace Library
 {
 	class Attributed: public Scope
@@ -28,9 +30,9 @@ namespace Library
 
 		std::uint32_t AuxiliaryBegin() const;
 
-	protected:
+		static void ClearCashedAttributes();
 
-		static HashMap<std::uint64_t, Vector<std::string>> sPrescribedAttributes;
+	protected:
 
 		virtual void InitPrescribedAttributes() = 0;
 
@@ -53,6 +55,7 @@ namespace Library
 
 	private:
 
+		static HashMap<std::uint64_t, Vector<std::string>> sPrescribedAttributes;
 		template <typename T> void InitializeDatum(Datum& datum, const T& initValue, const std::uint32_t size);
 		void AddPrescribedAttributeToHashmap(const std::string & name);
 	};
