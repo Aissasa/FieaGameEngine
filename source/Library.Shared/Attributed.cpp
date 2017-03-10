@@ -101,7 +101,7 @@ namespace Library
 	}
 
 	/************************************************************************/
-	void Attributed::ClearCashedAttributes()
+	void Attributed::ClearCashedPrescribedAttributes()
 	{
 		sPrescribedAttributes.Clear();
 	}
@@ -289,11 +289,6 @@ namespace Library
 	/************************************************************************/
 	Scope & Attributed::AddNestedScopeAttribute(const std::string & name)
 	{
-		if (name.empty())
-		{
-			throw invalid_argument("The name shouldn't be an empty.");
-		}
-
 		Scope& scope = AppendScope(name);
 		AddPrescribedAttributeToHashmap(name);
 

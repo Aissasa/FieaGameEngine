@@ -6,7 +6,6 @@
 
 namespace Library
 {
-
 	/** Scope forms a hierarchical database with datum.
 	* @see Datum
 	* @see RTTI

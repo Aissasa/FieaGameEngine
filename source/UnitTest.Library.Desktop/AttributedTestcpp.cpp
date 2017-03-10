@@ -77,6 +77,9 @@ namespace UnitTestLibraryDesktop
 		TEST_METHOD(IsAttributeTest)
 		{
 			AttributedFoo attr;
+			auto func1 = [&attr] { attr.IsAttribute(""); };
+			Assert::ExpectException<exception>(func1);
+
 			attr.AppendAuxiliaryAttribute("Test");
 			Assert::IsTrue(attr.IsAttribute("InternalString"));
 			Assert::IsTrue(attr.IsAttribute("mExternalFloat"));
@@ -87,6 +90,9 @@ namespace UnitTestLibraryDesktop
 		TEST_METHOD(IsPrescribedAttributeTest)
 		{
 			AttributedFoo attr;
+			auto func1 = [&attr] { attr.IsPrescribedAttribute(""); };
+			Assert::ExpectException<exception>(func1);
+
 			attr.AppendAuxiliaryAttribute("Test");
 			Assert::IsTrue(attr.IsPrescribedAttribute("InternalString"));
 			Assert::IsTrue(attr.IsPrescribedAttribute("mExternalFloat"));
@@ -98,6 +104,9 @@ namespace UnitTestLibraryDesktop
 		TEST_METHOD(IsAuxiliaryAttributeTest)
 		{
 			AttributedFoo attr;
+			auto func1 = [&attr] { attr.IsAuxiliaryAttribute(""); };
+			Assert::ExpectException<exception>(func1);
+
 			attr.AppendAuxiliaryAttribute("Test");
 			Assert::IsFalse(attr.IsAuxiliaryAttribute("InternalString"));
 			Assert::IsFalse(attr.IsAuxiliaryAttribute("mExternalFloat"));
@@ -109,12 +118,14 @@ namespace UnitTestLibraryDesktop
 		TEST_METHOD(AppendAuxiliaryAttributeTest)
 		{
 			AttributedFoo attr;
+			auto func1 = [&attr] { attr.AppendAuxiliaryAttribute(""); };
+			Assert::ExpectException<exception>(func1);
+
 			attr.AppendAuxiliaryAttribute("Test1");
 			attr.AppendAuxiliaryAttribute("Test2");
 			Assert::IsTrue(attr.IsAuxiliaryAttribute("Test1"));
 			Assert::IsTrue(attr.IsAuxiliaryAttribute("Test2"));
 			Assert::AreEqual(attr.AuxiliaryBegin(), 26U);
-
 		}
 
 #pragma endregion
