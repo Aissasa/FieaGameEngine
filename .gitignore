@@ -13,3 +13,4 @@ source/Library.Desktop/html/
 source/Game.Desktop.DirectX/html/
 build/.vs/
 build/TestResults/
+build/packages/

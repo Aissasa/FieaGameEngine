@@ -3,6 +3,7 @@
 #include "RTTI.h"
 #include "IXmlParseHelper.h"
 #include "Vector.h"
+#include <expat.h>
 
 namespace Library
 {
@@ -16,16 +17,16 @@ namespace Library
 
 		public:
 
-			SharedData();
+			SharedData(XmlParseMaster* xmlParseMaster = nullptr);
 
-			~SharedData() = default;
+			virtual ~SharedData() = default;
 
 			SharedData(const SharedData & rhs) = delete;
 			SharedData& operator=(const SharedData& rhs) = delete;
 
-			virtual SharedData* Clone() = 0;
+			virtual SharedData* Clone();
 
-			void SetXmlParseMaster(const XmlParseMaster*& xmlParseMaster);
+			void SetXmlParseMaster(XmlParseMaster*& xmlParseMaster);
 
 			XmlParseMaster* GetXmlParseMaster() const;
 
@@ -42,9 +43,9 @@ namespace Library
 
 		};
 
-		XmlParseMaster(const SharedData*& sharedData);
+		XmlParseMaster(SharedData*& sharedData);
 
-		~XmlParseMaster();
+		~XmlParseMaster() = default;
 
 		XmlParseMaster(const XmlParseMaster & rhs) = delete;
 		XmlParseMaster& operator=(const XmlParseMaster& rhs) = delete;
@@ -63,17 +64,18 @@ namespace Library
 
 		SharedData* GetSharedData() const;
 
-		void SetSharedData(const SharedData*& sharedData);
+		void SetSharedData(SharedData*& sharedData);
 
 	private:
 
-		void StartElementHandler();
-		void EndElementHandler();
-		void CharDataHandler();
+		static bool StartElementHandler(const std::string& el, const HashMap<std::string, std::string>& attributes);
+		static bool EndElementHandler(const std::string& el);
+		static bool CharDataHandler(const char*& str, const std::uint32_t length);
 
 		SharedData* mSharedData;
 		Vector<IXmlParseHelper> mHelpers;
 		std::string mCashedFileName;
+		XML_Parser mParser;
 	};
 
 }
