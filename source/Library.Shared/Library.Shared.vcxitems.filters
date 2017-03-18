@@ -23,6 +23,12 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Attributed.h">
       <Filter>Runtime</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)XmlParseMaster.h">
+      <Filter>Configuration</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)IXmlParseHelper.h">
+      <Filter>Configuration</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp" />
@@ -35,6 +41,12 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Attributed.cpp">
       <Filter>Runtime</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)XmlParseMaster.cpp">
+      <Filter>Configuration</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)IXmlParseHelper.cpp">
+      <Filter>Configuration</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Containers">
@@ -42,6 +54,9 @@
     </Filter>
     <Filter Include="Runtime">
       <UniqueIdentifier>{da521358-85a0-427e-9c29-67a2ba9651af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Configuration">
+      <UniqueIdentifier>{0aedde78-b6dc-4381-b1bb-57d3edd0b459}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

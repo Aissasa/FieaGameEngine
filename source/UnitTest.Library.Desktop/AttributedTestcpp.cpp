@@ -23,7 +23,7 @@ namespace UnitTestLibraryDesktop
 
 		TEST_METHOD_CLEANUP(Cleanup)
 		{
-			AttributedFoo::ClearCashedAttributes();
+			AttributedFoo::ClearCashedPrescribedAttributes();
 
 			_CrtMemState endMemState, diffMemState;
 			_CrtMemCheckpoint(&endMemState);
