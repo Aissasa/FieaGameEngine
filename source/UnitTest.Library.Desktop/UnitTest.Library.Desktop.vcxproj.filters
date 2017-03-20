@@ -26,6 +26,12 @@
     <ClCompile Include="AttributedFoo.cpp">
       <Filter>Support Classes</Filter>
     </ClCompile>
+    <ClCompile Include="TestSharedData.cpp">
+      <Filter>Support Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="TestXmlParseHelper.cpp">
+      <Filter>Support Classes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Support Classes">
@@ -41,6 +47,12 @@
       <Filter>Support Classes</Filter>
     </ClInclude>
     <ClInclude Include="AttributedFoo.h">
+      <Filter>Support Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="TestXmlParseHelper.h">
+      <Filter>Support Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="TestSharedData.h">
       <Filter>Support Classes</Filter>
     </ClInclude>
   </ItemGroup>

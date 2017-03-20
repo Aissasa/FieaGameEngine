@@ -8,6 +8,8 @@
 #include <vector>
 #include <cstdint>
 #include <cstring>
+#include <iostream>
+#include <fstream>
 
 // glm includes
 #include <glm/glm.hpp>

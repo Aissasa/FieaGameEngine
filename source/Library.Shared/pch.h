@@ -11,6 +11,8 @@
 #include <cstring>
 #include <exception>
 #include <new>
+#include <iostream>
+#include <fstream>
 
 // glm includes
 #include <glm/glm.hpp>

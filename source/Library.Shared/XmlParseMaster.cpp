@@ -1,5 +1,9 @@
 #include "pch.h"
 #include "XmlParseMaster.h"
+#include "IXmlParseHelper.h"
+
+
+using namespace std;
 
 namespace Library
 {
@@ -18,6 +22,7 @@ namespace Library
 	XmlParseMaster::SharedData* XmlParseMaster::SharedData::Clone()
 	{
 		SharedData* clone = new SharedData(mXmlParseMaster);
+		clone->mDepth = mDepth;
 		return clone;
 	}
 
@@ -57,41 +62,90 @@ namespace Library
 
 	/************************************************************************/
 	XmlParseMaster::XmlParseMaster(SharedData *& sharedData) :
-		mSharedData(sharedData), mHelpers(), mCashedFileName(""), mParser()
+		mSharedData(sharedData), mHelpers(), mCashedFileName(""), mCloned(false)
 	{
+		mParser = XML_ParserCreate(nullptr);
+		XML_SetUserData(mParser ,mSharedData);
+		XML_SetElementHandler(mParser, StartElementHandler, EndElementHandler);
+		XML_SetCharacterDataHandler(mParser, CharDataHandler);
+	}
+
+	/************************************************************************/
+	XmlParseMaster::~XmlParseMaster()
+	{
+		if (mCloned)
+		{
+			delete mSharedData;
+			for (auto& helper : mHelpers)
+			{
+				delete helper;
+			}
+		}
+		mHelpers.Clear();
+		XML_ParserFree(mParser);
 	}
 
 	/************************************************************************/
 	XmlParseMaster * XmlParseMaster::Clone()
 	{
-		// urgent implement
-		return nullptr;
+		SharedData* data = mSharedData->Clone();
+
+		XmlParseMaster* newXmlParseMaster = new XmlParseMaster(data);
+		newXmlParseMaster->mHelpers = mHelpers;
+		newXmlParseMaster->mCashedFileName = mCashedFileName;
+		newXmlParseMaster->mParser = mParser;
+		newXmlParseMaster->mCloned = true;
+
+		return newXmlParseMaster;
 	}
 
 	/************************************************************************/
-	void XmlParseMaster::AddHelper(const IXmlParseHelper & helper)
+	void XmlParseMaster::AddHelper(IXmlParseHelper* & helper)
 	{
 		mHelpers.PushBack(helper);
 	}
 
 	/************************************************************************/
-	void XmlParseMaster::RemoveHelper(const IXmlParseHelper & helper)
+	void XmlParseMaster::RemoveHelper(IXmlParseHelper* & helper)
 	{
 		mHelpers.Remove(helper);
 	}
 
 	/************************************************************************/
-	int XmlParseMaster::Parse(const char * buffer, const std::uint32_t bufferSize, const bool lastChunk)
+	int XmlParseMaster::Parse(const char* buffer, const std::uint32_t bufferSize, const bool lastChunk)
 	{
-		// urgent implement this : ps , for loop helpers
-		return 0;
+		static bool firstCall = true;
+		if (firstCall)
+		{
+			firstCall = false;
+			for (auto& helper : mHelpers)
+			{
+				helper->Initialize();
+			}
+		}
+
+		return XML_Parse(mParser, buffer, bufferSize, lastChunk);
 	}
 
 	/************************************************************************/
-	int XmlParseMaster::ParseFromFile(const std::string & fileName)
+	int XmlParseMaster::ParseFromFile(const std::string& fileName)
 	{
-		// urgent implement this : ps , for loop helpers
-		return 0;
+		int result = -1;
+		std::ifstream file(fileName, std::ios::in | std::ios::binary | std::ios::ate);
+		if (file.is_open())
+		{
+			file.seekg(0, std::ios::end);
+			uint32_t size = static_cast<uint32_t>(file.tellg());
+			char *contents = new char[size];
+			file.seekg(0, std::ios::beg);
+			file.read(contents, size);
+			file.close();
+
+			result = Parse(contents, size);
+
+			delete[] contents;
+		}
+		return result;
 	}
 
 	/************************************************************************/
@@ -113,24 +167,70 @@ namespace Library
 	}
 
 	/************************************************************************/
-	bool XmlParseMaster::StartElementHandler(const std::string & el, const HashMap<std::string, std::string>& attributes)
+	void XmlParseMaster::StartElementHandler(void *userData, const XML_Char *name, const XML_Char **atts)
 	{
-		// urgent implement
-		return false;
+		XmlParseMaster* master = static_cast<XmlParseMaster*>(userData);
+
+		if (master->mHelpers.Size() == 0)
+		{
+			throw exception("No helpers are available.");
+		}
+
+		string el(name);
+		HashMap<string, string> attributes;
+
+		for (uint32_t i = 0; atts[i]; i+=2)
+		{
+			attributes.Insert(pair<string, string>(string(atts[i]), string(atts[i + 1])));
+		}
+
+		for (auto& helper : master->mHelpers)
+		{
+			if (helper->StartElementHandler(*(master->mSharedData), el, attributes))
+			{
+				break;
+			}
+		}
 	}
 
 	/************************************************************************/
-	bool XmlParseMaster::EndElementHandler(const std::string & el)
+	void XmlParseMaster::EndElementHandler(void *userData, const XML_Char *name)
 	{
-		// urgent implement
-		return false;
+		XmlParseMaster* master = static_cast<XmlParseMaster*>(userData);
+
+		if (master->mHelpers.Size() == 0)
+		{
+			throw exception("No helpers are available.");
+		}
+
+		string el(name);
+		for (auto& helper : master->mHelpers)
+		{
+			if (helper->EndElementHandler(*(master->mSharedData), el))
+			{
+				break;
+			}
+		}
 	}
 
 	/************************************************************************/
-	bool XmlParseMaster::CharDataHandler(const char *& str, const std::uint32_t length)
+	void XmlParseMaster::CharDataHandler(void *userData, const XML_Char *s, int len)
 	{
-		// urgent implement
-		return false;
+		XmlParseMaster* master = static_cast<XmlParseMaster*>(userData);
+
+		if (master->mHelpers.Size() == 0)
+		{
+			throw exception("No helpers are available.");
+		}
+
+		string el(s, len);
+		for (auto& helper : master->mHelpers)
+		{
+			if (helper->CharDataHandler(*(master->mSharedData), el))
+			{
+				break;
+			}
+		}
 	}
 
 #pragma endregion

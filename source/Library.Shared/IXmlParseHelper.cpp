@@ -2,29 +2,17 @@
 #include "IXmlParseHelper.h"
 #include <expat.h>
 
+using namespace std;
+
 namespace Library
 {
+	RTTI_DEFINITIONS(IXmlParseHelper)
 
 	/************************************************************************/
-	void IXmlParseHelper::Initialize()
+	bool IXmlParseHelper::CharDataHandler(SharedDataC& sharedData, const std::string& str)
 	{
-	}
-
-	/************************************************************************/
-	bool IXmlParseHelper::StartElementHandler(const std::string & el, const HashMap<std::string, std::string>& attributes)
-	{
-		return false;
-	}
-
-	/************************************************************************/
-	bool IXmlParseHelper::EndElementHandler(const std::string & el)
-	{
-		return false;
-	}
-
-	/************************************************************************/
-	bool IXmlParseHelper::CharDataHandler(const char *& str, const std::uint32_t length)
-	{
+		UNREFERENCED_PARAMETER(sharedData);
+		UNREFERENCED_PARAMETER(str);
 		return false;
 	}
 }
