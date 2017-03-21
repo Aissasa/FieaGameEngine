@@ -213,6 +213,10 @@
       <SubType>
       </SubType>
     </ClCompile>
+    <ClCompile Include="XmlParseTest.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AttributedFoo.h" />

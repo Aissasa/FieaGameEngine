@@ -12,17 +12,16 @@ namespace UnitTestLibraryDesktop
 	/************************************************************************/
 	void TestXmlParseHelper::Initialize()
 	{
-		if (!mIsInitialized)
-		{
-			mIsInitialized = true;
-			// do something
-		}
+		mStartElementHandlerCount = 0;
+		mEndElementHandlerCount = 0;
+		mCharDataHandlerCount = 0;
 	}
 
 	/************************************************************************/
 	bool TestXmlParseHelper::StartElementHandler(Library::XmlParseMaster::SharedData & sharedData, const std::string & el, const Library::HashMap<std::string, std::string>& attributes)
 	{
-		if (sharedData.Is(TestSharedData::TypeIdClass()) && el == "Weapon")
+		// we can add constrains to el like == damage
+		if (sharedData.Is(TestSharedData::TypeIdClass()) && el != "Untreated")
 		{
 			++mStartElementHandlerCount;
 			sharedData.IncrementDepth();
@@ -46,7 +45,8 @@ namespace UnitTestLibraryDesktop
 	/************************************************************************/
 	bool TestXmlParseHelper::EndElementHandler(Library::XmlParseMaster::SharedData & sharedData, const std::string & el)
 	{
-		if (sharedData.Is(TestSharedData::TypeIdClass()))
+		// we can add constrains to el like == damage
+		if (sharedData.Is(TestSharedData::TypeIdClass()) && el != "Untreated")
 		{
 			++mEndElementHandlerCount;
 
@@ -70,7 +70,6 @@ namespace UnitTestLibraryDesktop
 	IXmlParseHelper* TestXmlParseHelper::Clone()
 	{
 		TestXmlParseHelper* helper = new TestXmlParseHelper();
-		helper->mIsInitialized = mIsInitialized;
 		helper->mStartElementHandlerCount = mStartElementHandlerCount;
 		helper->mEndElementHandlerCount = mEndElementHandlerCount;
 		helper->mCharDataHandlerCount = mCharDataHandlerCount;

@@ -25,9 +25,11 @@ namespace Library
 			SharedData(const SharedData & rhs) = delete;
 			SharedData& operator=(const SharedData& rhs) = delete;
 
-			virtual SharedData* Clone();
+			virtual SharedData* Clone() = 0;
 
-			void SetXmlParseMaster(XmlParseMaster*& xmlParseMaster);
+			virtual void Initialize();
+
+			void SetXmlParseMaster(XmlParseMaster* xmlParseMaster);
 
 			XmlParseMaster* GetXmlParseMaster() const;
 
@@ -44,7 +46,7 @@ namespace Library
 
 		};
 
-		XmlParseMaster(SharedData*& sharedData);
+		XmlParseMaster(SharedData* sharedData = nullptr);
 
 		~XmlParseMaster();
 
@@ -53,9 +55,9 @@ namespace Library
 
 		XmlParseMaster* Clone();
 		
-		void AddHelper(IXmlParseHelper*& helper);
+		void AddHelper(IXmlParseHelper& helper);
 
-		void RemoveHelper(IXmlParseHelper*& helper);
+		void RemoveHelper(IXmlParseHelper& helper);
 
 		int Parse(const char* buffer, const std::uint32_t bufferSize, const bool lastChunk = true);
 
@@ -65,7 +67,7 @@ namespace Library
 
 		SharedData* GetSharedData() const;
 
-		void SetSharedData(SharedData*& sharedData);
+		void SetSharedData(SharedData* sharedData);
 
 	private:
 
@@ -73,10 +75,12 @@ namespace Library
 		static void EndElementHandler(void *userData, const XML_Char *name);
 		static void CharDataHandler(void *userData, const XML_Char *s, int len);
 
+		void ParserReset();
+
 		SharedData* mSharedData;
 		Vector<IXmlParseHelper*> mHelpers;
-		std::string mCashedFileName;
+		std::string mCachedFileName;
 		XML_Parser mParser;
-		bool mCloned;
+		bool mIsCloned;
 	};
 }

@@ -16,18 +16,20 @@ namespace Library
 	XmlParseMaster::SharedData::SharedData(XmlParseMaster *xmlParseMaster) :
 		mXmlParseMaster(xmlParseMaster), mDepth(0)
 	{
+		if (mXmlParseMaster)
+		{
+			mXmlParseMaster->SetSharedData(this);
+		}
 	}
 
 	/************************************************************************/
-	XmlParseMaster::SharedData* XmlParseMaster::SharedData::Clone()
+	void XmlParseMaster::SharedData::Initialize()
 	{
-		SharedData* clone = new SharedData(mXmlParseMaster);
-		clone->mDepth = mDepth;
-		return clone;
+		mDepth = 0;
 	}
 
 	/************************************************************************/
-	void XmlParseMaster::SharedData::SetXmlParseMaster(XmlParseMaster *& xmlParseMaster)
+	void XmlParseMaster::SharedData::SetXmlParseMaster(XmlParseMaster * xmlParseMaster)
 	{
 		mXmlParseMaster = xmlParseMaster;
 	}
@@ -47,7 +49,10 @@ namespace Library
 	/************************************************************************/
 	void XmlParseMaster::SharedData::DecrementDepth()
 	{
-		--mDepth;
+		if (mDepth > 0)
+		{
+			--mDepth;
+		}
 	}
 
 	/************************************************************************/
@@ -61,19 +66,21 @@ namespace Library
 #pragma region XmlParseMaster
 
 	/************************************************************************/
-	XmlParseMaster::XmlParseMaster(SharedData *& sharedData) :
-		mSharedData(sharedData), mHelpers(), mCashedFileName(""), mCloned(false)
+	XmlParseMaster::XmlParseMaster(SharedData* sharedData) :
+		mSharedData(sharedData), mHelpers(), mCachedFileName(""), mIsCloned(false)
 	{
+		if (mSharedData)
+		{
+			mSharedData->SetXmlParseMaster(this);
+		}
+
 		mParser = XML_ParserCreate(nullptr);
-		XML_SetUserData(mParser ,mSharedData);
-		XML_SetElementHandler(mParser, StartElementHandler, EndElementHandler);
-		XML_SetCharacterDataHandler(mParser, CharDataHandler);
 	}
 
 	/************************************************************************/
 	XmlParseMaster::~XmlParseMaster()
 	{
-		if (mCloned)
+		if (mIsCloned)
 		{
 			delete mSharedData;
 			for (auto& helper : mHelpers)
@@ -88,27 +95,37 @@ namespace Library
 	/************************************************************************/
 	XmlParseMaster * XmlParseMaster::Clone()
 	{
-		SharedData* data = mSharedData->Clone();
+		SharedData* data = mSharedData ? mSharedData->Clone() : mSharedData;
 
 		XmlParseMaster* newXmlParseMaster = new XmlParseMaster(data);
-		newXmlParseMaster->mHelpers = mHelpers;
-		newXmlParseMaster->mCashedFileName = mCashedFileName;
-		newXmlParseMaster->mParser = mParser;
-		newXmlParseMaster->mCloned = true;
+		for (auto& helper : mHelpers)
+		{
+			newXmlParseMaster->AddHelper(*(helper->Clone()));
+		}
+		newXmlParseMaster->mCachedFileName = mCachedFileName;
+		newXmlParseMaster->mIsCloned = true;
 
 		return newXmlParseMaster;
 	}
 
 	/************************************************************************/
-	void XmlParseMaster::AddHelper(IXmlParseHelper* & helper)
+	void XmlParseMaster::AddHelper(IXmlParseHelper & helper)
 	{
-		mHelpers.PushBack(helper);
+		if (mIsCloned)
+		{
+			throw exception("This XmlParseMaster is a clone, you cannot add helpers to it.");
+		}
+		mHelpers.PushBack(&helper);
 	}
 
 	/************************************************************************/
-	void XmlParseMaster::RemoveHelper(IXmlParseHelper* & helper)
+	void XmlParseMaster::RemoveHelper(IXmlParseHelper & helper)
 	{
-		mHelpers.Remove(helper);
+		if (mIsCloned)
+		{
+			throw exception("This XmlParseMaster is a clone, you cannot remove helpers from it.");
+		}
+		mHelpers.Remove(&helper);
 	}
 
 	/************************************************************************/
@@ -118,10 +135,18 @@ namespace Library
 		if (firstCall)
 		{
 			firstCall = false;
+
+			ParserReset();
 			for (auto& helper : mHelpers)
 			{
 				helper->Initialize();
 			}
+			mSharedData->Initialize();
+		}
+
+		if (lastChunk)
+		{
+			firstCall = true;
 		}
 
 		return XML_Parse(mParser, buffer, bufferSize, lastChunk);
@@ -130,7 +155,8 @@ namespace Library
 	/************************************************************************/
 	int XmlParseMaster::ParseFromFile(const std::string& fileName)
 	{
-		int result = -1;
+		int result = -10;
+		mCachedFileName = fileName;
 		std::ifstream file(fileName, std::ios::in | std::ios::binary | std::ios::ate);
 		if (file.is_open())
 		{
@@ -151,7 +177,7 @@ namespace Library
 	/************************************************************************/
 	std::string XmlParseMaster::GetFileName() const
 	{
-		return mCashedFileName;
+		return mCachedFileName;
 	}
 
 	/************************************************************************/
@@ -161,7 +187,7 @@ namespace Library
 	}
 
 	/************************************************************************/
-	void XmlParseMaster::SetSharedData(SharedData *& sharedData)
+	void XmlParseMaster::SetSharedData(SharedData * sharedData)
 	{
 		mSharedData = sharedData;
 	}
@@ -179,7 +205,7 @@ namespace Library
 		string el(name);
 		HashMap<string, string> attributes;
 
-		for (uint32_t i = 0; atts[i]; i+=2)
+		for (uint32_t i = 0; atts[i]; i += 2)
 		{
 			attributes.Insert(pair<string, string>(string(atts[i]), string(atts[i + 1])));
 		}
@@ -198,11 +224,6 @@ namespace Library
 	{
 		XmlParseMaster* master = static_cast<XmlParseMaster*>(userData);
 
-		if (master->mHelpers.Size() == 0)
-		{
-			throw exception("No helpers are available.");
-		}
-
 		string el(name);
 		for (auto& helper : master->mHelpers)
 		{
@@ -218,11 +239,6 @@ namespace Library
 	{
 		XmlParseMaster* master = static_cast<XmlParseMaster*>(userData);
 
-		if (master->mHelpers.Size() == 0)
-		{
-			throw exception("No helpers are available.");
-		}
-
 		string el(s, len);
 		for (auto& helper : master->mHelpers)
 		{
@@ -231,6 +247,15 @@ namespace Library
 				break;
 			}
 		}
+	}
+
+	/************************************************************************/
+	void XmlParseMaster::ParserReset()
+	{
+		XML_ParserReset(mParser, NULL);
+		XML_SetUserData(mParser, this);
+		XML_SetElementHandler(mParser, StartElementHandler, EndElementHandler);
+		XML_SetCharacterDataHandler(mParser, CharDataHandler);
 	}
 
 #pragma endregion

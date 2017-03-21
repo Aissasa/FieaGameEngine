@@ -31,7 +31,6 @@ namespace Library
 
 		virtual IXmlParseHelper* Clone() = 0;
 
-		bool mIsInitialized;
 		std::uint32_t mStartElementHandlerCount;
 		std::uint32_t mEndElementHandlerCount;
 		std::uint32_t mCharDataHandlerCount;

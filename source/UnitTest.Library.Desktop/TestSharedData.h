@@ -20,6 +20,8 @@ namespace UnitTestLibraryDesktop
 
 		virtual SharedDataC* Clone() override;
 
+		virtual void Initialize() override;
+
 		void UpdateMaxDepth();
 
 		std::uint32_t GetMaxDepth() const;

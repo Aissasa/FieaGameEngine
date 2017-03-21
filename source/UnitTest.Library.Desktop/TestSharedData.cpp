@@ -16,10 +16,19 @@ namespace UnitTestLibraryDesktop
 	Library::XmlParseMaster::SharedData* TestSharedData::Clone()
 	{
 		TestSharedData* data = new TestSharedData(mXmlParseMaster);
+		data->mDepth = mDepth;
 		data->mMaxDepth = mMaxDepth;
 		data->mDamage = mDamage;
 
 		return data;
+	}
+
+	/************************************************************************/
+	void TestSharedData::Initialize()
+	{
+		SharedDataC::Initialize();
+		mMaxDepth = 0;
+		mDamage = 0;
 	}
 
 	/************************************************************************/
