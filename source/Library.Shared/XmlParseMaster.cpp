@@ -224,6 +224,11 @@ namespace Library
 	{
 		XmlParseMaster* master = static_cast<XmlParseMaster*>(userData);
 
+		if (master->mHelpers.Size() == 0)
+		{
+			throw exception("No helpers are available.");
+		}
+
 		string el(name);
 		for (auto& helper : master->mHelpers)
 		{
@@ -238,6 +243,11 @@ namespace Library
 	void XmlParseMaster::CharDataHandler(void *userData, const XML_Char *s, int len)
 	{
 		XmlParseMaster* master = static_cast<XmlParseMaster*>(userData);
+
+		if (master->mHelpers.Size() == 0)
+		{
+			throw exception("No helpers are available.");
+		}
 
 		string el(s, len);
 		for (auto& helper : master->mHelpers)

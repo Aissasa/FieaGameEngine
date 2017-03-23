@@ -29,6 +29,18 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)IXmlParseHelper.h">
       <Filter>Configuration</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)XmlParseHelperTable.h">
+      <Filter>Configuration</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)TableSharedData.h">
+      <Filter>Configuration</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)XmlParseHelperInteger.h">
+      <Filter>Configuration</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)XmlParseHelperFloat.h">
+      <Filter>Configuration</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp" />
@@ -45,6 +57,18 @@
       <Filter>Configuration</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)IXmlParseHelper.cpp">
+      <Filter>Configuration</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)XmlParseHelperTable.cpp">
+      <Filter>Configuration</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)TableSharedData.cpp">
+      <Filter>Configuration</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)XmlParseHelperInteger.cpp">
+      <Filter>Configuration</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)XmlParseHelperFloat.cpp">
       <Filter>Configuration</Filter>
     </ClCompile>
   </ItemGroup>

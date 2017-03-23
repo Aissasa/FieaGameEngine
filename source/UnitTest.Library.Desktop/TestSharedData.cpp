@@ -3,7 +3,6 @@
 
 namespace UnitTestLibraryDesktop
 {
-
 	RTTI_DEFINITIONS(TestSharedData)
 
 	/************************************************************************/

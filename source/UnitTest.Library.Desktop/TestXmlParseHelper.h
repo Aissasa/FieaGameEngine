@@ -8,7 +8,6 @@ namespace UnitTestLibraryDesktop
 {
 	class TestXmlParseHelper final : public Library::IXmlParseHelper
 	{
-
 		RTTI_DECLARATIONS(TestXmlParseHelper, Library::IXmlParseHelper)
 
 	public:

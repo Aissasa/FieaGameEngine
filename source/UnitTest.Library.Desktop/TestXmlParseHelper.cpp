@@ -12,13 +12,11 @@ namespace UnitTestLibraryDesktop
 	/************************************************************************/
 	void TestXmlParseHelper::Initialize()
 	{
-		mStartElementHandlerCount = 0;
-		mEndElementHandlerCount = 0;
-		mCharDataHandlerCount = 0;
+		IXmlParseHelper::Initialize();
 	}
 
 	/************************************************************************/
-	bool TestXmlParseHelper::StartElementHandler(Library::XmlParseMaster::SharedData & sharedData, const std::string & el, const Library::HashMap<std::string, std::string>& attributes)
+	bool TestXmlParseHelper::StartElementHandler(XmlParseMaster::SharedData & sharedData, const std::string & el, const HashMap<std::string, std::string>& attributes)
 	{
 		// we can add constrains to el like == damage
 		if (sharedData.Is(TestSharedData::TypeIdClass()) && el != "Untreated")
@@ -43,14 +41,14 @@ namespace UnitTestLibraryDesktop
 	}
 
 	/************************************************************************/
-	bool TestXmlParseHelper::EndElementHandler(Library::XmlParseMaster::SharedData & sharedData, const std::string & el)
+	bool TestXmlParseHelper::EndElementHandler(XmlParseMaster::SharedData & sharedData, const std::string & el)
 	{
 		// we can add constrains to el like == damage
 		if (sharedData.Is(TestSharedData::TypeIdClass()) && el != "Untreated")
 		{
 			++mEndElementHandlerCount;
-
 			sharedData.DecrementDepth();
+
 			return true;
 		}
 

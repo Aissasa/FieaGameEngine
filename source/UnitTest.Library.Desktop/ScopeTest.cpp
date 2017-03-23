@@ -252,6 +252,15 @@ namespace UnitTestLibraryDesktop
 			scope1.Clear();
 			Assert::IsNull(scope1.Find("JJ"));
 			Assert::IsNull(scope1.Find("child scope"));
+
+			auto& dat3 = scope1.Append("JJ");
+			dat3.PushBack(t1);
+
+			Datum* datPrt = scope1.Find("JJ");
+
+			Assert::IsNotNull(datPrt);
+			Assert::IsTrue(*datPrt == dat3);
+
 		}
 
 		/************************************************************************/
