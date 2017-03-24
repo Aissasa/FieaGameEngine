@@ -129,13 +129,13 @@ namespace Library
 		* @param lastChunk: Bool expressing if the passed chunk is the last chunk to parse from the current Xml. Defaulted to true.
 		* @return Parsing result code.
 		*/
-		int Parse(const char* buffer, const std::uint32_t bufferSize, const bool lastChunk = true);
+		void Parse(const char* buffer, const std::uint32_t bufferSize, const bool firstChunk = true, const bool lastChunk = true);
 
 		/** Parses an Xml file.
 		* @param fileName: The name of the Xml file to parse.
 		* @return Parsing result code.
 		*/
-		int ParseFromFile(const std::string& fileName);
+		void ParseFromFile(const std::string& fileName);
 
 		/** Gets the name of the file lastly or currently being parsed.
 		* @return Name of the xml file.
@@ -146,13 +146,13 @@ namespace Library
 		* @return Associated SharedData.
 		* @see SharedData
 		*/
-		SharedData* GetSharedData() const;
+		SharedData& GetSharedData() const;
 
 		/** Sets the SharedData associated to this XmlParseMaster.
 		* @param sharedData: SharedData to set.
 		* @see SharedData
 		*/
-		void SetSharedData(SharedData* sharedData);
+		void SetSharedData(SharedData& sharedData);
 
 	private:
 
@@ -182,7 +182,7 @@ namespace Library
 		*/
 		static void CharDataHandler(void *userData, const XML_Char *s, int len);
 
-		void ParserReset();
+		void Reset();
 
 		SharedData* mSharedData;
 		Vector<IXmlParseHelper*> mHelpers;

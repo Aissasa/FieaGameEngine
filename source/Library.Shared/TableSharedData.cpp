@@ -7,19 +7,14 @@ namespace Library
 
 	/************************************************************************/
 	TableSharedData::TableSharedData(XmlParseMaster* xmlParseMaster):
-		mIsParsingElement(false), XmlParseMaster::SharedData(xmlParseMaster)
+		mScope(nullptr) ,IsParsingElement(false), XmlParseMaster::SharedData(xmlParseMaster)
 	{
-		mScope = new Scope();
-		mCurrentScope = mScope;
 	}
 
 	/************************************************************************/
 	TableSharedData::~TableSharedData()
 	{
-		if (mScope)
-		{
-			mScope->Clear();
-		}
+		delete mScope;
 	}
 
 	/************************************************************************/
@@ -27,7 +22,7 @@ namespace Library
 	{
 		TableSharedData* data = new TableSharedData(mXmlParseMaster);
 		data->mDepth = mDepth;
-		data->mIsParsingElement = mIsParsingElement;
+		data->IsParsingElement = IsParsingElement;
 
 		return data;
 	}
@@ -40,44 +35,15 @@ namespace Library
 	}
 
 	/************************************************************************/
-	Scope * TableSharedData::GetScope() const
+	Scope& TableSharedData::GetScope() const
 	{
-		return mScope;
+		return *mScope;
 	}
 
 	/************************************************************************/
-	Scope * TableSharedData::GetCurrentScope() const
+	void TableSharedData::SetScope(Scope& scope)
 	{
-		//Scope* scope = nullptr;
-		//if (mScope)
-		//{
-		//	scope = mScope;
-		//	while (scope->GetParent())
-		//	{
-		//		scope = scope->GetParent();
-		//	}
-		//}
-
-		//return scope;
-		return mCurrentScope;
-	}
-
-	/************************************************************************/
-	void TableSharedData::SetCurrentScope(Scope * scope)
-	{
-		mCurrentScope = scope;
-	}
-
-	/************************************************************************/
-	bool TableSharedData::GetIsParsingElement() const
-	{
-		return mIsParsingElement;
-	}
-
-	/************************************************************************/
-	void TableSharedData::SetIsParsingElement(bool isParsingElement)
-	{
-		mIsParsingElement = isParsingElement;
+		mScope = &scope;
 	}
 
 }

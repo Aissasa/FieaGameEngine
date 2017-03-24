@@ -18,7 +18,7 @@ namespace Library
 	{
 		if (mXmlParseMaster)
 		{
-			mXmlParseMaster->SetSharedData(this);
+			mXmlParseMaster->SetSharedData(*this);
 		}
 	}
 
@@ -67,14 +67,12 @@ namespace Library
 
 	/************************************************************************/
 	XmlParseMaster::XmlParseMaster(SharedData* sharedData) :
-		mSharedData(sharedData), mHelpers(), mCachedFileName(""), mIsCloned(false)
+		mParser(XML_ParserCreate(nullptr)), mSharedData(sharedData), mHelpers(), mCachedFileName(""), mIsCloned(false)
 	{
 		if (mSharedData)
 		{
 			mSharedData->SetXmlParseMaster(this);
 		}
-
-		mParser = XML_ParserCreate(nullptr);
 	}
 
 	/************************************************************************/
@@ -115,6 +113,11 @@ namespace Library
 		{
 			throw exception("This XmlParseMaster is a clone, you cannot add helpers to it.");
 		}
+
+		if (mHelpers.Find(&helper) != mHelpers.end())
+		{
+			throw exception("This helper already exists");
+		}
 		mHelpers.PushBack(&helper);
 	}
 
@@ -129,49 +132,29 @@ namespace Library
 	}
 
 	/************************************************************************/
-	int XmlParseMaster::Parse(const char* buffer, const std::uint32_t bufferSize, const bool lastChunk)
+	void XmlParseMaster::Parse(const char* buffer, const std::uint32_t bufferSize, const bool firstChunk, const bool lastChunk)
 	{
-		static bool firstCall = true;
-		if (firstCall)
+		if (firstChunk)
 		{
-			firstCall = false;
-
-			ParserReset();
-			for (auto& helper : mHelpers)
-			{
-				helper->Initialize();
-			}
-			mSharedData->Initialize();
+			Reset();
 		}
-
-		if (lastChunk)
-		{
-			firstCall = true;
-		}
-
-		return XML_Parse(mParser, buffer, bufferSize, lastChunk);
+	
+ 		if (XML_Parse(mParser, buffer, bufferSize, lastChunk) != XML_STATUS_OK)
+ 		{
+			string errorMsg = "Parsing failed! ";
+			errorMsg.append(XML_ErrorString(XML_GetErrorCode(mParser)));
+ 			throw exception(errorMsg.c_str());
+ 		}
 	}
 
 	/************************************************************************/
-	int XmlParseMaster::ParseFromFile(const std::string& fileName)
+	void XmlParseMaster::ParseFromFile(const std::string& fileName)
 	{
-		int result = -10;
 		mCachedFileName = fileName;
-		std::ifstream file(fileName, std::ios::in | std::ios::binary | std::ios::ate);
-		if (file.is_open())
-		{
-			file.seekg(0, std::ios::end);
-			uint32_t size = static_cast<uint32_t>(file.tellg());
-			char *contents = new char[size];
-			file.seekg(0, std::ios::beg);
-			file.read(contents, size);
-			file.close();
 
-			result = Parse(contents, size);
-
-			delete[] contents;
-		}
-		return result;
+		std::ifstream in(fileName);
+		std::string contents((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
+		Parse(contents.c_str(), contents.length());
 	}
 
 	/************************************************************************/
@@ -181,20 +164,27 @@ namespace Library
 	}
 
 	/************************************************************************/
-	XmlParseMaster::SharedData* XmlParseMaster::GetSharedData() const
+	XmlParseMaster::SharedData& XmlParseMaster::GetSharedData() const
 	{
-		return mSharedData;
+		return *mSharedData;
 	}
 
 	/************************************************************************/
-	void XmlParseMaster::SetSharedData(SharedData * sharedData)
+	void XmlParseMaster::SetSharedData(SharedData& sharedData)
 	{
-		mSharedData = sharedData;
+		if (mIsCloned)
+		{
+			throw exception("This XmlParseMaster is a clone, you cannot set its SharedData.");
+		}
+		mSharedData = &sharedData;
+		mSharedData->SetXmlParseMaster(this);
 	}
 
 	/************************************************************************/
 	void XmlParseMaster::StartElementHandler(void *userData, const XML_Char *name, const XML_Char **atts)
 	{
+		assert(userData != nullptr);
+
 		XmlParseMaster* master = static_cast<XmlParseMaster*>(userData);
 
 		if (master->mHelpers.Size() == 0)
@@ -209,6 +199,8 @@ namespace Library
 		{
 			attributes.Insert(pair<string, string>(string(atts[i]), string(atts[i + 1])));
 		}
+
+		master->GetSharedData().IncrementDepth();
 
 		for (auto& helper : master->mHelpers)
 		{
@@ -237,6 +229,8 @@ namespace Library
 				break;
 			}
 		}
+
+		master->GetSharedData().DecrementDepth();
 	}
 
 	/************************************************************************/
@@ -260,12 +254,19 @@ namespace Library
 	}
 
 	/************************************************************************/
-	void XmlParseMaster::ParserReset()
+	void XmlParseMaster::Reset()
 	{
 		XML_ParserReset(mParser, NULL);
 		XML_SetUserData(mParser, this);
 		XML_SetElementHandler(mParser, StartElementHandler, EndElementHandler);
 		XML_SetCharacterDataHandler(mParser, CharDataHandler);
+
+		for (auto& helper : mHelpers)
+		{
+			helper->Initialize();
+		}
+		mSharedData->Initialize();
+		mCachedFileName.clear();
 	}
 
 #pragma endregion

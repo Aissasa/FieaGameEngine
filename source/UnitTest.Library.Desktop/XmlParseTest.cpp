@@ -46,11 +46,11 @@ namespace UnitTestLibraryDesktop
 		{
 			TestSharedData* sharedData = new TestSharedData();
 			XmlParseMaster master(sharedData);
-			Assert::IsTrue(sharedData == master.GetSharedData());
+			Assert::IsTrue(sharedData == &master.GetSharedData());
 			
 			TestSharedData* sharedData2 = new TestSharedData();
-			master.SetSharedData(sharedData2);
-			Assert::IsTrue(sharedData2 == master.GetSharedData());
+			master.SetSharedData(*sharedData2);
+			Assert::IsTrue(sharedData2 == &master.GetSharedData());
 
 			TestXmlParseHelper* helper = new TestXmlParseHelper();
 			master.AddHelper(*helper);
@@ -63,8 +63,6 @@ namespace UnitTestLibraryDesktop
 		/************************************************************************/
 		TEST_METHOD(XmlParseMasterCloneTest)
 		{
-
-
 			TestSharedData* sharedData = new TestSharedData();
 			XmlParseMaster master(sharedData);
 
@@ -72,11 +70,14 @@ namespace UnitTestLibraryDesktop
 			master.AddHelper(*helper);
 
 			XmlParseMaster* master2 = master.Clone();
-			Assert::IsTrue(sharedData != master2->GetSharedData());
+			Assert::IsTrue(sharedData != &master2->GetSharedData());
+
+			auto func1 = [&master2, sharedData] { master2->SetSharedData(*sharedData); };
+			Assert::ExpectException<exception>(func1);
 
 			XmlParseMaster master3;
 			XmlParseMaster* master4 = master3.Clone();
-			Assert::IsNull(master4->GetSharedData());
+			Assert::IsNull(&master4->GetSharedData());
 
 			delete master2;
 			delete master4;
@@ -93,6 +94,10 @@ namespace UnitTestLibraryDesktop
 			TestXmlParseHelper* helper1 = new TestXmlParseHelper();
 			TestXmlParseHelper* helper2 = new TestXmlParseHelper();
 			master.AddHelper(*helper1);
+
+			auto func0 = [&master, helper1] { master.AddHelper(*helper1); };
+			Assert::ExpectException<exception>(func0);
+
 
 			XmlParseMaster* master2 = master.Clone();
 			
@@ -116,34 +121,43 @@ namespace UnitTestLibraryDesktop
 			TestSharedData* sharedData = new TestSharedData();
 			XmlParseMaster master(sharedData);
 
-			auto func1 = [&master] { master.Parse("<Weapon Damage=\"5\" />", 22); };
+			string xmlToParse("<Weapon Damage=\"5\" />");
+
+			auto func1 = [&master, &xmlToParse] { master.Parse(xmlToParse.c_str(), xmlToParse.length()); };
 			Assert::ExpectException<exception>(func1);
 
 			TestXmlParseHelper* helper = new TestXmlParseHelper();
 			master.AddHelper(*helper);
 			
-			master.Parse("<Untreated Health=\"5\" />", 22);
+			auto func2 = [&master, &xmlToParse] { master.Parse(xmlToParse.c_str(), xmlToParse.length() - 1); };
+			Assert::ExpectException<exception>(func2);
+
+			xmlToParse = "<Untreated Health=\"5\" />";
+			master.Parse(xmlToParse.c_str(), xmlToParse.length());
 			Assert::IsTrue(sharedData->mDamage == 0);
 			Assert::IsTrue(sharedData->GetMaxDepth() == 0);
 			Assert::IsTrue(helper->mStartElementHandlerCount == 0);
 			Assert::IsTrue(helper->mEndElementHandlerCount == 0);
 			Assert::IsTrue(helper->mCharDataHandlerCount == 0);
 
-			master.Parse("<Weapon Damage=\"5\" />", 22);
+			xmlToParse = "<Weapon Damage=\"5\" />";
+			master.Parse(xmlToParse.c_str(), xmlToParse.length());
 			Assert::IsTrue(sharedData->mDamage == 5);
 			Assert::IsTrue(sharedData->GetMaxDepth() == 1);
 			Assert::IsTrue(helper->mStartElementHandlerCount == 1);
 			Assert::IsTrue(helper->mEndElementHandlerCount == 1);
 			Assert::IsTrue(helper->mCharDataHandlerCount == 0);
 
-			master.Parse("<Weapon><Damage><Value>9</Value></Damage></Weapon>", 51);
+			xmlToParse = "<Weapon><Damage><Value>9</Value></Damage></Weapon>";
+			master.Parse(xmlToParse.c_str(), xmlToParse.length());
 			Assert::IsTrue(sharedData->mDamage == 9);
 			Assert::IsTrue(sharedData->GetMaxDepth() == 3);
 			Assert::IsTrue(helper->mStartElementHandlerCount == 3);
 			Assert::IsTrue(helper->mEndElementHandlerCount == 3);
 			Assert::IsTrue(helper->mCharDataHandlerCount == 1);
 
-			master.Parse("<Weapon><Damage Value=\"23\"></Damage></Weapon>", 46);
+			xmlToParse = "<Weapon><Damage Value=\"23\"></Damage></Weapon>";
+			master.Parse(xmlToParse.c_str(), xmlToParse.length());
 			Assert::IsTrue(sharedData->mDamage == 23);
 			Assert::IsTrue(sharedData->GetMaxDepth() == 2);
 			Assert::IsTrue(helper->mStartElementHandlerCount == 2);
@@ -166,7 +180,7 @@ namespace UnitTestLibraryDesktop
 			ofstream file;
 			string fileName("ParseTestFile.xml");
 			file.open(fileName);
-			file << "<Weapon Damage=\"7\" />";
+			file << "<Weapon Damage=\"7\"/>";
 			file.close();
 
 			master.ParseFromFile(fileName);
@@ -199,8 +213,6 @@ namespace UnitTestLibraryDesktop
 			Assert::IsTrue(helper->mStartElementHandlerCount == 2);
 			Assert::IsTrue(helper->mEndElementHandlerCount == 2);
 			Assert::IsTrue(helper->mCharDataHandlerCount == 0);
-
-			Assert::IsTrue(master.GetFileName() == fileName);
 
 			delete sharedData;
 			delete helper;
@@ -250,16 +262,57 @@ namespace UnitTestLibraryDesktop
 			delete clone2;
 		}
 
+		/************************************************************************/
+		TEST_METHOD(SharedDataRTTITest)
+		{
+			RTTI* sharedData = new TestSharedData();
+
+			Assert::IsNotNull(sharedData->As<TestSharedData>());
+			Assert::IsNotNull(sharedData->As<SharedDataC>());
+			Assert::IsNull(sharedData->As<TestXmlParseHelper>());
+
+			Assert::IsTrue(sharedData->Is("TestSharedData"));
+			Assert::IsTrue(sharedData->Is(sharedData->TypeIdInstance()));
+			Assert::IsTrue(sharedData->Is(sharedData->As<TestSharedData>()->TypeIdClass()));
+			Assert::IsTrue(sharedData->As<TestSharedData>()->TypeName() == "TestSharedData");
+			
+			Assert::IsTrue(sharedData->QueryInterface(sharedData->TypeIdInstance())->ToString() == "RTTI");
+			Assert::IsNotNull(sharedData->As<TestSharedData>());
+
+			Assert::IsTrue(sharedData->As<TestSharedData>()->Equals(sharedData));
+
+			delete sharedData;
+		}
 
 #pragma endregion
 
+		/************************************************************************/
+		TEST_METHOD(TestXmlParseHelperRTTITest)
+		{
+			RTTI* helper = new TestXmlParseHelper();
+
+			Assert::IsNotNull(helper->As<TestXmlParseHelper>());
+			Assert::IsNotNull(helper->As<IXmlParseHelper>());
+			Assert::IsNull(helper->As<TestSharedData>());
+
+			Assert::IsTrue(helper->Is("TestXmlParseHelper"));
+			Assert::IsTrue(helper->Is(helper->TypeIdInstance()));
+			Assert::IsTrue(helper->Is(helper->As<IXmlParseHelper>()->TypeIdClass()));
+			Assert::IsTrue(helper->As<TestXmlParseHelper>()->TypeName() == "TestXmlParseHelper");
+
+			Assert::IsTrue(helper->QueryInterface(helper->TypeIdInstance())->ToString() == "RTTI");
+			Assert::IsNotNull(helper->As<TestXmlParseHelper>());
+
+			Assert::IsTrue(helper->As<TestXmlParseHelper>()->Equals(helper));
+
+			delete helper;
+		}
 
 #pragma endregion
 
 
 	private:
 		static _CrtMemState sStartMemState;
-
 
 	};
 

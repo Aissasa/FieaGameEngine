@@ -32,7 +32,7 @@ namespace Library
 	{
 		if (sharedData.Is(TableSharedData::TypeIdClass()) && el == FLOAT_ELEMENT_NAME)
 		{
-			if (sharedData.As<TableSharedData>()->GetIsParsingElement())
+			if (sharedData.As<TableSharedData>()->IsParsingElement)
 			{
 				throw exception("Cannot have nested elements in an float element.");
 			}
@@ -42,7 +42,7 @@ namespace Library
 				throw exception("This handler is already parsing another float element.");
 			}
 
-			sharedData.As<TableSharedData>()->SetIsParsingElement(true);
+			sharedData.As<TableSharedData>()->IsParsingElement = true;
 			mIsParsing = true;
 
 			// look for the name
@@ -74,7 +74,6 @@ namespace Library
 			}
 
 			++mStartElementHandlerCount;
-			sharedData.IncrementDepth();
 
 			return true;
 		}
@@ -88,13 +87,11 @@ namespace Library
 		if (sharedData.Is(TableSharedData::TypeIdClass()) && el == FLOAT_ELEMENT_NAME)
 		{
 			// set the name and the data
-			Datum& dat = sharedData.As<TableSharedData>()->GetCurrentScope()->Append(mNameString);
+			Datum& dat = sharedData.As<TableSharedData>()->GetScope().Append(mNameString);
 			dat.PushBack(stof(mDataString));
 
 			++mEndElementHandlerCount;
-			sharedData.DecrementDepth();
-			sharedData.As<TableSharedData>()->SetIsParsingElement(false);
-
+			sharedData.As<TableSharedData>()->IsParsingElement = false;
 			Reset();
 
 			return true;

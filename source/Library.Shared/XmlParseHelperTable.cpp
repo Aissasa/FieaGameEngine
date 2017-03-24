@@ -40,24 +40,27 @@ namespace Library
 				throw exception("The scope needs to have a name.");
 			}
 
-			// add nested scope
-			if (sharedData.Depth() != 0)
+			if (sharedData.Depth() <= 1)
 			{
-				Scope& nestedScope = sharedData.As<TableSharedData>()->GetCurrentScope()->AppendScope(attrToAdd);
-				sharedData.As<TableSharedData>()->SetCurrentScope(&nestedScope);
+				Scope* mainScope = new Scope();
+				sharedData.As<TableSharedData>()->SetScope(*mainScope);
+			}
+			else
+			{
+				// add nested scope
+				Scope& nestedScope = sharedData.As<TableSharedData>()->GetScope().AppendScope(attrToAdd);
+				sharedData.As<TableSharedData>()->SetScope(nestedScope);
 			}
 
-			Datum& dat = sharedData.As<TableSharedData>()->GetCurrentScope()->Append(NAME_ATTRIBUTE_NAME);
+			Datum& dat = sharedData.As<TableSharedData>()->GetScope().Append(NAME_ATTRIBUTE_NAME);
 			dat.PushBack(attrToAdd);
 
 			++mStartElementHandlerCount;
-			sharedData.IncrementDepth();
 
 			return true;
 		}
 
 		return false;
-
 	}
 
 	/************************************************************************/
@@ -66,18 +69,16 @@ namespace Library
 		if (sharedData.Is(TableSharedData::TypeIdClass()) && el == SCOPE_ELEMENT_NAME)
 		{
 			++mEndElementHandlerCount;
-			sharedData.DecrementDepth();
 
 			// end of nested scope
-			if (sharedData.Depth() != 0)
+			if (sharedData.Depth() > 1)
 			{
 				// go to parent scope
-				sharedData.As<TableSharedData>()->SetCurrentScope(sharedData.As<TableSharedData>()->GetCurrentScope()->GetParent());
+				Scope* parentScope = sharedData.As<TableSharedData>()->GetScope().GetParent();
+				sharedData.As<TableSharedData>()->SetScope(*parentScope);
 			}
-
 			return true;
 		}
-
 		return false;
 	}
 
@@ -90,6 +91,5 @@ namespace Library
 		helper->mCharDataHandlerCount = mCharDataHandlerCount;
 
 		return helper;
-
 	}
 }

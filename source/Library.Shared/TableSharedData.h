@@ -21,19 +21,14 @@ namespace Library
 
 		virtual void Initialize() override;
 
-		Scope* GetScope() const;
-		Scope* GetCurrentScope() const;
-		void SetCurrentScope(Scope* scope);
+		Scope& GetScope() const;
+		void SetScope(Scope& scope);
 
-		bool GetIsParsingElement() const;
-		void SetIsParsingElement(bool isParsingElement);
+		bool IsParsingElement;
 
 	private:
 
 		Scope* mScope;
-		Scope* mCurrentScope;
-		bool mIsParsingElement;
-
 	};
 
 }

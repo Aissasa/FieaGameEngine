@@ -22,7 +22,6 @@ namespace UnitTestLibraryDesktop
 		if (sharedData.Is(TestSharedData::TypeIdClass()) && el != "Untreated")
 		{
 			++mStartElementHandlerCount;
-			sharedData.IncrementDepth();
 			sharedData.As<TestSharedData>()->UpdateMaxDepth();
 
 			for (auto& attr : attributes)
@@ -47,7 +46,6 @@ namespace UnitTestLibraryDesktop
 		if (sharedData.Is(TestSharedData::TypeIdClass()) && el != "Untreated")
 		{
 			++mEndElementHandlerCount;
-			sharedData.DecrementDepth();
 
 			return true;
 		}
