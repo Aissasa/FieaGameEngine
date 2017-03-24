@@ -24,9 +24,11 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)SList.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)TableSharedData.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Vector.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)XmlParseHelperFloat.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)XmlParseHelperInteger.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)XmlParseHelperMatrix.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)XmlParseHelperNumber.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)XmlParseHelperString.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)XmlParseHelperTable.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)XmlParseHelperVector.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)XmlParseMaster.h" />
   </ItemGroup>
   <ItemGroup>
@@ -38,9 +40,11 @@
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)Scope.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)TableSharedData.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)XmlParseHelperFloat.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)XmlParseHelperInteger.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)XmlParseHelperMatrix.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)XmlParseHelperNumber.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)XmlParseHelperString.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)XmlParseHelperTable.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)XmlParseHelperVector.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)XmlParseMaster.cpp" />
   </ItemGroup>
   <ItemGroup>

@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "XmlParseMaster.h"
-#include "XmlParseHelperFloat.h"
+#include "XmlParseHelperNumber.h"
 #include "TableSharedData.h"
 
 
@@ -8,42 +8,40 @@ using namespace std;
 
 namespace Library
 {
-	RTTI_DEFINITIONS(XmlParseHelperFloat)
+	RTTI_DEFINITIONS(XmlParseHelperNumber)
 
-	const std::string XmlParseHelperFloat::FLOAT_ELEMENT_NAME = "Float";
-	const std::string XmlParseHelperFloat::NAME_ELEMENT_NAME = "Name";
-	const std::string XmlParseHelperFloat::VALUE_ATTRIBUTE_NAME = "Value";
+	const string XmlParseHelperNumber::INTEGER_ELEMENT_NAME = "Integer";
+	const string XmlParseHelperNumber::FLOAT_ELEMENT_NAME = "Float";
+	const string XmlParseHelperNumber::NAME_ELEMENT_NAME = "Name";
+	const string XmlParseHelperNumber::VALUE_ATTRIBUTE_NAME = "Value";
 
 	/************************************************************************/
-	XmlParseHelperFloat::XmlParseHelperFloat() :
+	XmlParseHelperNumber::XmlParseHelperNumber():
 		mIsParsing(false), mDataGotSet(false), mNameString(), mDataString(), IXmlParseHelper()
 	{
 	}
 
 	/************************************************************************/
-	void XmlParseHelperFloat::Initialize()
+	void XmlParseHelperNumber::Initialize()
 	{
-		IXmlParseHelper::Initialize();
+		XmlParseHelperNumber::Initialize();
 		Reset();
 	}
 
 	/************************************************************************/
-	bool XmlParseHelperFloat::StartElementHandler(XmlParseMaster::SharedData & sharedData, const std::string & el, const HashMap<std::string, std::string>& attributes)
+	bool XmlParseHelperNumber::StartElementHandler(XmlParseMaster::SharedData & sharedData, const std::string & el, const HashMap<std::string, std::string>& attributes)
 	{
-		if (sharedData.Is(TableSharedData::TypeIdClass()) && el == FLOAT_ELEMENT_NAME)
+		if (sharedData.Is(TableSharedData::TypeIdClass()) && (el == INTEGER_ELEMENT_NAME || el == FLOAT_ELEMENT_NAME))
 		{
 			if (sharedData.As<TableSharedData>()->IsParsingElement)
 			{
-				throw exception("Cannot have nested elements in an float element.");
+				throw exception("Cannot have nested elements in a number element.");
 			}
 
 			if (mIsParsing)
 			{
-				throw exception("This handler is already parsing another float element.");
+				throw exception("This handler is already parsing another number element.");
 			}
-
-			sharedData.As<TableSharedData>()->IsParsingElement = true;
-			mIsParsing = true;
 
 			// look for the name
 			bool nameFound = false;
@@ -59,7 +57,7 @@ namespace Library
 
 			if (!nameFound)
 			{
-				throw exception("The float element needs to have a name.");
+				throw exception("The number element needs to have a name.");
 			}
 
 			// look for the value in the attributes
@@ -73,6 +71,8 @@ namespace Library
 				}
 			}
 
+			sharedData.As<TableSharedData>()->IsParsingElement = true;
+			mIsParsing = true;
 			++mStartElementHandlerCount;
 
 			return true;
@@ -82,13 +82,25 @@ namespace Library
 	}
 
 	/************************************************************************/
-	bool XmlParseHelperFloat::EndElementHandler(Library::XmlParseMaster::SharedData & sharedData, const std::string & el)
+	bool XmlParseHelperNumber::EndElementHandler(XmlParseMaster::SharedData & sharedData, const std::string & el)
 	{
-		if (sharedData.Is(TableSharedData::TypeIdClass()) && el == FLOAT_ELEMENT_NAME)
+		if (sharedData.Is(TableSharedData::TypeIdClass()) && (el == INTEGER_ELEMENT_NAME || el == FLOAT_ELEMENT_NAME))
 		{
+			if (!mIsParsing)
+			{
+				throw exception("Cannot call EndElementHandler before StartElementHandler.");
+			}
+
 			// set the name and the data
 			Datum& dat = sharedData.As<TableSharedData>()->GetScope().Append(mNameString);
-			dat.PushBack(stof(mDataString));
+			if (el == INTEGER_ELEMENT_NAME)
+			{
+				dat.PushBack(stoi(mDataString));
+			}
+			if (el == FLOAT_ELEMENT_NAME)
+			{
+				dat.PushBack(stof(mDataString));
+			}
 
 			++mEndElementHandlerCount;
 			sharedData.As<TableSharedData>()->IsParsingElement = false;
@@ -101,13 +113,13 @@ namespace Library
 	}
 
 	/************************************************************************/
-	bool XmlParseHelperFloat::CharDataHandler(SharedDataC & sharedData, const std::string & str)
+	bool XmlParseHelperNumber::CharDataHandler(SharedDataC & sharedData, const std::string & str)
 	{
 		if (sharedData.Is(TableSharedData::TypeIdClass()))
 		{
 			if (!mIsParsing)
 			{
-				throw exception("Cannot call CharDataHandler before StartElementHandler");
+				throw exception("Cannot call CharDataHandler before StartElementHandler.");
 			}
 
 			if (!mDataGotSet)
@@ -122,9 +134,9 @@ namespace Library
 	}
 
 	/************************************************************************/
-	IXmlParseHelper* XmlParseHelperFloat::Clone()
+	IXmlParseHelper* XmlParseHelperNumber::Clone()
 	{
-		XmlParseHelperFloat* helper = new XmlParseHelperFloat();
+		XmlParseHelperNumber* helper = new XmlParseHelperNumber();
 		helper->mStartElementHandlerCount = mStartElementHandlerCount;
 		helper->mEndElementHandlerCount = mEndElementHandlerCount;
 		helper->mCharDataHandlerCount = mCharDataHandlerCount;
@@ -137,7 +149,7 @@ namespace Library
 	}
 
 	/************************************************************************/
-	void XmlParseHelperFloat::Reset()
+	void XmlParseHelperNumber::Reset()
 	{
 		mDataGotSet = false;
 		mIsParsing = false;

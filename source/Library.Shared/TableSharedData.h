@@ -25,6 +25,9 @@ namespace Library
 		void SetScope(Scope& scope);
 
 		bool IsParsingElement;
+		bool IsParsingMatrix;
+
+		Vector<glm::vec4> MatrixVectors;
 
 	private:
 

@@ -22,7 +22,7 @@ namespace Library
 
 		virtual bool EndElementHandler(Library::XmlParseMaster::SharedData& sharedData, const std::string& el) override;
 
-		//virtual bool CharDataHandler(SharedDataC& sharedData, const std::string& str) override;
+		virtual bool CharDataHandler(SharedDataC& sharedData, const std::string& str) override;
 
 		virtual IXmlParseHelper* Clone() override;
 
@@ -32,6 +32,7 @@ namespace Library
 		const static std::string SCOPE_ELEMENT_NAME;
 		const static std::string NAME_ATTRIBUTE_NAME;
 
+		bool mIsParsing;
 	};
 
 }

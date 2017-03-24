@@ -23,23 +23,29 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Attributed.h">
       <Filter>Runtime</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)XmlParseMaster.h">
-      <Filter>Configuration</Filter>
-    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)IXmlParseHelper.h">
-      <Filter>Configuration</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)XmlParseHelperTable.h">
-      <Filter>Configuration</Filter>
+      <Filter>Configuration\XmlParsing</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)TableSharedData.h">
-      <Filter>Configuration</Filter>
+      <Filter>Configuration\XmlParsing</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)XmlParseHelperInteger.h">
-      <Filter>Configuration</Filter>
+    <ClInclude Include="$(MSBuildThisFileDirectory)XmlParseHelperNumber.h">
+      <Filter>Configuration\XmlParsing</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)XmlParseHelperFloat.h">
-      <Filter>Configuration</Filter>
+    <ClInclude Include="$(MSBuildThisFileDirectory)XmlParseHelperString.h">
+      <Filter>Configuration\XmlParsing</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)XmlParseHelperTable.h">
+      <Filter>Configuration\XmlParsing</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)XmlParseHelperVector.h">
+      <Filter>Configuration\XmlParsing</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)XmlParseMaster.h">
+      <Filter>Configuration\XmlParsing</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)XmlParseHelperMatrix.h">
+      <Filter>Configuration\XmlParsing</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -53,23 +59,29 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Attributed.cpp">
       <Filter>Runtime</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)XmlParseMaster.cpp">
-      <Filter>Configuration</Filter>
-    </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)IXmlParseHelper.cpp">
-      <Filter>Configuration</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)XmlParseHelperTable.cpp">
-      <Filter>Configuration</Filter>
+      <Filter>Configuration\XmlParsing</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)TableSharedData.cpp">
-      <Filter>Configuration</Filter>
+      <Filter>Configuration\XmlParsing</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)XmlParseHelperInteger.cpp">
-      <Filter>Configuration</Filter>
+    <ClCompile Include="$(MSBuildThisFileDirectory)XmlParseHelperNumber.cpp">
+      <Filter>Configuration\XmlParsing</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)XmlParseHelperFloat.cpp">
-      <Filter>Configuration</Filter>
+    <ClCompile Include="$(MSBuildThisFileDirectory)XmlParseHelperString.cpp">
+      <Filter>Configuration\XmlParsing</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)XmlParseHelperTable.cpp">
+      <Filter>Configuration\XmlParsing</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)XmlParseHelperVector.cpp">
+      <Filter>Configuration\XmlParsing</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)XmlParseMaster.cpp">
+      <Filter>Configuration\XmlParsing</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)XmlParseHelperMatrix.cpp">
+      <Filter>Configuration\XmlParsing</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -81,6 +93,9 @@
     </Filter>
     <Filter Include="Configuration">
       <UniqueIdentifier>{0aedde78-b6dc-4381-b1bb-57d3edd0b459}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Configuration\XmlParsing">
+      <UniqueIdentifier>{4243181c-0203-43b4-b237-3da165de6b9a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

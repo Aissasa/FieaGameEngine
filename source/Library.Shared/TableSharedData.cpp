@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "TableSharedData.h"
+#include "Vector.h"
 
 namespace Library
 {

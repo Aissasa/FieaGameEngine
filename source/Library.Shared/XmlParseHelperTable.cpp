@@ -16,6 +16,7 @@ namespace Library
 	void XmlParseHelperTable::Initialize()
 	{
 		IXmlParseHelper::Initialize();
+		mIsParsing = false;
 	}
 
 	/************************************************************************/
@@ -55,6 +56,7 @@ namespace Library
 			Datum& dat = sharedData.As<TableSharedData>()->GetScope().Append(NAME_ATTRIBUTE_NAME);
 			dat.PushBack(attrToAdd);
 
+			mIsParsing = true;
 			++mStartElementHandlerCount;
 
 			return true;
@@ -68,7 +70,10 @@ namespace Library
 	{
 		if (sharedData.Is(TableSharedData::TypeIdClass()) && el == SCOPE_ELEMENT_NAME)
 		{
-			++mEndElementHandlerCount;
+			if (!mIsParsing)
+			{
+				throw exception("Cannot call EndElementHandler before StartElementHandler.");
+			}
 
 			// end of nested scope
 			if (sharedData.Depth() > 1)
@@ -77,8 +82,29 @@ namespace Library
 				Scope* parentScope = sharedData.As<TableSharedData>()->GetScope().GetParent();
 				sharedData.As<TableSharedData>()->SetScope(*parentScope);
 			}
+
+			mIsParsing = false;
+			++mEndElementHandlerCount;
+
 			return true;
 		}
+		return false;
+	}
+	
+	/************************************************************************/
+	bool XmlParseHelperTable::CharDataHandler(SharedDataC & sharedData, const std::string & str)
+	{
+		UNREFERENCED_PARAMETER(str);
+		if (sharedData.Is(TableSharedData::TypeIdClass()))
+		{
+			if (!mIsParsing)
+			{
+				throw exception("Cannot call CharDataHandler before StartElementHandler.");
+			}
+
+			return true;
+		}
+
 		return false;
 	}
 
