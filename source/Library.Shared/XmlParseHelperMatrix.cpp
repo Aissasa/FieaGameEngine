@@ -11,7 +11,7 @@ namespace Library
 {
 	RTTI_DEFINITIONS(XmlParseHelperMatrix)
 
-		const std::string XmlParseHelperMatrix::MATRIX_ELEMENT_NAME = "Matrix";
+	const std::string XmlParseHelperMatrix::MATRIX_ELEMENT_NAME = "Matrix";
 	const std::string XmlParseHelperMatrix::NAME_ELEMENT_NAME = "Name";
 
 	/************************************************************************/
@@ -36,7 +36,7 @@ namespace Library
 			{
 				throw exception("This handler is already parsing another matrix element.");
 			}
-			
+
 			if (sharedData.As<TableSharedData>()->IsParsingElement)
 			{
 				throw exception("Cannot have nested elements in a matrix element.");

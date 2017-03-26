@@ -32,7 +32,7 @@ namespace Library
 		IXmlParseHelper& operator=(const IXmlParseHelper& rhs) = delete;
 
 		/** Initializes the IXmlParseHelper to its default state.
-		* Its purpose is to reset the IXmlParseHelper after each parse.
+		* Its purpose is to reset the IXmlParseHelper before each parse.
 		*/
 		virtual void Initialize();
 
