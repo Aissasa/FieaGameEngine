@@ -135,7 +135,7 @@ namespace UnitTestLibraryDesktop
 			xmlToParse = "<Untreated Health=\"5\" />";
 			master.Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length()));
 			Assert::IsTrue(sharedData->mDamage == 0);
-			Assert::IsTrue(sharedData->GetMaxDepth() == 0);
+			Assert::IsTrue(sharedData->GetMaxDepth() == 1);
 			Assert::IsTrue(helper->mStartElementHandlerCount == 0);
 			Assert::IsTrue(helper->mEndElementHandlerCount == 0);
 			Assert::IsTrue(helper->mCharDataHandlerCount == 0);
@@ -234,8 +234,6 @@ namespace UnitTestLibraryDesktop
 
 			sharedData.IncrementDepth();
 			Assert::IsTrue(sharedData.Depth() == 1);
-			Assert::IsTrue(sharedData.GetMaxDepth() == 0);
-			sharedData.UpdateMaxDepth();
 			Assert::IsTrue(sharedData.GetMaxDepth() == 1);
 			
 			SharedDataC* clone = sharedData.Clone();
@@ -244,7 +242,6 @@ namespace UnitTestLibraryDesktop
 
 			clone->DecrementDepth();
 			clone->DecrementDepth();
-			clone->As<TestSharedData>()->UpdateMaxDepth();
 			Assert::IsTrue(clone->As<TestSharedData>()->GetMaxDepth() == 1);
 			Assert::IsTrue(clone->Depth() == 0);
 			Assert::IsTrue(sharedData.Depth() == 1);

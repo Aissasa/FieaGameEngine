@@ -68,7 +68,7 @@ namespace Library
 
 			/** Increments the depth in the SharedData.
 			*/
-			void IncrementDepth();
+			virtual void IncrementDepth();
 
 			/** Decrements the depth in the SharedData.
 			*/

@@ -31,6 +31,13 @@ namespace UnitTestLibraryDesktop
 	}
 
 	/************************************************************************/
+	void TestSharedData::IncrementDepth()
+	{
+		SharedDataC::IncrementDepth();
+		UpdateMaxDepth();
+	}
+
+	/************************************************************************/
 	void TestSharedData::UpdateMaxDepth()
 	{
 		if (mDepth > mMaxDepth)

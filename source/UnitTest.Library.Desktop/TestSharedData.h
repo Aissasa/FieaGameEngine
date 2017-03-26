@@ -22,13 +22,15 @@ namespace UnitTestLibraryDesktop
 
 		virtual void Initialize() override;
 
-		void UpdateMaxDepth();
+		void IncrementDepth() override;
 
 		std::uint32_t GetMaxDepth() const;
 
 		std::uint32_t mDamage;
 
 	private:
+
+		void UpdateMaxDepth();
 
 		std::uint32_t mMaxDepth;
 	};

@@ -22,7 +22,6 @@ namespace UnitTestLibraryDesktop
 		if (sharedData.Is(TestSharedData::TypeIdClass()) && el != "Untreated")
 		{
 			++mStartElementHandlerCount;
-			sharedData.As<TestSharedData>()->UpdateMaxDepth();
 
 			for (auto& attr : attributes)
 			{
