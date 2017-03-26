@@ -24,6 +24,7 @@ namespace Library
 		TableSharedData* data = new TableSharedData(mXmlParseMaster);
 		data->mDepth = mDepth;
 		data->IsParsingElement = IsParsingElement;
+		data->MatrixVectors = MatrixVectors;
 
 		return data;
 	}
@@ -32,7 +33,14 @@ namespace Library
 	void TableSharedData::Initialize()
 	{
 		XmlParseMaster::SharedData::Initialize();
-		mScope->Clear();
+		IsParsingElement = false;
+		IsParsingMatrix = false;
+		MatrixVectors.Clear();
+		if (mScope)
+		{
+			delete mScope;
+			mScope = nullptr;
+		}
 	}
 
 	/************************************************************************/

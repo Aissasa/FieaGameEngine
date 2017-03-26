@@ -37,14 +37,14 @@ namespace Library
 	{
 		if (sharedData.Is(TableSharedData::TypeIdClass()) && el == VECTOR_ELEMENT_NAME)
 		{
-			if (sharedData.As<TableSharedData>()->IsParsingElement && !sharedData.As<TableSharedData>()->IsParsingMatrix)
-			{
-				throw exception("Cannot have nested elements in a vector element.");
-			}
-
 			if (mIsParsing)
 			{
 				throw exception("This handler is already parsing another vector element.");
+			}
+
+			if (sharedData.As<TableSharedData>()->IsParsingElement && !sharedData.As<TableSharedData>()->IsParsingMatrix)
+			{
+				throw exception("Cannot have nested elements in a vector element.");
 			}
 
 			// look for the name
@@ -133,23 +133,6 @@ namespace Library
 			++mEndElementHandlerCount;
 			sharedData.As<TableSharedData>()->IsParsingElement = false;
 			Reset();
-
-			return true;
-		}
-
-		return false;
-	}
-
-	/************************************************************************/
-	bool XmlParseHelperVector::CharDataHandler(SharedDataC & sharedData, const std::string & str)
-	{
-		UNREFERENCED_PARAMETER(str);
-		if (sharedData.Is(TableSharedData::TypeIdClass()))
-		{
-			if (!mIsParsing)
-			{
-				throw exception("Cannot call CharDataHandler before StartElementHandler");
-			}
 
 			return true;
 		}

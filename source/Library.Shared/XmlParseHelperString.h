@@ -22,7 +22,7 @@ namespace Library
 
 		virtual bool EndElementHandler(XmlParseMaster::SharedData& sharedData, const std::string& el) override;
 
-		virtual bool CharDataHandler(SharedDataC& sharedData, const std::string& str) override;
+		virtual bool CharDataHandler(XmlParseMaster::SharedData& sharedData, const std::string& str) override;
 
 		virtual IXmlParseHelper* Clone() override;
 

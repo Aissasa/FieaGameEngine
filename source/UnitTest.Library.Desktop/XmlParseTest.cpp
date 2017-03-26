@@ -123,17 +123,17 @@ namespace UnitTestLibraryDesktop
 
 			string xmlToParse("<Weapon Damage=\"5\" />");
 
-			auto func1 = [&master, &xmlToParse] { master.Parse(xmlToParse.c_str(), xmlToParse.length()); };
+			auto func1 = [&master, &xmlToParse] { master.Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length())); };
 			Assert::ExpectException<exception>(func1);
 
 			TestXmlParseHelper* helper = new TestXmlParseHelper();
 			master.AddHelper(*helper);
 			
-			auto func2 = [&master, &xmlToParse] { master.Parse(xmlToParse.c_str(), xmlToParse.length() - 1); };
+			auto func2 = [&master, &xmlToParse] { master.Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length()-1)); };
 			Assert::ExpectException<exception>(func2);
 
 			xmlToParse = "<Untreated Health=\"5\" />";
-			master.Parse(xmlToParse.c_str(), xmlToParse.length());
+			master.Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length()));
 			Assert::IsTrue(sharedData->mDamage == 0);
 			Assert::IsTrue(sharedData->GetMaxDepth() == 0);
 			Assert::IsTrue(helper->mStartElementHandlerCount == 0);
@@ -141,7 +141,7 @@ namespace UnitTestLibraryDesktop
 			Assert::IsTrue(helper->mCharDataHandlerCount == 0);
 
 			xmlToParse = "<Weapon Damage=\"5\" />";
-			master.Parse(xmlToParse.c_str(), xmlToParse.length());
+			master.Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length()));
 			Assert::IsTrue(sharedData->mDamage == 5);
 			Assert::IsTrue(sharedData->GetMaxDepth() == 1);
 			Assert::IsTrue(helper->mStartElementHandlerCount == 1);
@@ -149,7 +149,7 @@ namespace UnitTestLibraryDesktop
 			Assert::IsTrue(helper->mCharDataHandlerCount == 0);
 
 			xmlToParse = "<Weapon><Damage><Value>9</Value></Damage></Weapon>";
-			master.Parse(xmlToParse.c_str(), xmlToParse.length());
+			master.Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length()));
 			Assert::IsTrue(sharedData->mDamage == 9);
 			Assert::IsTrue(sharedData->GetMaxDepth() == 3);
 			Assert::IsTrue(helper->mStartElementHandlerCount == 3);
@@ -157,7 +157,7 @@ namespace UnitTestLibraryDesktop
 			Assert::IsTrue(helper->mCharDataHandlerCount == 1);
 
 			xmlToParse = "<Weapon><Damage Value=\"23\"></Damage></Weapon>";
-			master.Parse(xmlToParse.c_str(), xmlToParse.length());
+			master.Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length()));
 			Assert::IsTrue(sharedData->mDamage == 23);
 			Assert::IsTrue(sharedData->GetMaxDepth() == 2);
 			Assert::IsTrue(helper->mStartElementHandlerCount == 2);

@@ -11,7 +11,7 @@ namespace Library
 {
 	RTTI_DEFINITIONS(XmlParseHelperMatrix)
 
-	const std::string XmlParseHelperMatrix::MATRIX_ELEMENT_NAME = "Matrix";
+		const std::string XmlParseHelperMatrix::MATRIX_ELEMENT_NAME = "Matrix";
 	const std::string XmlParseHelperMatrix::NAME_ELEMENT_NAME = "Name";
 
 	/************************************************************************/
@@ -32,14 +32,14 @@ namespace Library
 	{
 		if (sharedData.Is(TableSharedData::TypeIdClass()) && el == MATRIX_ELEMENT_NAME)
 		{
-			if (sharedData.As<TableSharedData>()->IsParsingElement)
-			{
-				throw exception("Cannot have nested elements in a matrix element.");
-			}
-
 			if (mIsParsing)
 			{
 				throw exception("This handler is already parsing another matrix element.");
+			}
+			
+			if (sharedData.As<TableSharedData>()->IsParsingElement)
+			{
+				throw exception("Cannot have nested elements in a matrix element.");
 			}
 
 			// look for the name
@@ -85,8 +85,9 @@ namespace Library
 				throw exception("Insufficient number of vectors to build the matrix.");
 			}
 
-			mat4x4 matrixToAdd(sharedData.As<TableSharedData>()->MatrixVectors[0], sharedData.As<TableSharedData>()->MatrixVectors[1], 
-							   sharedData.As<TableSharedData>()->MatrixVectors[2], sharedData.As<TableSharedData>()->MatrixVectors[3]);
+			Vector<vec4> vectors = sharedData.As<TableSharedData>()->MatrixVectors;
+
+			mat4x4 matrixToAdd(vectors[0], vectors[1], vectors[2], vectors[3]);
 
 			Datum& dat = sharedData.As<TableSharedData>()->GetScope().Append(mNameString);
 			dat.PushBack(matrixToAdd);
@@ -94,24 +95,8 @@ namespace Library
 			++mEndElementHandlerCount;
 			sharedData.As<TableSharedData>()->IsParsingElement = false;
 			sharedData.As<TableSharedData>()->IsParsingMatrix = false;
+			sharedData.As<TableSharedData>()->MatrixVectors.Clear();
 			Reset();
-
-			return true;
-		}
-
-		return false;
-	}
-
-	/************************************************************************/
-	bool XmlParseHelperMatrix::CharDataHandler(SharedDataC & sharedData, const std::string & str)
-	{
-		UNREFERENCED_PARAMETER(str);
-		if (sharedData.Is(TableSharedData::TypeIdClass()))
-		{
-			if (!mIsParsing)
-			{
-				throw exception("Cannot call CharDataHandler before StartElementHandler");
-			}
 
 			return true;
 		}

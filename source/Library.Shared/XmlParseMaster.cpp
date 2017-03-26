@@ -67,7 +67,7 @@ namespace Library
 
 	/************************************************************************/
 	XmlParseMaster::XmlParseMaster(SharedData* sharedData) :
-		mParser(XML_ParserCreate(nullptr)), mSharedData(sharedData), mHelpers(), mCachedFileName(""), mIsCloned(false)
+		mParser(XML_ParserCreate(nullptr)), mSharedData(sharedData), mHelpers(), mCachedFileName(), mIsCloned(false)
 	{
 		if (mSharedData)
 		{
@@ -154,7 +154,7 @@ namespace Library
 
 		std::ifstream in(fileName);
 		std::string contents((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
-		Parse(contents.c_str(), contents.length());
+		Parse(contents.c_str(), static_cast<uint32_t>(contents.length()));
 	}
 
 	/************************************************************************/
@@ -200,8 +200,6 @@ namespace Library
 			attributes.Insert(pair<string, string>(string(atts[i]), string(atts[i + 1])));
 		}
 
-		master->GetSharedData().IncrementDepth();
-
 		for (auto& helper : master->mHelpers)
 		{
 			if (helper->StartElementHandler(*(master->mSharedData), el, attributes))
@@ -209,6 +207,8 @@ namespace Library
 				break;
 			}
 		}
+
+		master->GetSharedData().IncrementDepth();
 	}
 
 	/************************************************************************/
@@ -221,6 +221,8 @@ namespace Library
 			throw exception("No helpers are available.");
 		}
 
+		master->GetSharedData().DecrementDepth();
+
 		string el(name);
 		for (auto& helper : master->mHelpers)
 		{
@@ -229,8 +231,6 @@ namespace Library
 				break;
 			}
 		}
-
-		master->GetSharedData().DecrementDepth();
 	}
 
 	/************************************************************************/

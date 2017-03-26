@@ -35,6 +35,9 @@
     <ClCompile Include="XmlParseTest.cpp">
       <Filter>Test Classes</Filter>
     </ClCompile>
+    <ClCompile Include="ScopeXmlParseTest.cpp">
+      <Filter>Test Classes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Support Classes">

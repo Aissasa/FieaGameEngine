@@ -24,7 +24,7 @@ namespace Library
 	/************************************************************************/
 	void XmlParseHelperNumber::Initialize()
 	{
-		XmlParseHelperNumber::Initialize();
+		IXmlParseHelper::Initialize();
 		Reset();
 	}
 
@@ -33,14 +33,14 @@ namespace Library
 	{
 		if (sharedData.Is(TableSharedData::TypeIdClass()) && (el == INTEGER_ELEMENT_NAME || el == FLOAT_ELEMENT_NAME))
 		{
-			if (sharedData.As<TableSharedData>()->IsParsingElement)
-			{
-				throw exception("Cannot have nested elements in a number element.");
-			}
-
 			if (mIsParsing)
 			{
 				throw exception("This handler is already parsing another number element.");
+			}
+
+			if (sharedData.As<TableSharedData>()->IsParsingElement)
+			{
+				throw exception("Cannot have nested elements in a number element.");
 			}
 
 			// look for the name
@@ -113,13 +113,13 @@ namespace Library
 	}
 
 	/************************************************************************/
-	bool XmlParseHelperNumber::CharDataHandler(SharedDataC & sharedData, const std::string & str)
+	bool XmlParseHelperNumber::CharDataHandler(XmlParseMaster::SharedData & sharedData, const std::string & str)
 	{
 		if (sharedData.Is(TableSharedData::TypeIdClass()))
 		{
 			if (!mIsParsing)
 			{
-				throw exception("Cannot call CharDataHandler before StartElementHandler.");
+				return false;
 			}
 
 			if (!mDataGotSet)

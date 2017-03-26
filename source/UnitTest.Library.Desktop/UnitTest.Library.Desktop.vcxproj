@@ -206,6 +206,10 @@
       <SubType>
       </SubType>
     </ClCompile>
+    <ClCompile Include="ScopeXmlParseTest.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="SListTest.cpp" />
     <ClCompile Include="TestSharedData.cpp" />
     <ClCompile Include="TestXmlParseHelper.cpp" />

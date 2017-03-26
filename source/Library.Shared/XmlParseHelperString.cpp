@@ -32,14 +32,14 @@ namespace Library
 	{
 		if (sharedData.Is(TableSharedData::TypeIdClass()) && el == STRING_ELEMENT_NAME)
 		{
-			if (sharedData.As<TableSharedData>()->IsParsingElement)
-			{
-				throw exception("Cannot have nested elements in a string element.");
-			}
-
 			if (mIsParsing)
 			{
 				throw exception("This handler is already parsing another string element.");
+			}
+
+			if (sharedData.As<TableSharedData>()->IsParsingElement)
+			{
+				throw exception("Cannot have nested elements in a string element.");
 			}
 
 			// look for the name
@@ -105,13 +105,13 @@ namespace Library
 	}
 
 	/************************************************************************/
-	bool XmlParseHelperString::CharDataHandler(SharedDataC & sharedData, const std::string & str)
+	bool XmlParseHelperString::CharDataHandler(XmlParseMaster::SharedData & sharedData, const std::string & str)
 	{
 		if (sharedData.Is(TableSharedData::TypeIdClass()))
 		{
 			if (!mIsParsing)
 			{
-				throw exception("Cannot call CharDataHandler before StartElementHandler.");
+				return false;
 			}
 
 			if (!mDataGotSet)
@@ -145,7 +145,7 @@ namespace Library
 	{
 		mDataGotSet = false;
 		mIsParsing = false;
-		mNameString = "";
-		mDataString = "";
+		mNameString.clear();
+		mDataString.clear();
 	}
 }

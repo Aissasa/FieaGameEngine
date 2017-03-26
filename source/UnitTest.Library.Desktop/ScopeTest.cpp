@@ -240,9 +240,12 @@ namespace UnitTestLibraryDesktop
 		void ScopeClearTemplate()
 		{
 			Scope scope1;
-			T t1;
+			T t0, t1;
 			auto& dat = scope1.Append("JJ");
 			dat.PushBack(t1);
+
+			auto& dat0 = scope1.Append("bb");
+			dat0.PushBack(t0);
 
 			Scope& childScope = scope1.AppendScope("child scope");
 			auto& dat2 = childScope.Append("Yo");
