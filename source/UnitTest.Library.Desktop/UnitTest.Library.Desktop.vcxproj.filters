@@ -26,17 +26,26 @@
     <ClCompile Include="AttributedFoo.cpp">
       <Filter>Support Classes</Filter>
     </ClCompile>
-    <ClCompile Include="TestSharedData.cpp">
-      <Filter>Support Classes</Filter>
-    </ClCompile>
-    <ClCompile Include="TestXmlParseHelper.cpp">
-      <Filter>Support Classes</Filter>
-    </ClCompile>
     <ClCompile Include="XmlParseTest.cpp">
       <Filter>Test Classes</Filter>
     </ClCompile>
     <ClCompile Include="ScopeXmlParseTest.cpp">
       <Filter>Test Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="TestSharedData.cpp">
+      <Filter>Support Classes\XmlParsing</Filter>
+    </ClCompile>
+    <ClCompile Include="TestXmlParseHelper.cpp">
+      <Filter>Support Classes\XmlParsing</Filter>
+    </ClCompile>
+    <ClCompile Include="AbstractProductTest.cpp">
+      <Filter>Support Classes\Factory</Filter>
+    </ClCompile>
+    <ClCompile Include="Product1.cpp">
+      <Filter>Support Classes\Factory</Filter>
+    </ClCompile>
+    <ClCompile Include="Product2.cpp">
+      <Filter>Support Classes\Factory</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -45,6 +54,12 @@
     </Filter>
     <Filter Include="Test Classes">
       <UniqueIdentifier>{41368be5-0acf-4309-97dd-c4438405f57d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Support Classes\XmlParsing">
+      <UniqueIdentifier>{d4c133af-6c56-42f0-bb27-07a581b7f2c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Support Classes\Factory">
+      <UniqueIdentifier>{c4866243-17de-404b-a912-a6572eb86bf4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -55,11 +70,23 @@
     <ClInclude Include="AttributedFoo.h">
       <Filter>Support Classes</Filter>
     </ClInclude>
-    <ClInclude Include="TestXmlParseHelper.h">
-      <Filter>Support Classes</Filter>
-    </ClInclude>
     <ClInclude Include="TestSharedData.h">
-      <Filter>Support Classes</Filter>
+      <Filter>Support Classes\XmlParsing</Filter>
+    </ClInclude>
+    <ClInclude Include="TestXmlParseHelper.h">
+      <Filter>Support Classes\XmlParsing</Filter>
+    </ClInclude>
+    <ClInclude Include="AbstractProductTest.h">
+      <Filter>Support Classes\Factory</Filter>
+    </ClInclude>
+    <ClInclude Include="Product1.h">
+      <Filter>Support Classes\Factory</Filter>
+    </ClInclude>
+    <ClInclude Include="Product2.h">
+      <Filter>Support Classes\Factory</Filter>
+    </ClInclude>
+    <ClInclude Include="ConcreteFactoriesTest.h">
+      <Filter>Support Classes\Factory</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

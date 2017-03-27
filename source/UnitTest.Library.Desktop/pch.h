@@ -10,6 +10,7 @@
 #include <cstring>
 #include <iostream>
 #include <fstream>
+#include <cassert>
 
 // glm includes
 #include <glm/glm.hpp>

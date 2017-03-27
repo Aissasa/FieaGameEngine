@@ -47,6 +47,9 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)XmlParseHelperMatrix.h">
       <Filter>Configuration\XmlParsing</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Factory.h">
+      <Filter>Configuration\Factory</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp" />
@@ -97,6 +100,9 @@
     <Filter Include="Configuration\XmlParsing">
       <UniqueIdentifier>{4243181c-0203-43b4-b237-3da165de6b9a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Configuration\Factory">
+      <UniqueIdentifier>{29a18754-5b7a-4d1a-8c75-eadcbd01a4c4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)SList.inl">
@@ -107,6 +113,9 @@
     </None>
     <None Include="$(MSBuildThisFileDirectory)HashMap.inl">
       <Filter>Containers</Filter>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)Factory.inl">
+      <Filter>Configuration\Factory</Filter>
     </None>
   </ItemGroup>
 </Project>

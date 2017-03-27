@@ -81,7 +81,6 @@ namespace UnitTestLibraryDesktop
 
 			string xmlToParse("<Scope Name=\"Lvl1\"/>");
 			master1.Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length()));
-			Assert::IsTrue(testSharedData->GetMaxDepth() == 0);
 			Assert::IsTrue(scopeHelper->mStartElementHandlerCount == 0);
 			Assert::IsTrue(scopeHelper->mEndElementHandlerCount == 0);
 
@@ -161,8 +160,8 @@ namespace UnitTestLibraryDesktop
 
 			string xmlToParse("<Scope Name=\"Lvl1\"><Integer Name=\"Integer1\" Value=\"2\"/></Scope>");
 			master1.Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length()));
-			Assert::IsTrue(testSharedData->GetMaxDepth() == 0);
 			Assert::IsTrue(numberHelper->mStartElementHandlerCount == 0);
+			Assert::IsTrue(numberHelper->mEndElementHandlerCount == 0);
 
 			TableSharedData* sharedData = new TableSharedData();
 			XmlParseMaster master(sharedData);
@@ -219,8 +218,8 @@ namespace UnitTestLibraryDesktop
 
 			string xmlToParse("<Scope Name=\"Lvl1\"><String Name=\"String1\" Value=\"2\"/></Scope>");
 			master1.Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length()));
-			Assert::IsTrue(testSharedData->GetMaxDepth() == 0);
 			Assert::IsTrue(stringHelper->mStartElementHandlerCount == 0);
+			Assert::IsTrue(stringHelper->mEndElementHandlerCount == 0);
 
 			TableSharedData* sharedData = new TableSharedData();
 			XmlParseMaster master(sharedData);
@@ -278,8 +277,8 @@ namespace UnitTestLibraryDesktop
 
 			string xmlToParse("<Scope Name=\"Lvl1\"><Vector Name=\"Vector1\" x=\"2\" y=\"5.6f\" z=\"0\" w=\"0.3f\"/></Scope>");
 			master1.Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length()));
-			Assert::IsTrue(testSharedData->GetMaxDepth() == 0);
 			Assert::IsTrue(vectorHelper->mStartElementHandlerCount == 0);
+			Assert::IsTrue(vectorHelper->mEndElementHandlerCount == 0);
 
 			TableSharedData* sharedData = new TableSharedData();
 			XmlParseMaster master(sharedData);
@@ -343,8 +342,8 @@ namespace UnitTestLibraryDesktop
 
 			string xmlToParse("<Scope Name=\"Lvl1\"> <Matrix Name=\"Matrix1\"> <Vector Name=\"Vector1\" x=\"2\" y=\"5.6f\" z=\"0\" w=\"0.3f\"/> <Vector Name=\"Vector2\" x=\"5\" y=\"9.6f\" z=\"8\" w=\"7.3f\"/> <Vector Name=\"Vector3\" x=\"7\" y=\"9.8f\" z=\"4\" w=\"1.6f\"/> <Vector Name=\"Vector4\" x=\"9\" y=\"5.8f\" z=\"4\" w=\"1.6f\"/> </Matrix> </Scope>");
 			master1.Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length()));
-			Assert::IsTrue(testSharedData->GetMaxDepth() == 0);
 			Assert::IsTrue(matrixHelper->mStartElementHandlerCount == 0);
+			Assert::IsTrue(matrixHelper->mEndElementHandlerCount == 0);
 
 			TableSharedData* sharedData = new TableSharedData();
 			XmlParseMaster master(sharedData);
