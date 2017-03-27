@@ -12,7 +12,7 @@ namespace Library
 	{
 	public:
 
-		typedef HashMap<std::string, Factory<AbstractProductT*>>::Iterator MapIterator;
+		typename typedef HashMap<std::string, Factory<AbstractProductT>*>::Iterator MapIterator;
 
 		static Factory<AbstractProductT>* Find(const std::string& className);
 
@@ -22,40 +22,40 @@ namespace Library
 
 		virtual std::string ClassName() = 0;
 
+		static MapIterator begin();
+
+		static MapIterator end();
+
 	protected:
 
 		static void Add(Factory<AbstractProductT>& factory);
 
 		static void Remove(Factory<AbstractProductT>& factory);
 
-		static MapIterator begin();
-
-		static MapIterator end();
-
 	private:
 
 		static HashMap<std::string, Factory<AbstractProductT>*> sFactoryMap;
 	};
 
-#define ConcreteFactory( AbstractProductT, ConcreteProductT )             \
-    class ConcreteProductT##Factory : Library::Factory<AbstractProductT>  \
-    {                                                                     \
-        public:                                                           \
-             ConcreteProductT##Factory()  { Add( *this ) ; }              \
-	                                                                      \
-            ~ConcreteProductT##Factory()  { Remove( *this ) ; }           \
-            	                                                          \
-            virtual std::string ClassName() override                      \
-			{                                                             \
-	             return std::string(#ConcreteProductT);                   \
-	        }                                                             \
-                                                                          \
-            virtual AbstractProductT* Create() override                   \
-            {                                                             \
-                AbstractProductT * product = new ConcreteProductT() ;     \
-                assert( product != nullptr ) ;                            \
-                return product ;                                          \
-            }                                                             \
+#define ConcreteFactory( AbstractProductT, ConcreteProductT )                    \
+    class ConcreteProductT##Factory : public Library::Factory<AbstractProductT>  \
+    {                                                                            \
+        public:                                                                  \
+             ConcreteProductT##Factory()  { Add( *this ) ; }                     \
+	                                                                             \
+            ~ConcreteProductT##Factory()  { Remove( *this ) ; }                  \
+            	                                                                 \
+            virtual std::string ClassName() override                             \
+			{                                                                    \
+	             return std::string(#ConcreteProductT);                          \
+	        }                                                                    \
+                                                                                 \
+            virtual AbstractProductT* Create() override                          \
+            {                                                                    \
+                AbstractProductT * product = new ConcreteProductT() ;            \
+                assert( product != nullptr ) ;                                   \
+                return product ;                                                 \
+            }                                                                    \
     };
 }
 

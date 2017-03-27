@@ -3,6 +3,8 @@
 
 namespace UnitTestLibraryDesktop
 {
+	RTTI_DEFINITIONS(Product2);
+
 	/************************************************************************/
 	Product2::Product2(std::uint32_t number) :
 		AbstractProductTest(number)

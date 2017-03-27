@@ -192,6 +192,10 @@
       <SubType>
       </SubType>
     </ClCompile>
+    <ClCompile Include="FactoryTest.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="Foo.cpp" />
     <ClCompile Include="HashMapTest.cpp">
       <SubType>

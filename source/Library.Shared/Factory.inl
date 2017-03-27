@@ -3,6 +3,9 @@
 
 namespace Library
 {
+	template<typename AbstractProductT>
+	typename HashMap<std::string, Factory<AbstractProductT>*> Factory<AbstractProductT>::sFactoryMap = HashMap<std::string, Factory<AbstractProductT>*>();
+
 	/************************************************************************/
 	template<typename AbstractProductT>
 	Factory<AbstractProductT>* Factory<AbstractProductT>::Find(const std::string & className)
@@ -13,7 +16,7 @@ namespace Library
 		{
 			return nullptr;
 		}
-		return *iterator;
+		return (*iterator).second;
 	}
 
 	/************************************************************************/
@@ -34,8 +37,8 @@ namespace Library
 	template<typename AbstractProductT>
 	void Factory<AbstractProductT>::Add(Factory<AbstractProductT>& factory)
 	{
-		// todo think about if the factory already exists
-		sFactoryMap.Insert(&factory);
+		// urgent think about if the factory already exists
+		sFactoryMap.Insert(std::pair<std::string, Factory<AbstractProductT>*>(factory.ClassName(), &factory));
 	}
 
 	/************************************************************************/
@@ -47,14 +50,14 @@ namespace Library
 
 	/************************************************************************/
 	template<typename AbstractProductT>
-	MapIterator Factory<AbstractProductT>::begin()
+	typename HashMap<std::string, Factory<AbstractProductT>*>::Iterator Factory<AbstractProductT>::begin()
 	{
 		return sFactoryMap.begin();
 	}
 
 	/************************************************************************/
 	template<typename AbstractProductT>
-	MapIterator Factory<AbstractProductT>::end()
+	typename HashMap<std::string, Factory<AbstractProductT>*>::Iterator Factory<AbstractProductT>::end()
 	{
 		return sFactoryMap.end();
 	}

@@ -6,6 +6,8 @@ namespace UnitTestLibraryDesktop
 {
 	class Product2 final : public AbstractProductTest
 	{
+		RTTI_DECLARATIONS(Product2, AbstractProductTest)
+
 	public:
 
 		Product2(std::uint32_t number = 0);

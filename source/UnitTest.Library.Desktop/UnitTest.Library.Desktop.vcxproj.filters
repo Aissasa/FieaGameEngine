@@ -47,6 +47,9 @@
     <ClCompile Include="Product2.cpp">
       <Filter>Support Classes\Factory</Filter>
     </ClCompile>
+    <ClCompile Include="FactoryTest.cpp">
+      <Filter>Test Classes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Support Classes">
