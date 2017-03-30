@@ -90,8 +90,6 @@ namespace UnitTestLibraryDesktop
 		TEST_METHOD(IsPrescribedAttributeTest)
 		{
 			AttributedFoo attr;
-			auto func1 = [&attr] { attr.IsPrescribedAttribute(""); };
-			Assert::ExpectException<exception>(func1);
 
 			attr.AppendAuxiliaryAttribute("Test");
 			Assert::IsTrue(attr.IsPrescribedAttribute("InternalString"));
@@ -125,7 +123,6 @@ namespace UnitTestLibraryDesktop
 			attr.AppendAuxiliaryAttribute("Test2");
 			Assert::IsTrue(attr.IsAuxiliaryAttribute("Test1"));
 			Assert::IsTrue(attr.IsAuxiliaryAttribute("Test2"));
-			Assert::AreEqual(attr.AuxiliaryBegin(), 26U);
 		}
 
 #pragma endregion

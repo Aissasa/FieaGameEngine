@@ -63,11 +63,6 @@ namespace Library
 		*/
 		Datum& AppendAuxiliaryAttribute(const std::string& str);
 
-		/** Returns the index to the first slot where we can have an auxiliary attribute.
-		* @return Index to the begin slot.
-		*/
-		std::uint32_t AuxiliaryBegin() const;
-
 		/** Clears out the cashed prescribed attributes.
 		* This method needs to be called after we're done with any instances to avoid a memory leak.
 		*/

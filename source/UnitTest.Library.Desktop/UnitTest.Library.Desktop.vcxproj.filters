@@ -50,6 +50,9 @@
     <ClCompile Include="FactoryTest.cpp">
       <Filter>Test Classes</Filter>
     </ClCompile>
+    <ClCompile Include="Bar.cpp">
+      <Filter>Support Classes\Factory</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Support Classes">
@@ -89,6 +92,9 @@
       <Filter>Support Classes\Factory</Filter>
     </ClInclude>
     <ClInclude Include="ConcreteFactoriesTest.h">
+      <Filter>Support Classes\Factory</Filter>
+    </ClInclude>
+    <ClInclude Include="Bar.h">
       <Filter>Support Classes\Factory</Filter>
     </ClInclude>
   </ItemGroup>

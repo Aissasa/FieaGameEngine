@@ -37,7 +37,6 @@ namespace Library
 	template<typename AbstractProductT>
 	void Factory<AbstractProductT>::Add(Factory<AbstractProductT>& factory)
 	{
-		// urgent think about if the factory already exists
 		sFactoryMap.Insert(std::pair<std::string, Factory<AbstractProductT>*>(factory.ClassName(), &factory));
 	}
 

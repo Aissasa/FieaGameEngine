@@ -51,18 +51,10 @@ namespace Library
 	/************************************************************************/
 	bool Attributed::IsPrescribedAttribute(const std::string & str) const
 	{
-		if (str.empty())
+		if (!str.empty())
 		{
-			throw invalid_argument("The string shouldn't be empty.");
-		}
-
-		for (auto& i : sPrescribedAttributes)
-		{
-			// check current vector if it has the attribute
-			if (i.second.Find(str) != i.second.end())
-			{
-				return true;
-			}
+			Vector<std::string>& prescribedAttributes = sPrescribedAttributes[TypeIdInstance()];
+			return IsAttribute(str) && prescribedAttributes.Find(str) != prescribedAttributes.end();
 		}
 		return false;
 	}
@@ -87,17 +79,6 @@ namespace Library
 		}
 
 		return Append(str);
-	}
-
-	/************************************************************************/
-	std::uint32_t Attributed::AuxiliaryBegin() const
-	{
-		uint32_t index = 1;
-		for (auto& i : sPrescribedAttributes)
-		{
-			index += i.second.Size();
-		}
-		return index;
 	}
 
 	/************************************************************************/
@@ -305,7 +286,7 @@ namespace Library
 	/************************************************************************/
 	void Attributed::AddPrescribedAttributeToHashmap(const std::string & name)
 	{
-		auto& vect = sPrescribedAttributes[Attributed::TypeIdClass()];
+		auto& vect = sPrescribedAttributes[TypeIdInstance()];
 		if (vect.Find(name) == vect.end())
 		{
 			vect.PushBack(name);

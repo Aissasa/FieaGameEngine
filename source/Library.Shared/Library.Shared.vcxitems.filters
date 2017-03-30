@@ -50,6 +50,15 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Factory.h">
       <Filter>Configuration\Factory</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)WorldState.h">
+      <Filter>Configuration\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)GameTime.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)GameClock.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp" />
@@ -86,6 +95,15 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)XmlParseHelperMatrix.cpp">
       <Filter>Configuration\XmlParsing</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)WorldState.cpp">
+      <Filter>Configuration\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)GameTime.cpp">
+      <Filter>Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)GameClock.cpp">
+      <Filter>Misc</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Containers">
@@ -102,6 +120,12 @@
     </Filter>
     <Filter Include="Configuration\Factory">
       <UniqueIdentifier>{29a18754-5b7a-4d1a-8c75-eadcbd01a4c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Configuration\Scripting">
+      <UniqueIdentifier>{0849a3b8-cad8-479c-b81a-55fb3234173c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Misc">
+      <UniqueIdentifier>{5a04737e-47d2-4e0e-a554-1cb1c29b79d1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
