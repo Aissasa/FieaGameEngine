@@ -70,6 +70,8 @@ namespace UnitTestLibraryDesktop
 
 		AddNestedScopeAttribute("NestedScope");
 		AddNestedScopeAttribute("NestedScope", mNestedScope);
+
+		AddEmptyNestedScopeAttribute("EmptyNestedScope");
 	}
 
 }

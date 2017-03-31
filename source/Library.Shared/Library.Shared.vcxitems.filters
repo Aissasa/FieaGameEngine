@@ -59,6 +59,18 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)GameClock.h">
       <Filter>Misc</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Entity.h">
+      <Filter>Configuration\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Sector.h">
+      <Filter>Configuration\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)World.h">
+      <Filter>Configuration\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)EntityFactory.h">
+      <Filter>Configuration\Factory</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp" />
@@ -103,6 +115,15 @@
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)GameClock.cpp">
       <Filter>Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Entity.cpp">
+      <Filter>Configuration\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Sector.cpp">
+      <Filter>Configuration\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)World.cpp">
+      <Filter>Configuration\Scripting</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

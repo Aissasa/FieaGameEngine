@@ -222,6 +222,14 @@ namespace Library
 		*/
 		void AddNestedScopeAttribute(const std::string& name, Scope* nestedScope);
 
+		/** Adds an empty scope attribute to the attributed.
+		* @param name: Name of the attribute to add.
+		* @return Reference to the created datum.
+		* @see Scope
+		*/
+		Datum& AddEmptyNestedScopeAttribute(const std::string& name);
+
+
 	private:
 
 		static HashMap<std::uint64_t, Vector<std::string>> sPrescribedAttributes;

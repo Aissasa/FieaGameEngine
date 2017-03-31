@@ -1,10 +1,8 @@
-
-#include "Factory.h"
-
+#pragma once
 namespace Library
 {
 	template<typename AbstractProductT>
-	typename HashMap<std::string, Factory<AbstractProductT>*> Factory<AbstractProductT>::sFactoryMap = HashMap<std::string, Factory<AbstractProductT>*>();
+	HashMap<std::string, Factory<AbstractProductT>*> Factory<AbstractProductT>::sFactoryMap = HashMap<std::string, Factory<AbstractProductT>*>();
 
 	/************************************************************************/
 	template<typename AbstractProductT>

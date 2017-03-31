@@ -279,8 +279,23 @@ namespace Library
 	/************************************************************************/
 	void Attributed::AddNestedScopeAttribute(const std::string & name, Scope* nestedScope)
 	{
+		// todo change nestedscope to a ref
 		Adopt(*nestedScope, name);
 		AddPrescribedAttributeToHashmap(name);
+	}
+
+	/************************************************************************/
+	Datum& Attributed::AddEmptyNestedScopeAttribute(const std::string & name)
+	{
+		auto& dat = Append(name, Datum::DatumType::Table);
+		if (dat.Type() != Datum::DatumType::Table)
+		{
+			throw exception("The Attribute already exist under a non table type.");
+		}
+
+		AddPrescribedAttributeToHashmap(name);
+
+		return dat;
 	}
 
 	/************************************************************************/

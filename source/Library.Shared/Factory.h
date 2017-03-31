@@ -1,8 +1,5 @@
 #pragma once
 
-#include <cstdint>
-#include <cstring>
-#include <exception>
 #include "HashMap.h"
 
 namespace Library
@@ -15,7 +12,7 @@ namespace Library
 	{
 	public:
 
-		typename typedef HashMap<std::string, Factory<AbstractProductT>*>::Iterator MapIterator;
+		typedef typename HashMap<std::string, Factory<AbstractProductT>*>::Iterator MapIterator;
 
 		/** Finds a concrete factory by name.
 		* If the factory does not exist, a nullptr is returned.
@@ -72,7 +69,7 @@ namespace Library
 	};
 
 #define ConcreteFactory( AbstractProductT, ConcreteProductT )                    \
-    class ConcreteProductT##Factory : public Library::Factory<AbstractProductT>  \
+    class ConcreteProductT##Factory final : public Library::Factory<AbstractProductT>  \
     {                                                                            \
         public:                                                                  \
              ConcreteProductT##Factory()  { Add( *this ) ; }                     \

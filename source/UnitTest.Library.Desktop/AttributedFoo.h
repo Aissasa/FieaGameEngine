@@ -7,7 +7,7 @@ namespace UnitTestLibraryDesktop
 
 	class AttributedFoo : public Library::Attributed
 	{
-		RTTI_DECLARATIONS(AttributedFoo, Attributed);
+		RTTI_DECLARATIONS(AttributedFoo, Attributed)
 
 	public:
 

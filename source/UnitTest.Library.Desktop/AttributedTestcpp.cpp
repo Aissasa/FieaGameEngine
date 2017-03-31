@@ -95,6 +95,11 @@ namespace UnitTestLibraryDesktop
 			Assert::IsTrue(attr.IsPrescribedAttribute("InternalString"));
 			Assert::IsTrue(attr.IsPrescribedAttribute("mExternalFloat"));
 			Assert::IsTrue(attr.IsPrescribedAttribute("NestedScope"));
+			Assert::AreEqual(attr.Find("NestedScope")->Size(), 2u);
+			Assert::IsTrue(attr.IsPrescribedAttribute("EmptyNestedScope"));
+			Assert::AreEqual(attr.Find("EmptyNestedScope")->Size(), 0u);
+			Assert::IsTrue(attr.Find("EmptyNestedScope")->Type() == Datum::DatumType::Table);
+
 			Assert::IsFalse(attr.IsPrescribedAttribute("Test"));
 		}
 
