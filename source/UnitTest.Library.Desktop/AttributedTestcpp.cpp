@@ -91,6 +91,7 @@ namespace UnitTestLibraryDesktop
 		{
 			AttributedFoo attr;
 
+			//Assert::IsTrue(attr.IsPrescribedAttribute("this"));
 			attr.AppendAuxiliaryAttribute("Test");
 			Assert::IsTrue(attr.IsPrescribedAttribute("InternalString"));
 			Assert::IsTrue(attr.IsPrescribedAttribute("mExternalFloat"));

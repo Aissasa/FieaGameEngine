@@ -14,6 +14,12 @@ namespace Library
 
 		typedef typename HashMap<std::string, Factory<AbstractProductT>*>::Iterator MapIterator;
 
+
+		/** Default destructor.
+		 *  
+		 */
+		virtual ~Factory() = default;
+
 		/** Finds a concrete factory by name.
 		* If the factory does not exist, a nullptr is returned.
 		* @param className: Name of the factory to look for.

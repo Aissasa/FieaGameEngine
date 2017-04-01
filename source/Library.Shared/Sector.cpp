@@ -21,25 +21,6 @@ namespace Library
 	}
 
 	/************************************************************************/
-	Sector::Sector(const Sector& rhs):
-		Attributed(rhs), mEntitiesDatumPtr(nullptr)
-	{
-		mName = rhs.mName;
-	}
-
-	/************************************************************************/
-	Sector& Sector::operator=(const Sector& rhs)
-	{
-		if (this != &rhs)
-		{
-			Attributed::operator=(rhs);
-			mName = rhs.mName;
-		}
-
-		return *this;
-	}
-
-	/************************************************************************/
 	std::string Sector::Name() const
 	{
 		return mName;
@@ -61,8 +42,11 @@ namespace Library
 	/************************************************************************/
 	Entity& Sector::CreateEntity(const string& entityClassName, const string& entityInstanceName)
 	{
-		EntityFactory factory;
 		Entity* entity = Factory<Entity>::Create(entityClassName);
+		if (!entity)
+		{
+			throw exception("The correspondant factory needs to be initialized.");
+		}
 		entity->SetName(entityInstanceName);
 		entity->SetSector(*this);
 		AddNestedScopeAttribute(ENTITIES_ENTRY_NAME, entity);
@@ -93,13 +77,14 @@ namespace Library
 	void Sector::Update(WorldState& worldState)
 	{
 		assert(mEntitiesDatumPtr != nullptr);
-		worldState.SetSector(*this);
+		worldState.SetSector(this);
 		uint32_t size = mEntitiesDatumPtr->Size();
 		for (uint32_t i = 0; i < size; ++i)
 		{
 			assert((*mEntitiesDatumPtr)[i].Is(Entity::TypeIdClass()));
 			static_cast<Entity&>((*mEntitiesDatumPtr)[i]).Update(worldState);
 		}
+		worldState.SetSector(nullptr);
 	}
 
 	/************************************************************************/

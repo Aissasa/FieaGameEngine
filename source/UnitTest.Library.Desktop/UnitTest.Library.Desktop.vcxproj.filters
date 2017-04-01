@@ -53,6 +53,12 @@
     <ClCompile Include="Bar.cpp">
       <Filter>Support Classes\Factory</Filter>
     </ClCompile>
+    <ClCompile Include="WorldTest.cpp">
+      <Filter>Test Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="TestEntity.cpp">
+      <Filter>Support Classes\Scripting</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Support Classes">
@@ -66,6 +72,9 @@
     </Filter>
     <Filter Include="Support Classes\Factory">
       <UniqueIdentifier>{c4866243-17de-404b-a912-a6572eb86bf4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Support Classes\Scripting">
+      <UniqueIdentifier>{6a919a1a-323e-4d6c-a1c8-644318fdc0c8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -96,6 +105,9 @@
     </ClInclude>
     <ClInclude Include="Bar.h">
       <Filter>Support Classes\Factory</Filter>
+    </ClInclude>
+    <ClInclude Include="TestEntity.h">
+      <Filter>Support Classes\Scripting</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

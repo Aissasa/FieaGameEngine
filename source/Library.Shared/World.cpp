@@ -20,25 +20,6 @@ namespace Library
 	}
 
 	/************************************************************************/
-	World::World(const World& rhs) :
-		Attributed(rhs), mSectorsDatumPtr(nullptr)
-	{
-		mName = rhs.mName;
-	}
-
-	/************************************************************************/
-	World& World::operator=(const World& rhs)
-	{
-		if (this != &rhs)
-		{
-			Attributed::operator=(rhs);
-			mName = rhs.mName;
-		}
-
-		return *this;
-	}
-
-	/************************************************************************/
 	string World::Name() const
 	{
 		return mName;
@@ -73,13 +54,14 @@ namespace Library
 	void World::Update(WorldState& worldState)
 	{
 		assert(mSectorsDatumPtr != nullptr);
-		worldState.SetWorld(*this);
+		worldState.SetWorld(this);
 		uint32_t size = mSectorsDatumPtr->Size();
 		for (uint32_t i = 0; i < size; ++i)
 		{
 			assert((*mSectorsDatumPtr)[i].Is(Sector::TypeIdClass()));
 			static_cast<Sector&>((*mSectorsDatumPtr)[i]).Update(worldState);
 		}
+		//worldState.SetWorld(nullptr);
 	}
 
 	/************************************************************************/

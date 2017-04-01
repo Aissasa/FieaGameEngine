@@ -270,19 +270,21 @@ namespace UnitTestLibraryDesktop
 		template<typename T>
 		void ScopeToStringTemplate(const T& t1, const T& t2, const string& str1, const string& str2)
 		{
-			Scope scope1;
-			auto& dat = scope1.Append("JJ");
+			Scope* scope1 = new Scope();
+			auto& dat = scope1->Append("JJ");
 			dat.PushBack(t1);
 
-			Scope& childScope = scope1.AppendScope("child scope");
+			Scope& childScope = scope1->AppendScope("child scope");
 			auto& dat2 = childScope.Append("Yo");
 			dat2.PushBack(t2);
 
-			string result = scope1.ToString();
+			string result = scope1->ToString();
 			bool b = (result.find(str1) != string::npos);
 			Assert::IsTrue(b);
 			b = (result.find(str2) != string::npos);
 			Assert::IsTrue(b);
+
+			delete scope1;
 		}
 
 #pragma endregion

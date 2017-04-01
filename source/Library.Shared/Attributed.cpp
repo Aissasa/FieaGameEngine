@@ -27,6 +27,7 @@ namespace Library
 		(*this)["this"] = static_cast<RTTI*>(this);
 	}
 
+	/************************************************************************/
 	Attributed& Attributed::operator=(const Attributed & rhs)
 	{
 		if (this != &rhs)
@@ -45,7 +46,7 @@ namespace Library
 			throw invalid_argument("The string shouldn't be empty.");
 		}
 
-		return Scope::Find(str) != nullptr;
+		return Find(str) != nullptr;
 	}
 
 	/************************************************************************/
@@ -285,7 +286,7 @@ namespace Library
 	}
 
 	/************************************************************************/
-	Datum& Attributed::AddEmptyNestedScopeAttribute(const std::string & name)
+	Datum& Attributed::AddEmptyNestedScopeAttribute(const string & name)
 	{
 		auto& dat = Append(name, Datum::DatumType::Table);
 		if (dat.Type() != Datum::DatumType::Table)
@@ -299,7 +300,7 @@ namespace Library
 	}
 
 	/************************************************************************/
-	void Attributed::AddPrescribedAttributeToHashmap(const std::string & name)
+	void Attributed::AddPrescribedAttributeToHashmap(const string & name)
 	{
 		auto& vect = sPrescribedAttributes[TypeIdInstance()];
 		if (vect.Find(name) == vect.end())

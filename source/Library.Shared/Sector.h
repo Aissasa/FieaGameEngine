@@ -16,8 +16,8 @@ namespace Library
 
 		Sector();
 		~Sector() = default;
-		Sector(const Sector & rhs);
-		Sector& operator=(const Sector& rhs);
+		Sector(const Sector & rhs) = delete;
+		Sector& operator=(const Sector& rhs) = delete;
 
 		std::string Name() const;
 		void SetName(const std::string& name);

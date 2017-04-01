@@ -15,8 +15,8 @@ namespace Library
 
 		Entity();
 		virtual ~Entity() = default;
-		Entity(const Entity& rhs);
-		Entity& operator=(const Entity& rhs);
+		Entity(const Entity& rhs) = delete;
+		Entity& operator=(const Entity& rhs) = delete;
 
 		std::string Name() const;
 		void SetName(const std::string& name);
@@ -24,7 +24,7 @@ namespace Library
 		Sector* GetSector() const;
 		void SetSector(Sector& sector);
 
-		void Update(WorldState& worldState);
+		virtual void Update(WorldState& worldState);
 
 	protected:
 		void InitPrescribedAttributes() override;
@@ -36,5 +36,5 @@ namespace Library
 	};
 
 #define EntityConcreteFactory(EntityDerivedClass) \
-	ConcreteFactory(Entity, EntityDerivedClass);
+	ConcreteFactory(Library::Entity, EntityDerivedClass);
 }

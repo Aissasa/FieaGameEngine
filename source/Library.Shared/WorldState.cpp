@@ -16,9 +16,9 @@ namespace Library
 	}
 
 	/************************************************************************/
-	void WorldState::SetWorld(World& world)
+	void WorldState::SetWorld(World* world)
 	{
-		mWorld = &world;
+		mWorld = world;
 	}
 
 	/************************************************************************/
@@ -28,9 +28,9 @@ namespace Library
 	}
 
 	/************************************************************************/
-	void WorldState::SetSector(Sector& sector)
+	void WorldState::SetSector(Sector* sector)
 	{
-		mSector = &sector;
+		mSector = sector;
 	}
 
 	/************************************************************************/
@@ -40,9 +40,9 @@ namespace Library
 	}
 
 	/************************************************************************/
-	void WorldState::SetEntity(Entity& entity)
+	void WorldState::SetEntity(Entity* entity)
 	{
-		mEntity = &entity;
+		mEntity = entity;
 	}
 
 	/************************************************************************/

@@ -13,26 +13,7 @@ namespace Library
 	/************************************************************************/
 	Entity::Entity()
 	{
-		Entity::InitPrescribedAttributes();
-	}
-
-	/************************************************************************/
-	Entity::Entity(const Entity& rhs):
-		Attributed(rhs)
-	{
-		mName = rhs.mName;
-	}
-
-	/************************************************************************/
-	Entity& Entity::operator=(const Entity& rhs)
-	{
-		if (this != &rhs)
-		{
-			Attributed::operator=(rhs);
-			mName = rhs.mName;
-		}
-
-		return *this;
+		InitPrescribedAttributes();
 	}
 
 	/************************************************************************/

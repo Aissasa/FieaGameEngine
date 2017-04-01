@@ -13,8 +13,8 @@ namespace Library
 	public:
 		World();
 		~World() = default;
-		World(const World & rhs);
-		World& operator=(const World& rhs);
+		World(const World & rhs) = delete;
+		World& operator=(const World& rhs) = delete;
 
 		std::string Name() const;
 		void SetName(const std::string& name);

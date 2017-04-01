@@ -174,10 +174,15 @@ namespace Library
 			return true;
 		}
 
-		if (mParentScope != rhs.mParentScope || mVect.Size() != rhs.mVect.Size())
+		if (mParentScope != rhs.mParentScope)
 		{
 			return false;
 		}
+		if (mVect.Size() != rhs.mVect.Size())
+		{
+			return false;
+		}
+
 		bool same = true;
 
 		auto it1 = mVect.begin();
@@ -198,7 +203,7 @@ namespace Library
 				return false;
 			}
 
-			// urgent think of a better way to compare datums of scopes
+			// todo think of a better way to compare datums of scopes
 			if (v1.second.Type() == Datum::DatumType::Table && v2.second.Type() == Datum::DatumType::Table)
 			{
 				for (uint32_t i = 0; i < v1.second.Size(); ++i)
@@ -283,10 +288,14 @@ namespace Library
 			uint32_t size = dat.Size();
 			for (uint32_t i = 0; i < size; i++)
 			{
+				// to avoid infinite loop like for attributed for example
+				if (&dat[i] == this)
+				{
+					continue;
+				}
 				if (dat.Type() == Datum::DatumType::Table)
 				{
 					str = str + "\n" + dat.ToString(i);
-
 				}
 				else
 				{

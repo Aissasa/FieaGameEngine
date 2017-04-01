@@ -19,11 +19,11 @@ namespace Library
 		WorldState& operator=(const WorldState& rhs) = delete;
 
 		World* GetWorld() const;
-		void SetWorld(World& world);
+		void SetWorld(World* world);
 		Sector* GetSector() const;
-		void SetSector(Sector& sector);
+		void SetSector(Sector* sector);
 		Entity* GetEntity() const;
-		void SetEntity(Entity& entity);
+		void SetEntity(Entity* entity);
 		GameTime GetGameTime() const;
 		void SetGameTime(const GameTime& game_time);
 
