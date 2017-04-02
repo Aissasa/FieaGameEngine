@@ -55,11 +55,11 @@ namespace Library
 			else
 			{
 				// add nested scope
-				Scope& nestedScope = sharedData.As<TableSharedData>()->GetScope().AppendScope(attrToAdd);
+				Scope& nestedScope = sharedData.As<TableSharedData>()->GetScope()->AppendScope(attrToAdd);
 				sharedData.As<TableSharedData>()->SetScope(nestedScope);
 			}
 
-			Datum& dat = sharedData.As<TableSharedData>()->GetScope().Append(NAME_ATTRIBUTE_NAME);
+			Datum& dat = sharedData.As<TableSharedData>()->GetScope()->Append(NAME_ATTRIBUTE_NAME);
 			dat.PushBack(attrToAdd);
 			
 			++mStartElementHandlerCount;
@@ -84,7 +84,7 @@ namespace Library
 			if (sharedData.Depth() > 0)
 			{
 				// go to parent scope
-				Scope* parentScope = sharedData.As<TableSharedData>()->GetScope().GetParent();
+				Scope* parentScope = sharedData.As<TableSharedData>()->GetScope()->GetParent();
 				sharedData.As<TableSharedData>()->SetScope(*parentScope);
 			}
 

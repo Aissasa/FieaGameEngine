@@ -6,9 +6,19 @@
 #include "Entity.h"
 #include "EntityFactory.h"
 #include "TestEntity.h"
+#include "WorldSharedData.h"
+#include "XmlParseHelperWorld.h"
+#include "TestSharedData.h"
+#include "XmlParseHelperNumber.h"
+#include "XmlParseHelperSector.h"
+#include "XmlParseHelperEntity.h"
+#include "XmlParseHelperString.h"
+#include "XmlParseHelperVector.h"
+#include "XmlParseHelperMatrix.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 using namespace std;
+using namespace glm;
 using namespace Library;
 
 namespace UnitTestLibraryDesktop
@@ -39,6 +49,33 @@ namespace UnitTestLibraryDesktop
 				Assert::Fail(L"Memory Leaks!");
 			}
 		}
+#pragma endregion
+
+#pragma region Template Methods
+
+		/************************************************************************/
+		template <typename Helper>
+		void HelperRTTITestTemplate(string className)
+		{
+			RTTI* helper = new Helper();
+
+			Assert::IsNotNull(helper->As<Helper>());
+			Assert::IsNotNull(helper->As<IXmlParseHelper>());
+			Assert::IsNull(helper->As<TableSharedData>());
+
+			Assert::IsTrue(helper->Is(className));
+			Assert::IsTrue(helper->Is(helper->TypeIdInstance()));
+			Assert::IsTrue(helper->Is(helper->As<IXmlParseHelper>()->TypeIdClass()));
+			Assert::IsTrue(helper->As<Helper>()->TypeName() == className);
+
+			Assert::IsTrue(helper->QueryInterface(helper->TypeIdInstance())->ToString() == "RTTI");
+			Assert::IsNotNull(helper->As<Helper>());
+
+			Assert::IsTrue(helper->As<Helper>()->Equals(helper));
+
+			delete helper;
+		}
+
 #pragma endregion
 
 #pragma region TestMethods
@@ -195,6 +232,8 @@ namespace UnitTestLibraryDesktop
 			WorldState state;
 			world->Update(state);
 			Assert::IsTrue(state.GetWorld() == world);
+			Assert::IsNull(state.GetSector());
+			Assert::IsNull(state.GetEntity());
 			world->Update(state);
 			Assert::IsTrue(ent1.As<TestEntity>()->GetNumber() == 2);
 			Assert::IsTrue(ent2.As<TestEntity>()->GetNumber() == 2);
@@ -222,6 +261,303 @@ namespace UnitTestLibraryDesktop
 			Assert::IsTrue(world->As<World>()->Equals(world));
 
 			delete world;
+		}
+
+#pragma endregion 
+
+#pragma region XmlParsing
+
+		/************************************************************************/
+		TEST_METHOD(XmlParseHelperWorldTest)
+		{
+			// non working shared data
+			TestSharedData* testSharedData = new TestSharedData();
+			XmlParseMaster master1(testSharedData);
+
+			XmlParseHelperWorld* worldHelper = new XmlParseHelperWorld();
+			master1.AddHelper(*worldHelper);
+
+			string xmlToParse("<World Name=\"Lvl1\"/>");
+			master1.Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length()));
+			Assert::IsTrue(worldHelper->mStartElementHandlerCount == 0);
+			Assert::IsTrue(worldHelper->mEndElementHandlerCount == 0);
+
+			WorldSharedData* sharedData = new WorldSharedData();
+			XmlParseMaster master(sharedData);
+			master.AddHelper(*worldHelper);
+
+			// no name
+			xmlToParse = "<World Test=\"Yo\"/>";
+			auto func1 = [&master, &xmlToParse] { master.Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length())); };
+			Assert::ExpectException<exception>(func1);
+
+			// nested world
+			xmlToParse = "<World Name=\"Yo\"><World Name=\"Yo2\"/></World>";
+			auto func2 = [&master, &xmlToParse] { master.Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length())); };
+			Assert::ExpectException<exception>(func2);
+
+			// simple world
+			xmlToParse = "<World Test=\"Yo\" Name=\"Lvl1\">bla</World>";
+			master.Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length()));
+			Assert::IsNotNull(sharedData->GetScope());
+			Assert::IsTrue(sharedData->GetScope()->Is(World::TypeIdClass()));
+			Assert::IsTrue(sharedData->GetScope()->As<World>()->Sectors().IsEmpty());
+			Assert::IsTrue(sharedData->GetScope()->As<World>()->Name() == "Lvl1");
+
+			// clone helper
+			XmlParseMaster* cloneMaster = master.Clone();
+			cloneMaster->Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length()));
+			auto& cloneSharedData = cloneMaster->GetSharedData();
+			Assert::IsTrue(cloneSharedData.Is(WorldSharedData::TypeIdClass()));
+			WorldSharedData& worldCloneSharedData = static_cast<WorldSharedData&>(cloneSharedData);
+			Assert::IsNotNull(worldCloneSharedData.GetScope());
+			Assert::IsTrue(worldCloneSharedData.GetScope()->Is(World::TypeIdClass()));
+			Assert::IsTrue(worldCloneSharedData.GetScope()->As<World>()->Sectors().IsEmpty());
+			Assert::IsTrue(worldCloneSharedData.GetScope()->As<World>()->Name() == "Lvl1");
+
+			delete cloneMaster;
+			delete worldHelper;
+			delete sharedData;
+			delete testSharedData;
+		}
+
+		/************************************************************************/
+		TEST_METHOD(XmlParseHelperSectorTest)
+		{
+			// non working shared data
+			TestSharedData* testSharedData = new TestSharedData();
+			XmlParseMaster master1(testSharedData);
+
+			XmlParseHelperWorld* worldHelper = new XmlParseHelperWorld();
+			XmlParseHelperSector* sectorHelper = new XmlParseHelperSector();
+			master1.AddHelper(*worldHelper);
+			master1.AddHelper(*sectorHelper);
+
+			string xmlToParse("<World Name=\"Lvl1\"><Sector Name=\"Sec1\"></Sector></World>");
+			master1.Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length()));
+			Assert::IsTrue(worldHelper->mStartElementHandlerCount == 0);
+			Assert::IsTrue(worldHelper->mEndElementHandlerCount == 0);
+
+			WorldSharedData* sharedData = new WorldSharedData();
+			XmlParseMaster master(sharedData);
+			master.AddHelper(*worldHelper);
+			master.AddHelper(*sectorHelper);
+
+			// no name
+			xmlToParse = "<World Name=\"Lvl1\"><Sector NonName=\"Sec1\"></Sector></World>";
+			auto func1 = [&master, &xmlToParse] { master.Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length())); };
+			Assert::ExpectException<exception>(func1);
+
+			// not under world
+			xmlToParse = "<Sector Name=\"Sec2\"></Sector>";
+			auto func2 = [&master, &xmlToParse] { master.Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length())); };
+			Assert::ExpectException<exception>(func2);
+
+			// nested sector
+			xmlToParse = "<World Name=\"Lvl1\"><Sector Name=\"Sec1\"><Sector Name=\"Sec2\"></Sector></Sector></World>";
+			auto func3 = [&master, &xmlToParse] { master.Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length())); };
+			Assert::ExpectException<exception>(func3);
+			// to actually delete the world
+			sharedData->SetScope(*sharedData->GetScope()->As<Sector>()->GetWorld());
+
+			// simple sector
+			xmlToParse = "<World Name=\"Lvl1\"><Sector Name=\"Sec1\"></Sector></World>";
+			master.Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length()));
+			Assert::IsNotNull(sharedData->GetScope());
+			Assert::IsTrue(sharedData->GetScope()->Is(World::TypeIdClass()));
+			Assert::IsFalse(sharedData->GetScope()->As<World>()->Sectors().IsEmpty());
+			Assert::IsTrue(sharedData->GetScope()->As<World>()->Sectors().operator[](0).As<Sector>()->Name() == "Sec1");
+
+			// two sectors
+			xmlToParse = "<World Name=\"Lvl1\"><Sector Name=\"Sec1\"></Sector><Sector Name=\"Sec2\"></Sector></World>";
+			master.Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length()));
+			Assert::IsNotNull(sharedData->GetScope());
+			Assert::IsTrue(sharedData->GetScope()->As<World>()->Sectors().operator[](1).As<Sector>()->Name() == "Sec2");
+
+			// clone helper
+			XmlParseMaster* cloneMaster = master.Clone();
+			cloneMaster->Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length()));
+			auto& cloneSharedData = cloneMaster->GetSharedData();
+			Assert::IsTrue(cloneSharedData.Is(WorldSharedData::TypeIdClass()));
+			WorldSharedData& worldCloneSharedData = static_cast<WorldSharedData&>(cloneSharedData);
+			Assert::IsNotNull(worldCloneSharedData.GetScope());
+			Assert::IsTrue(worldCloneSharedData.GetScope()->Is(World::TypeIdClass()));
+			Assert::IsFalse(worldCloneSharedData.GetScope()->As<World>()->Sectors().IsEmpty());
+			Assert::IsTrue(worldCloneSharedData.GetScope()->As<World>()->Sectors().operator[](0).As<Sector>()->Name() == "Sec1");
+			Assert::IsTrue(worldCloneSharedData.GetScope()->As<World>()->Sectors().operator[](1).As<Sector>()->Name() == "Sec2");
+
+			delete cloneMaster;
+			delete worldHelper;
+			delete sectorHelper;
+			delete sharedData;
+			delete testSharedData;
+		}
+
+		/************************************************************************/
+		TEST_METHOD(XmlParseHelperEntityTest)
+		{
+			// non working shared data
+			TestSharedData* testSharedData = new TestSharedData();
+			XmlParseMaster master1(testSharedData);
+
+			XmlParseHelperWorld* worldHelper = new XmlParseHelperWorld();
+			XmlParseHelperSector* sectorHelper = new XmlParseHelperSector();
+			XmlParseHelperEntity* entityHelper = new XmlParseHelperEntity();
+			XmlParseHelperNumber* numberHelper = new XmlParseHelperNumber();
+			XmlParseHelperString* stringHelper = new XmlParseHelperString();
+			XmlParseHelperVector* vectorHelper = new XmlParseHelperVector();
+			XmlParseHelperMatrix* matrixHelper = new XmlParseHelperMatrix();
+			master1.AddHelper(*worldHelper);
+			master1.AddHelper(*sectorHelper);
+			master1.AddHelper(*entityHelper);
+			master1.AddHelper(*numberHelper);
+			master1.AddHelper(*stringHelper);
+			master1.AddHelper(*vectorHelper);
+			master1.AddHelper(*matrixHelper);
+
+			string xmlToParse("<World Name=\"Lvl1\"><Sector Name=\"Sec1\"><Entity Class=\"Entity\" InstanceName=\"Ent\"><Float Name=\"Fl\" Value=\"5.6f\"/></Entity></Sector></World>");
+			master1.Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length()));
+			Assert::IsTrue(worldHelper->mStartElementHandlerCount == 0);
+			Assert::IsTrue(worldHelper->mEndElementHandlerCount == 0);
+
+			WorldSharedData* sharedData = new WorldSharedData();
+			XmlParseMaster master(sharedData);
+			master.AddHelper(*worldHelper);
+			master.AddHelper(*sectorHelper);
+			master.AddHelper(*entityHelper);
+			master.AddHelper(*numberHelper);
+			master.AddHelper(*stringHelper);
+			master.AddHelper(*vectorHelper);
+			master.AddHelper(*matrixHelper);
+
+			// not under sector
+			xmlToParse = "<Entity Class=\"Entity\" InstanceName=\"Ent\"><Float Name=\"Fl\" Value=\"5.6f\"/></Entity>";
+			auto func2 = [&master, &xmlToParse] { master.Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length())); };
+			Assert::ExpectException<exception>(func2);
+
+			// no names
+			xmlToParse = "<World Name=\"Lvl1\"><Sector Name=\"Sec1\"><Entity Class=\"Entity\" NonInstanceName=\"Ent\"><Float Name=\"Fl\" Value=\"5.6f\"/></Entity></Sector></World>";
+			auto func0 = [&master, &xmlToParse] { master.Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length())); };
+			Assert::ExpectException<exception>(func0);
+			// to actually delete the world
+			sharedData->SetScope(*sharedData->GetScope()->As<Sector>()->GetWorld());
+
+			xmlToParse = "<World Name=\"Lvl1\"><Sector Name=\"Sec1\"><Entity NonClass=\"Entity\" InstanceName=\"Ent\"><Float Name=\"Fl\" Value=\"5.6f\"/></Entity></Sector></World>";
+			auto func1 = [&master, &xmlToParse] { master.Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length())); };
+			Assert::ExpectException<exception>(func1);
+			// to actually delete the world
+			sharedData->SetScope(*sharedData->GetScope()->As<Sector>()->GetWorld());
+
+			// nested entity
+			xmlToParse = "<World Name=\"Lvl1\"><Sector Name=\"Sec1\"><Entity Class=\"Entity\" InstanceName=\"Ent\"><Entity Class=\"Entity\" InstanceName=\"Ent2\"></Entity></Entity></Sector></Sector></World>";
+			auto func3 = [&master, &xmlToParse] { master.Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length())); };
+			Assert::ExpectException<exception>(func3);
+			// to actually delete the world
+			sharedData->SetScope(*sharedData->GetScope()->As<Entity>()->GetSector()->GetWorld());
+
+			// simple entity
+			xmlToParse = "<World Name=\"Lvl1\"><Sector Name=\"Sec1\"><Entity Class=\"Entity\" InstanceName=\"Ent\"><Float Name=\"Fl\" Value=\"5.6f\"/></Entity></Sector></World>";
+			master.Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length()));
+			Assert::IsNotNull(sharedData->GetScope());
+			Assert::IsTrue(sharedData->GetScope()->Is(World::TypeIdClass()));
+			Assert::IsFalse(sharedData->GetScope()->As<World>()->Sectors().IsEmpty());
+			Scope& ent = sharedData->GetScope()->As<World>()->Sectors().operator[](0).As<Sector>()->Entities().operator[](0);
+			Assert::IsTrue(ent.As<Entity>()->Name() == "Ent");
+			Assert::IsTrue(ent.As<Entity>()->IsAuxiliaryAttribute("Fl"));
+			Assert::IsTrue(ent.As<Entity>()->Find("Fl")->Get<float>() == 5.6f);
+
+			// simple entity with vector and matrix
+			xmlToParse = "<World Name=\"Lvl1\"><Sector Name=\"Sec1\"><Entity Class=\"Entity\" InstanceName=\"Ent\"><Vector Name=\"Vector1\" x=\"2\" y=\"5.6f\" z=\"0\" w=\"0.3f\"/><Matrix Name=\"Matrix1\"> <Vector Name=\"Vector1\" x=\"2\" y=\"5.6f\" z=\"0\" w=\"0.3f\"/> <Vector Name=\"Vector2\" x=\"5\" y=\"9.6f\" z=\"8\" w=\"7.3f\"/> <Vector Name=\"Vector3\" x=\"7\" y=\"9.8f\" z=\"4\" w=\"1.6f\"/> <Vector Name=\"Vector4\" x=\"9\" y=\"5.8f\" z=\"4\" w=\"1.6f\"/> </Matrix></Entity></Sector></World>";
+			master.Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length()));
+			Assert::IsNotNull(sharedData->GetScope());
+			Assert::IsTrue(sharedData->GetScope()->Is(World::TypeIdClass()));
+			Assert::IsFalse(sharedData->GetScope()->As<World>()->Sectors().IsEmpty());
+			Scope& ent10 = sharedData->GetScope()->As<World>()->Sectors().operator[](0).As<Sector>()->Entities().operator[](0);
+			Assert::IsTrue(ent10.As<Entity>()->Name() == "Ent");
+			Assert::IsTrue(ent10.As<Entity>()->IsAuxiliaryAttribute("Vector1"));
+			Assert::IsTrue(ent10.As<Entity>()->Find("Vector1")->Get<vec4>() == vec4(2, 5.6f, 0, 0.3f));
+			Assert::IsTrue(ent10.As<Entity>()->IsAuxiliaryAttribute("Matrix1"));
+			Assert::IsTrue(ent10.As<Entity>()->Find("Matrix1")->Get<mat4x4>() == mat4x4(2, 5.6f, 0, 0.3f, 5, 9.6f, 8, 7.3f, 7, 9.8f, 4, 1.6f, 9, 5.8f, 4, 1.6f));
+
+			// two entities
+			xmlToParse = "<World Name=\"Lvl1\"><Sector Name=\"Sec1\"><Entity Class=\"Entity\" InstanceName=\"Ent\"><String Name=\"Str1\" Value=\"yo\"/></Entity><Entity Class=\"Entity\" InstanceName=\"Ent2\"><Integer Name=\"Int1\" Value=\"5\"/></Entity></Sector></World>";
+			master.Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length()));
+			Scope& ent1 = sharedData->GetScope()->As<World>()->Sectors().operator[](0).As<Sector>()->Entities().operator[](0);
+			Scope& ent2 = sharedData->GetScope()->As<World>()->Sectors().operator[](0).As<Sector>()->Entities().operator[](1);
+			Assert::IsTrue(ent1.As<Entity>()->Name() == "Ent");
+			Assert::IsTrue(ent1.As<Entity>()->IsAuxiliaryAttribute("Str1"));
+			Assert::IsTrue(ent1.As<Entity>()->Find("Str1")->Get<string>() == "yo");
+			Assert::IsTrue(ent2.As<Entity>()->Name() == "Ent2");
+			Assert::IsTrue(ent2.As<Entity>()->IsAuxiliaryAttribute("Int1"));
+			Assert::IsTrue(ent2.As<Entity>()->Find("Int1")->Get<int32_t>() == 5);
+
+			// clone helper
+			XmlParseMaster* cloneMaster = master.Clone();
+			cloneMaster->Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length()));
+			auto& cloneSharedData = cloneMaster->GetSharedData();
+			Assert::IsTrue(cloneSharedData.Is(WorldSharedData::TypeIdClass()));
+			WorldSharedData& worldCloneSharedData = static_cast<WorldSharedData&>(cloneSharedData);
+			Assert::IsNotNull(worldCloneSharedData.GetScope());
+			Assert::IsTrue(worldCloneSharedData.GetScope()->Is(World::TypeIdClass()));
+			Assert::IsFalse(worldCloneSharedData.GetScope()->As<World>()->Sectors().IsEmpty());
+			Scope& ent3 = worldCloneSharedData.GetScope()->As<World>()->Sectors().operator[](0).As<Sector>()->Entities().operator[](0);
+			Assert::IsTrue(ent3.As<Entity>()->Name() == "Ent");
+			Assert::IsTrue(ent3.As<Entity>()->IsAuxiliaryAttribute("Str1"));
+			Assert::IsTrue(ent3.As<Entity>()->Find("Str1")->Get<string>() == "yo");
+
+			// todo fix this case, where the shared data now points to the cloned master
+			// simple entity
+			//xmlToParse = "<World Name=\"Lvl1\"><Sector Name=\"Sec1\"><Entity Class=\"Entity\" InstanceName=\"Ent\"><Float Name=\"Fl\" Value=\"5.6f\"/></Entity></Sector></World>";
+			//master.Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length()));
+			//Assert::IsNotNull(sharedData->GetScope());
+			//Assert::IsTrue(sharedData->GetScope()->Is(World::TypeIdClass()));
+			//Assert::IsFalse(sharedData->GetScope()->As<World>()->Sectors().IsEmpty());
+			//Scope& ent0 = sharedData->GetScope()->As<World>()->Sectors().operator[](0).As<Sector>()->Entities().operator[](0);
+			//Assert::IsTrue(ent0.As<Entity>()->Name() == "Ent");
+			//Assert::IsTrue(ent0.As<Entity>()->IsAuxiliaryAttribute("Fl"));
+			//Assert::IsTrue(ent0.As<Entity>()->Find("Fl")->Get<float>() == 5.6f);
+
+
+			delete cloneMaster;
+			delete worldHelper;
+			delete sectorHelper;
+			delete entityHelper;
+			delete numberHelper;
+			delete stringHelper;
+			delete vectorHelper;
+			delete matrixHelper;
+			delete sharedData;
+			delete testSharedData;
+		}
+
+		/************************************************************************/
+		TEST_METHOD(TableSharedDataRTTITest)
+		{
+			RTTI* sharedData = new WorldSharedData();
+
+			Assert::IsNotNull(sharedData->As<WorldSharedData>());
+			Assert::IsNotNull(sharedData->As<TableSharedData>());
+			Assert::IsNull(sharedData->As<Entity>());
+
+			Assert::IsTrue(sharedData->Is("WorldSharedData"));
+			Assert::IsTrue(sharedData->Is(sharedData->TypeIdInstance()));
+			Assert::IsTrue(sharedData->Is(sharedData->As<WorldSharedData>()->TypeIdClass()));
+			Assert::IsTrue(sharedData->As<WorldSharedData>()->TypeName() == "WorldSharedData");
+
+			Assert::IsTrue(sharedData->QueryInterface(sharedData->TypeIdInstance())->ToString() == "RTTI");
+			Assert::IsNotNull(sharedData->As<WorldSharedData>());
+
+			Assert::IsTrue(sharedData->As<WorldSharedData>()->Equals(sharedData));
+
+			delete sharedData;
+		}
+
+		/************************************************************************/
+		TEST_METHOD(XmlParseHelpersRTTITest)
+		{
+			HelperRTTITestTemplate<XmlParseHelperWorld>("XmlParseHelperWorld");
+			HelperRTTITestTemplate<XmlParseHelperSector>("XmlParseHelperSector");
+			HelperRTTITestTemplate<XmlParseHelperEntity>("XmlParseHelperEntity");
 		}
 
 #pragma endregion 

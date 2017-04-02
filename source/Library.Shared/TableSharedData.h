@@ -11,7 +11,7 @@ namespace Library
 	* @see XmlParseMaster
 	* @see IXmlParseHelper
 	*/
-	class TableSharedData final : public XmlParseMaster::SharedData
+	class TableSharedData : public XmlParseMaster::SharedData
 	{
 		RTTI_DECLARATIONS(TableSharedData, XmlParseMaster::SharedData)
 
@@ -20,12 +20,13 @@ namespace Library
 		/** TableSharedData Constructor.
 		* Creates and initializes a TableSharedData instance, and hooks it to the passed XmlParseMaster.
 		* @param xmlParseMaster: XmlParseMaster to hook the instance to. Defaulted to nullptr.
+		* @see XmlParseMaster
 		*/
 		TableSharedData(XmlParseMaster* xmlParseMaster = nullptr);
 
 		/** TableSharedData Destructor.
 		*/
-		~TableSharedData();
+		virtual ~TableSharedData();
 
 		TableSharedData(const TableSharedData & rhs) = delete;
 		TableSharedData& operator=(const TableSharedData& rhs) = delete;
@@ -46,7 +47,7 @@ namespace Library
 		* @return Associated Scope.
 		* @see Scope
 		*/
-		Scope& GetScope() const;
+		Scope* GetScope() const;
 
 		/** Sets a new Scope to the Scope stored within the TableSharedData.
 		* @param scope: Scope to set.

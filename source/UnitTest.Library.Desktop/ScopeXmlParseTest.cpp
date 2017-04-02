@@ -95,17 +95,17 @@ namespace UnitTestLibraryDesktop
 
 			xmlToParse = "<Scope Test=\"Yo\" Name=\"Lvl1\">bla</Scope>";
 			master.Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length()));
-			Assert::IsNotNull(&sharedData->GetScope());
-			Assert::IsNotNull(sharedData->GetScope().Find("Name"));
-			Assert::IsTrue(sharedData->GetScope().Find("Name")->Get<string>(0) == "Lvl1");
+			Assert::IsNotNull(sharedData->GetScope());
+			Assert::IsNotNull(sharedData->GetScope()->Find("Name"));
+			Assert::IsTrue(sharedData->GetScope()->Find("Name")->Get<string>(0) == "Lvl1");
 
 			XmlParseHelperNumber* numberHelper = new XmlParseHelperNumber();
 			master.AddHelper(*numberHelper);
 
 			xmlToParse = "<Scope Name=\"Lvl1\"><Integer Name=\"Integer1\" Value=\"2\"/></Scope>";
 			master.Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length()));
-			Assert::IsNotNull(sharedData->GetScope().Find("Integer1"));
-			Assert::IsTrue(sharedData->GetScope().Find("Integer1")->Get<int32_t>(0) == 2);
+			Assert::IsNotNull(sharedData->GetScope()->Find("Integer1"));
+			Assert::IsTrue(sharedData->GetScope()->Find("Integer1")->Get<int32_t>(0) == 2);
 
 
 			XmlParseHelperString* stringHelper = new XmlParseHelperString();
@@ -113,19 +113,19 @@ namespace UnitTestLibraryDesktop
 
 			xmlToParse = "<Scope Name=\"Lvl1\"><String Name=\"String1\" Value=\"Yo\"/></Scope>";
 			master.Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length()));
-			Assert::IsNotNull(sharedData->GetScope().Find("String1"));
-			Assert::IsTrue(sharedData->GetScope().Find("String1")->Get<string>(0) == "Yo");
+			Assert::IsNotNull(sharedData->GetScope()->Find("String1"));
+			Assert::IsTrue(sharedData->GetScope()->Find("String1")->Get<string>(0) == "Yo");
 
 
 			xmlToParse = "<Scope Name=\"Lvl1\"><Scope Name=\"Lvl2\"><Integer Name=\"Integer1\" Value=\"2\"/></Scope><String Name=\"String1\" Value=\"Yo\"/></Scope>";
 			master.Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length()));
 
-			Assert::IsNotNull(sharedData->GetScope().Find("Name"));
-			Assert::IsTrue(sharedData->GetScope().Find("Name")->Get<string>(0) == "Lvl1");
-			Assert::IsNotNull(sharedData->GetScope().Find("String1"));
-			Assert::IsTrue(sharedData->GetScope().Find("String1")->Get<string>(0) == "Yo");
+			Assert::IsNotNull(sharedData->GetScope()->Find("Name"));
+			Assert::IsTrue(sharedData->GetScope()->Find("Name")->Get<string>(0) == "Lvl1");
+			Assert::IsNotNull(sharedData->GetScope()->Find("String1"));
+			Assert::IsTrue(sharedData->GetScope()->Find("String1")->Get<string>(0) == "Yo");
 
-			Scope* childScope = sharedData->GetScope().Find("Lvl2")->Get<Scope*>(0);
+			Scope* childScope = sharedData->GetScope()->Find("Lvl2")->Get<Scope*>(0);
 			Assert::IsNotNull(childScope);
 			Assert::IsNotNull(childScope->Find("Name"));
 			Assert::IsTrue(childScope->Find("Name")->Get<string>(0) == "Lvl2");
@@ -135,8 +135,8 @@ namespace UnitTestLibraryDesktop
 			XmlParseMaster* cloneMaster = master.Clone();
 			xmlToParse = "<Scope Name=\"Lvl1\"><Integer Name=\"Integer1\" Value=\"2\"/></Scope>";
 			cloneMaster->Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length()));
-			Assert::IsNotNull(cloneMaster->GetSharedData().As<TableSharedData>()->GetScope().Find("Integer1"));
-			Assert::IsTrue(cloneMaster->GetSharedData().As<TableSharedData>()->GetScope().Find("Integer1")->Get<int32_t>(0) == 2);
+			Assert::IsNotNull(cloneMaster->GetSharedData().As<TableSharedData>()->GetScope()->Find("Integer1"));
+			Assert::IsTrue(cloneMaster->GetSharedData().As<TableSharedData>()->GetScope()->Find("Integer1")->Get<int32_t>(0) == 2);
 
 
 			delete cloneMaster;
@@ -184,18 +184,18 @@ namespace UnitTestLibraryDesktop
 
 			xmlToParse = "<Scope Name=\"Lvl1\"> <Integer Name=\"Integer1\" Value=\"2\"/> <Integer Name=\"Integer1\">5</Integer> <Float Name=\"Float1\" Value=\"2.5f\"/> </Scope>";
 			master.Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length()));
-			Assert::IsNotNull(sharedData->GetScope().Find("Integer1"));
-			Assert::IsTrue(sharedData->GetScope().Find("Integer1")->Get<int32_t>(0) == 2);
-			Assert::IsTrue(sharedData->GetScope().Find("Integer1")->Get<int32_t>(1) == 5);
-			Assert::IsTrue(sharedData->GetScope().Find("Float1")->Get<std::float_t>(0) == 2.5f);
+			Assert::IsNotNull(sharedData->GetScope()->Find("Integer1"));
+			Assert::IsTrue(sharedData->GetScope()->Find("Integer1")->Get<int32_t>(0) == 2);
+			Assert::IsTrue(sharedData->GetScope()->Find("Integer1")->Get<int32_t>(1) == 5);
+			Assert::IsTrue(sharedData->GetScope()->Find("Float1")->Get<std::float_t>(0) == 2.5f);
 
 			XmlParseMaster* cloneMaster = master.Clone();
 			xmlToParse = "<Scope Name=\"Lvl1\"> <Integer Name=\"Integer1\" Value=\"2\"/> <Integer Name=\"Integer1\">5</Integer> <Float Name=\"Float1\" Value=\"2.5f\"/> </Scope>";
 			cloneMaster->Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length()));
-			Assert::IsNotNull(cloneMaster->GetSharedData().As<TableSharedData>()->GetScope().Find("Integer1"));
-			Assert::IsTrue(cloneMaster->GetSharedData().As<TableSharedData>()->GetScope().Find("Integer1")->Get<int32_t>(0) == 2);
-			Assert::IsTrue(cloneMaster->GetSharedData().As<TableSharedData>()->GetScope().Find("Integer1")->Get<int32_t>(1) == 5);
-			Assert::IsTrue(cloneMaster->GetSharedData().As<TableSharedData>()->GetScope().Find("Float1")->Get<std::float_t>(0) == 2.5f);
+			Assert::IsNotNull(cloneMaster->GetSharedData().As<TableSharedData>()->GetScope()->Find("Integer1"));
+			Assert::IsTrue(cloneMaster->GetSharedData().As<TableSharedData>()->GetScope()->Find("Integer1")->Get<int32_t>(0) == 2);
+			Assert::IsTrue(cloneMaster->GetSharedData().As<TableSharedData>()->GetScope()->Find("Integer1")->Get<int32_t>(1) == 5);
+			Assert::IsTrue(cloneMaster->GetSharedData().As<TableSharedData>()->GetScope()->Find("Float1")->Get<std::float_t>(0) == 2.5f);
 
 			delete cloneMaster;
 			delete scopeHelper;
@@ -242,19 +242,19 @@ namespace UnitTestLibraryDesktop
 
 			xmlToParse = "<Scope Name=\"Lvl1\"> <String Name=\"String1\" Value=\"ha\"/> <String Name=\"String1\">yep</String> <String Name=\"String2\" Value=\"hahaha\"/> </Scope>";
 			master.Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length()));
-			Assert::IsNotNull(sharedData->GetScope().Find("String1"));
-			Assert::IsTrue(sharedData->GetScope().Find("String1")->Get<string>(0) == "ha");
-			Assert::IsTrue(sharedData->GetScope().Find("String1")->Get<string>(1) == "yep");
-			Assert::IsTrue(sharedData->GetScope().Find("String2")->Get<string>(0) == "hahaha");
-
+			Assert::IsNotNull(sharedData->GetScope()->Find("String1"));
+			Assert::IsTrue(sharedData->GetScope()->Find("String1")->Get<string>(0) == "ha");
+			Assert::IsTrue(sharedData->GetScope()->Find("String1")->Get<string>(1) == "yep");
+			Assert::IsTrue(sharedData->GetScope()->Find("String2")->Get<string>(0) == "hahaha");
 
 			XmlParseMaster* cloneMaster = master.Clone();
 			xmlToParse = "<Scope Name=\"Lvl1\"> <String Name=\"String1\" Value=\"ha\"/> <String Name=\"String1\">yep</String> <String Name=\"String2\" Value=\"hahaha\"/> </Scope>";
 			cloneMaster->Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length()));
-			Assert::IsNotNull(cloneMaster->GetSharedData().As<TableSharedData>()->GetScope().Find("String1"));
-			Assert::IsTrue(cloneMaster->GetSharedData().As<TableSharedData>()->GetScope().Find("String1")->Get<string>(0) == "ha");
-			Assert::IsTrue(cloneMaster->GetSharedData().As<TableSharedData>()->GetScope().Find("String1")->Get<string>(1) == "yep");
-			Assert::IsTrue(cloneMaster->GetSharedData().As<TableSharedData>()->GetScope().Find("String2")->Get<string>(0) == "hahaha");
+			Assert::IsNotNull(cloneMaster->GetSharedData().As<TableSharedData>()->GetScope()->Find("String1"));
+			Assert::IsTrue(cloneMaster->GetSharedData().As<TableSharedData>()->GetScope()->Find("String1")->Get<string>(0) == "ha");
+			Assert::IsTrue(cloneMaster->GetSharedData().As<TableSharedData>()->GetScope()->Find("String1")->Get<string>(1) == "yep");
+			Assert::IsTrue(cloneMaster->GetSharedData().As<TableSharedData>()->GetScope()->Find("String2")->Get<string>(0) == "hahaha");
+
 
 			delete cloneMaster;
 			delete scopeHelper;
@@ -310,16 +310,16 @@ namespace UnitTestLibraryDesktop
 
 			xmlToParse = "<Scope Name=\"Lvl1\"> <Vector Name=\"Vector1\" x=\"2\" y=\"5.6f\" z=\"0\" w=\"0.3f\"/> <Vector Name=\"Vector2\" x=\"5\" y=\"9.6f\" z=\"8\" w=\"7.3f\"/> <Vector Name=\"Vector1\" x=\"7\" y=\"9.8f\" z=\"4\" w=\"1.6f\"/> </Scope>";
 			master.Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length()));
-			Assert::IsTrue(sharedData->GetScope().Find("Vector1")->Get<vec4>(0) == vec4(2, 5.6f, 0, 0.3f));
-			Assert::IsTrue(sharedData->GetScope().Find("Vector1")->Get<vec4>(1) == vec4(7, 9.8f, 4, 1.6f));
-			Assert::IsTrue(sharedData->GetScope().Find("Vector2")->Get<vec4>(0) == vec4(5, 9.6f, 8, 7.3f));
+			Assert::IsTrue(sharedData->GetScope()->Find("Vector1")->Get<vec4>(0) == vec4(2, 5.6f, 0, 0.3f));
+			Assert::IsTrue(sharedData->GetScope()->Find("Vector1")->Get<vec4>(1) == vec4(7, 9.8f, 4, 1.6f));
+			Assert::IsTrue(sharedData->GetScope()->Find("Vector2")->Get<vec4>(0) == vec4(5, 9.6f, 8, 7.3f));
 
 			XmlParseMaster* cloneMaster = master.Clone();
 			xmlToParse = "<Scope Name=\"Lvl1\"> <Vector Name=\"Vector1\" x=\"2\" y=\"5.6f\" z=\"0\" w=\"0.3f\"/> <Vector Name=\"Vector2\" x=\"5\" y=\"9.6f\" z=\"8\" w=\"7.3f\"/> <Vector Name=\"Vector1\" x=\"7\" y=\"9.8f\" z=\"4\" w=\"1.6f\"/> </Scope>";
 			cloneMaster->Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length()));
-			Assert::IsTrue(cloneMaster->GetSharedData().As<TableSharedData>()->GetScope().Find("Vector1")->Get<vec4>(0) == vec4(2, 5.6f, 0, 0.3f));
-			Assert::IsTrue(cloneMaster->GetSharedData().As<TableSharedData>()->GetScope().Find("Vector1")->Get<vec4>(1) == vec4(7, 9.8f, 4, 1.6f));
-			Assert::IsTrue(cloneMaster->GetSharedData().As<TableSharedData>()->GetScope().Find("Vector2")->Get<vec4>(0) == vec4(5, 9.6f, 8, 7.3f));
+			Assert::IsTrue(cloneMaster->GetSharedData().As<TableSharedData>()->GetScope()->Find("Vector1")->Get<vec4>(0) == vec4(2, 5.6f, 0, 0.3f));
+			Assert::IsTrue(cloneMaster->GetSharedData().As<TableSharedData>()->GetScope()->Find("Vector1")->Get<vec4>(1) == vec4(7, 9.8f, 4, 1.6f));
+			Assert::IsTrue(cloneMaster->GetSharedData().As<TableSharedData>()->GetScope()->Find("Vector2")->Get<vec4>(0) == vec4(5, 9.6f, 8, 7.3f));
 
 			delete cloneMaster;
 			delete scopeHelper;
@@ -372,16 +372,16 @@ namespace UnitTestLibraryDesktop
 
 			xmlToParse = "<Scope Name=\"Lvl1\"> <Matrix Name=\"Matrix1\"><Vector Name=\"Vector1\" x=\"2\" y=\"5.6f\" z=\"0\" w=\"0.3f\"/> <Vector Name=\"Vector2\" x=\"5\" y=\"9.6f\" z=\"8\" w=\"7.3f\"/> <Vector Name=\"Vector3\" x=\"7\" y=\"9.8f\" z=\"4\" w=\"1.6f\"/> <Vector Name=\"Vector4\" x=\"9\" y=\"5.8f\" z=\"4\" w=\"1.6f\"/>  </Matrix> <Matrix Name=\"Matrix1\"><Vector Name=\"Vector1\" x=\"2\" y=\"5.6f\" z=\"0\" w=\"0.3f\"/> <Vector Name=\"Vector2\" x=\"5\" y=\"9.6f\" z=\"8\" w=\"7.3f\"/> <Vector Name=\"Vector3\" x=\"7\" y=\"9.8f\" z=\"4\" w=\"1.6f\"/> <Vector Name=\"Vector4\" x=\"9\" y=\"5.8f\" z=\"4\" w=\"0.6f\"/>  </Matrix> <Matrix Name=\"Matrix2\"><Vector Name=\"Vector1\" x=\"2\" y=\"5.6f\" z=\"0\" w=\"0.3f\"/> <Vector Name=\"Vector2\" x=\"5\" y=\"9.6f\" z=\"8\" w=\"7.3f\"/> <Vector Name=\"Vector3\" x=\"7\" y=\"9.8f\" z=\"4\" w=\"1.6f\"/> <Vector Name=\"Vector4\" x=\"9\" y=\"5.8f\" z=\"4\" w=\"1.9f\"/>  </Matrix></Scope>";
 			master.Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length()));
-			Assert::IsTrue(sharedData->GetScope().Find("Matrix1")->Get<mat4x4>(0) == mat4x4(vec4(2, 5.6f, 0, 0.3f), vec4(5, 9.6f, 8, 7.3f), vec4(7, 9.8, 4, 1.6f), vec4(9, 5.8f, 4, 1.6f)));
-			Assert::IsTrue(sharedData->GetScope().Find("Matrix1")->Get<mat4x4>(1) == mat4x4(vec4(2, 5.6f, 0, 0.3f), vec4(5, 9.6f, 8, 7.3f), vec4(7, 9.8, 4, 1.6f), vec4(9, 5.8f, 4, 0.6f)));
-			Assert::IsTrue(sharedData->GetScope().Find("Matrix2")->Get<mat4x4>(0) == mat4x4(vec4(2, 5.6f, 0, 0.3f), vec4(5, 9.6f, 8, 7.3f), vec4(7, 9.8, 4, 1.6f), vec4(9, 5.8f, 4, 1.9f)));
+			Assert::IsTrue(sharedData->GetScope()->Find("Matrix1")->Get<mat4x4>(0) == mat4x4(vec4(2, 5.6f, 0, 0.3f), vec4(5, 9.6f, 8, 7.3f), vec4(7, 9.8, 4, 1.6f), vec4(9, 5.8f, 4, 1.6f)));
+			Assert::IsTrue(sharedData->GetScope()->Find("Matrix1")->Get<mat4x4>(1) == mat4x4(vec4(2, 5.6f, 0, 0.3f), vec4(5, 9.6f, 8, 7.3f), vec4(7, 9.8, 4, 1.6f), vec4(9, 5.8f, 4, 0.6f)));
+			Assert::IsTrue(sharedData->GetScope()->Find("Matrix2")->Get<mat4x4>(0) == mat4x4(vec4(2, 5.6f, 0, 0.3f), vec4(5, 9.6f, 8, 7.3f), vec4(7, 9.8, 4, 1.6f), vec4(9, 5.8f, 4, 1.9f)));
 
 			XmlParseMaster* cloneMaster = master.Clone();
 			xmlToParse = "<Scope Name=\"Lvl1\"> <Matrix Name=\"Matrix1\"><Vector Name=\"Vector1\" x=\"2\" y=\"5.6f\" z=\"0\" w=\"0.3f\"/> <Vector Name=\"Vector2\" x=\"5\" y=\"9.6f\" z=\"8\" w=\"7.3f\"/> <Vector Name=\"Vector3\" x=\"7\" y=\"9.8f\" z=\"4\" w=\"1.6f\"/> <Vector Name=\"Vector4\" x=\"9\" y=\"5.8f\" z=\"4\" w=\"1.6f\"/>  </Matrix> <Matrix Name=\"Matrix1\"><Vector Name=\"Vector1\" x=\"2\" y=\"5.6f\" z=\"0\" w=\"0.3f\"/> <Vector Name=\"Vector2\" x=\"5\" y=\"9.6f\" z=\"8\" w=\"7.3f\"/> <Vector Name=\"Vector3\" x=\"7\" y=\"9.8f\" z=\"4\" w=\"1.6f\"/> <Vector Name=\"Vector4\" x=\"9\" y=\"5.8f\" z=\"4\" w=\"0.6f\"/>  </Matrix> <Matrix Name=\"Matrix2\"><Vector Name=\"Vector1\" x=\"2\" y=\"5.6f\" z=\"0\" w=\"0.3f\"/> <Vector Name=\"Vector2\" x=\"5\" y=\"9.6f\" z=\"8\" w=\"7.3f\"/> <Vector Name=\"Vector3\" x=\"7\" y=\"9.8f\" z=\"4\" w=\"1.6f\"/> <Vector Name=\"Vector4\" x=\"9\" y=\"5.8f\" z=\"4\" w=\"1.9f\"/>  </Matrix></Scope>";
 			cloneMaster->Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length()));
-			Assert::IsTrue(cloneMaster->GetSharedData().As<TableSharedData>()->GetScope().Find("Matrix1")->Get<mat4x4>(0) == mat4x4(vec4(2, 5.6f, 0, 0.3f), vec4(5, 9.6f, 8, 7.3f), vec4(7, 9.8, 4, 1.6f), vec4(9, 5.8f, 4, 1.6f)));
-			Assert::IsTrue(cloneMaster->GetSharedData().As<TableSharedData>()->GetScope().Find("Matrix1")->Get<mat4x4>(1) == mat4x4(vec4(2, 5.6f, 0, 0.3f), vec4(5, 9.6f, 8, 7.3f), vec4(7, 9.8, 4, 1.6f), vec4(9, 5.8f, 4, 0.6f)));
-			Assert::IsTrue(cloneMaster->GetSharedData().As<TableSharedData>()->GetScope().Find("Matrix2")->Get<mat4x4>(0) == mat4x4(vec4(2, 5.6f, 0, 0.3f), vec4(5, 9.6f, 8, 7.3f), vec4(7, 9.8, 4, 1.6f), vec4(9, 5.8f, 4, 1.9f)));
+			Assert::IsTrue(cloneMaster->GetSharedData().As<TableSharedData>()->GetScope()->Find("Matrix1")->Get<mat4x4>(0) == mat4x4(vec4(2, 5.6f, 0, 0.3f), vec4(5, 9.6f, 8, 7.3f), vec4(7, 9.8, 4, 1.6f), vec4(9, 5.8f, 4, 1.6f)));
+			Assert::IsTrue(cloneMaster->GetSharedData().As<TableSharedData>()->GetScope()->Find("Matrix1")->Get<mat4x4>(1) == mat4x4(vec4(2, 5.6f, 0, 0.3f), vec4(5, 9.6f, 8, 7.3f), vec4(7, 9.8, 4, 1.6f), vec4(9, 5.8f, 4, 0.6f)));
+			Assert::IsTrue(cloneMaster->GetSharedData().As<TableSharedData>()->GetScope()->Find("Matrix2")->Get<mat4x4>(0) == mat4x4(vec4(2, 5.6f, 0, 0.3f), vec4(5, 9.6f, 8, 7.3f), vec4(7, 9.8, 4, 1.6f), vec4(9, 5.8f, 4, 1.9f)));
 
 			delete cloneMaster;
 			delete scopeHelper;

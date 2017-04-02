@@ -2,6 +2,8 @@
 #include "XmlParseMaster.h"
 #include "XmlParseHelperString.h"
 #include "TableSharedData.h"
+#include "Entity.h"
+#include "WorldSharedData.h"
 
 
 using namespace std;
@@ -90,9 +92,18 @@ namespace Library
 				throw exception("Cannot call EndElementHandler before StartElementHandler.");
 			}
 
+			Datum* dat;
 			// set the name and the data
-			Datum& dat = sharedData.As<TableSharedData>()->GetScope().Append(mNameString);
-			dat.PushBack(mDataString);
+			if (sharedData.Is(WorldSharedData::TypeIdClass()))
+			{
+				dat = &sharedData.As<WorldSharedData>()->GetScope()->As<Entity>()->AppendAuxiliaryAttribute(mNameString);
+			}
+			else
+			{
+				dat = &sharedData.As<TableSharedData>()->GetScope()->Append(mNameString);
+			}
+			// set the name and the data
+			dat->PushBack(mDataString);
 
 			++mEndElementHandlerCount;
 			sharedData.As<TableSharedData>()->IsParsingElement = false;

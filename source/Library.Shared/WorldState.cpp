@@ -46,14 +46,14 @@ namespace Library
 	}
 
 	/************************************************************************/
-	GameTime WorldState::GetGameTime() const
+	GameTime& WorldState::GetGameTime()
 	{
 		return mGameTime;
 	}
 
 	/************************************************************************/
-	void WorldState::SetGameTime(const GameTime& game_time)
+	void WorldState::SetGameTime(const GameTime& gameTime)
 	{
-		mGameTime = game_time;
+		mGameTime = gameTime;
 	}
 }

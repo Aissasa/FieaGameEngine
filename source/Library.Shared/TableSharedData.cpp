@@ -8,7 +8,7 @@ namespace Library
 
 	/************************************************************************/
 	TableSharedData::TableSharedData(XmlParseMaster* xmlParseMaster):
-		mScope(nullptr) ,IsParsingElement(false), XmlParseMaster::SharedData(xmlParseMaster)
+		SharedData(xmlParseMaster), IsParsingElement(false), IsParsingMatrix(false), mScope(nullptr)
 	{
 	}
 
@@ -24,6 +24,7 @@ namespace Library
 		TableSharedData* data = new TableSharedData(mXmlParseMaster);
 		data->mDepth = mDepth;
 		data->IsParsingElement = IsParsingElement;
+		data->IsParsingMatrix = IsParsingMatrix;
 		data->MatrixVectors = MatrixVectors;
 
 		return data;
@@ -32,21 +33,18 @@ namespace Library
 	/************************************************************************/
 	void TableSharedData::Initialize()
 	{
-		XmlParseMaster::SharedData::Initialize();
+		SharedData::Initialize();
 		IsParsingElement = false;
 		IsParsingMatrix = false;
 		MatrixVectors.Clear();
-		if (mScope)
-		{
-			delete mScope;
-			mScope = nullptr;
-		}
+		delete mScope;
+		mScope = nullptr;
 	}
 
 	/************************************************************************/
-	Scope& TableSharedData::GetScope() const
+	Scope* TableSharedData::GetScope() const
 	{
-		return *mScope;
+		return mScope;
 	}
 
 	/************************************************************************/

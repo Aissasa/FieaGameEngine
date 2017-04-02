@@ -71,6 +71,18 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)EntityFactory.h">
       <Filter>Configuration\Factory</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)WorldSharedData.h">
+      <Filter>Configuration\XmlParsing</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)XmlParseHelperSector.h">
+      <Filter>Configuration\XmlParsing</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)XmlParseHelperWorld.h">
+      <Filter>Configuration\XmlParsing</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)XmlParseHelperEntity.h">
+      <Filter>Configuration\XmlParsing</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp" />
@@ -124,6 +136,18 @@
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)World.cpp">
       <Filter>Configuration\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)WorldSharedData.cpp">
+      <Filter>Configuration\XmlParsing</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)XmlParseHelperWorld.cpp">
+      <Filter>Configuration\XmlParsing</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)XmlParseHelperSector.cpp">
+      <Filter>Configuration\XmlParsing</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)XmlParseHelperEntity.cpp">
+      <Filter>Configuration\XmlParsing</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

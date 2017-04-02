@@ -2,6 +2,8 @@
 #include "XmlParseMaster.h"
 #include "XmlParseHelperMatrix.h"
 #include "TableSharedData.h"
+#include "Entity.h"
+#include "WorldSharedData.h"
 
 
 using namespace std;
@@ -16,7 +18,7 @@ namespace Library
 
 	/************************************************************************/
 	XmlParseHelperMatrix::XmlParseHelperMatrix() :
-		mIsParsing(false), IXmlParseHelper()
+		IXmlParseHelper(), mIsParsing(false)
 	{
 	}
 
@@ -89,8 +91,18 @@ namespace Library
 
 			mat4x4 matrixToAdd(vectors[0], vectors[1], vectors[2], vectors[3]);
 
-			Datum& dat = sharedData.As<TableSharedData>()->GetScope().Append(mNameString);
-			dat.PushBack(matrixToAdd);
+			Datum* dat;
+			// set the name and the data
+			if (sharedData.Is(WorldSharedData::TypeIdClass()))
+			{
+				dat = &sharedData.As<WorldSharedData>()->GetScope()->As<Entity>()->AppendAuxiliaryAttribute(mNameString);
+			}
+			else
+			{
+				dat = &sharedData.As<TableSharedData>()->GetScope()->Append(mNameString);
+			}
+
+			dat->PushBack(matrixToAdd);
 
 			++mEndElementHandlerCount;
 			sharedData.As<TableSharedData>()->IsParsingElement = false;

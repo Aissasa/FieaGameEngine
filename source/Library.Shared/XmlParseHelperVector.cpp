@@ -3,6 +3,8 @@
 #include "XmlParseHelperVector.h"
 #include "TableSharedData.h"
 #include "Vector.h"
+#include "Entity.h"
+#include "WorldSharedData.h"
 
 
 using namespace std;
@@ -110,9 +112,18 @@ namespace Library
 			}
 			else
 			{
+				Datum* dat;
 				// set the name and the data
-				Datum& dat = sharedData.As<TableSharedData>()->GetScope().Append(name);
-				dat.PushBack(vectorToAdd);
+				if (sharedData.Is(WorldSharedData::TypeIdClass()))
+				{
+					dat = &sharedData.As<WorldSharedData>()->GetScope()->As<Entity>()->AppendAuxiliaryAttribute(name);
+				}
+				else
+				{
+					dat = &sharedData.As<TableSharedData>()->GetScope()->Append(name);
+				}
+
+				dat->PushBack(vectorToAdd);
 				++mStartElementHandlerCount;
 			}
 

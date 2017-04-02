@@ -31,9 +31,13 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)TableSharedData.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Vector.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)World.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)XmlParseHelperEntity.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)XmlParseHelperWorld.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)WorldSharedData.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)WorldState.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)XmlParseHelperMatrix.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)XmlParseHelperNumber.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)XmlParseHelperSector.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)XmlParseHelperString.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)XmlParseHelperTable.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)XmlParseHelperVector.h" />
@@ -53,6 +57,10 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Sector.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)TableSharedData.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)World.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)XmlParseHelperEntity.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)XmlParseHelperSector.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)XmlParseHelperWorld.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)WorldSharedData.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)WorldState.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)XmlParseHelperMatrix.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)XmlParseHelperNumber.cpp" />
