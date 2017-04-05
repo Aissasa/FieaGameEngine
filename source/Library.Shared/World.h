@@ -5,6 +5,7 @@ namespace Library
 {
 	class WorldState;
 	class Sector;
+	class Action;
 
 	/** World is a container for an interactive simulation. 
 	* It defines a global scope, contains a list of Sectors and an event queue.
@@ -15,6 +16,8 @@ namespace Library
 	class World final : public Attributed
 	{
 		RTTI_DECLARATIONS(World, Attributed);
+
+		typedef std::pair<Datum*, std::uint32_t> DatumAndIndexPair;
 
 	public:
 
@@ -39,6 +42,25 @@ namespace Library
 		*/
 		void SetName(const std::string& name);
 
+		/** Gets the Datum containing the World's Actions.
+		* @return World Actions.
+		* @see Action
+		* @see Datum
+		*/
+		Datum& Actions() const;
+
+		/** Creates a new Action and adopts it into the World.
+		* Needs the existance of the correspondant factory to work successfully.
+		* @exception An exception is thrown if the Action creation fails.
+		* @param actionClassName: Name of the Action class to create an instance from.
+		* @param actionInstanceName: Name of the new Action instance.
+		* @return Newly created Action instance.
+		* @see Action
+		*/
+		Action& CreateAction(const std::string& actionClassName, const std::string& actionInstanceName);
+
+		bool DestroyAction(const WorldState& worldState, const std::string& actionInstanceName) const;
+
 		/** Gets the Datum containing the World's Sectors.
 		* @return World Sectors.
 		* @see Sector
@@ -52,6 +74,14 @@ namespace Library
 		* @see Sector
 		*/
 		Sector& CreateSector(const std::string& sectorName);
+
+		/** Marks a certain action for delete.
+		* The delete operation of the actions added happens after the updates are done.
+		* @param action: A datum and index pair representing the action to destroy.
+		* @see Action
+		* @see Datum
+		*/
+		void AddActionToDestory(Datum& datumContainingAction, const std::uint32_t index);
 
 		/** Iterates through the contained Sectors and calls their update method.
 		* @param worldState: Wolrd state to use for updates.
@@ -70,9 +100,14 @@ namespace Library
 
 	private:
 
+		const static std::string ACTIONS_ENTRY_NAME;
 		const static std::string WORLD_NAME_ENTRY_NAME;
 		std::string mName;
 
+		Datum* mActionsDatumPtr;
 		Datum* mSectorsDatumPtr;
+		Vector<DatumAndIndexPair> mActionsToDestroy;
+
+		void DeleteActions();
 	};
 }

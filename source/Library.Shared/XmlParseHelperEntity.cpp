@@ -65,7 +65,7 @@ namespace Library
 				throw exception("The entity instance needs to have a name.");
 			}
 
-			EntityFactory factory;
+			//EntityFactory factory;
 
 			Entity& entity = worldSharedData.GetScope()->As<Sector>()->CreateEntity(entityClassName, entityInstanceName);
 			worldSharedData.SetScope(entity);

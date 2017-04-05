@@ -7,13 +7,14 @@ namespace Library
 	class World;
 	class Sector;
 	class Entity;
-	//class Action;
+	class Action;
 
     /** WorldState represnts the state of processing a World.
 	* It serves the role of passing data between various layers in the world.
 	* @see World
 	* @see Sector
 	* @see Entity
+	* @see Action
 	* @see GameTime
 	*/
 	class WorldState final
@@ -67,6 +68,18 @@ namespace Library
 		*/
 		void SetEntity(Entity* entity);
 
+		/** Gets the current Action.
+		* @return Current Action.
+		* @see Action
+		*/
+		Action* GetAction() const;
+
+		/** Sets the current Action.
+		* @param entity: New Action to set.
+		* @see Action
+		*/
+		void SetAction(Action* action);
+
 		/** Gets the current GameTime.
 		* @return Current GameTime.
 		* @see GameTime
@@ -84,7 +97,7 @@ namespace Library
 		World*  mWorld;
 		Sector* mSector;
 		Entity* mEntity;
-		//Action* mAction;
+		Action* mAction;
 
 		GameTime mGameTime;
 	};

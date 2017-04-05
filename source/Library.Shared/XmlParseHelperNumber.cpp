@@ -97,7 +97,7 @@ namespace Library
 			// set the name and the data
 			if (sharedData.Is(WorldSharedData::TypeIdClass()))
 			{
-				dat = &sharedData.As<WorldSharedData>()->GetScope()->As<Entity>()->AppendAuxiliaryAttribute(mNameString);
+				dat = &sharedData.As<WorldSharedData>()->GetScope()->As<Attributed>()->AppendAuxiliaryAttribute(mNameString);
 			}
 			else
 			{

@@ -1,47 +1,31 @@
 #include "pch.h"
-#include "Entity.h"
-#include "Sector.h"
-#include "Action.h"
+#include "ActionList.h"
+#include "Factory.h"
+#include "WorldState.h"
 #include "World.h"
 
 using namespace std;
 
 namespace Library
 {
-	RTTI_DEFINITIONS(Entity);
-
-	const string Entity::ENTITY_NAME_ENTRY_NAME = "Name";
-	const string Entity::ACTIONS_ENTRY_NAME = "Actions";
-
+	RTTI_DEFINITIONS(ActionList);
 
 	/************************************************************************/
-	Entity::Entity():
+	ActionList::ActionList():
 		mActionsDatumPtr(nullptr)
 	{
 		InitPrescribedAttributes();
 	}
 
 	/************************************************************************/
-	std::string Entity::Name() const
-	{
-		return mName;
-	}
-
-	/************************************************************************/
-	void Entity::SetName(const std::string& name)
-	{
-		mName = name;
-	}
-
-	/************************************************************************/
-	Datum& Entity::Actions() const
+	Datum& ActionList::Actions() const
 	{
 		assert(mActionsDatumPtr != nullptr);
 		return *mActionsDatumPtr;
 	}
 
 	/************************************************************************/
-	Action& Entity::CreateAction(const std::string& actionClassName, const std::string& actionInstanceName)
+	Action& ActionList::CreateAction(const std::string& actionClassName, const std::string& actionInstanceName)
 	{
 		Action* action = Factory<Action>::Create(actionClassName);
 		if (!action)
@@ -55,7 +39,7 @@ namespace Library
 	}
 
 	/************************************************************************/
-	bool Entity::DestroyAction(const WorldState& worldState, const std::string& actionInstanceName) const
+	bool ActionList::DestroyAction(const WorldState& worldState, const std::string& actionInstanceName) const
 	{
 		if (worldState.GetWorld())
 		{
@@ -73,48 +57,26 @@ namespace Library
 		}
 
 		return false;
-
 	}
 
 	/************************************************************************/
-	Sector* Entity::GetSector() const
-	{
-		Scope* parent = GetParent();
-		if (!parent)
-		{
-			return nullptr;
-		}
-
-		assert(parent->Is(Sector::TypeIdClass()));
-		return static_cast<Sector*>(parent);
-	}
-
-	/************************************************************************/
-	void Entity::SetSector(Sector& sector)
-	{
-		sector.Adopt(*this, sector.ENTITIES_ENTRY_NAME);
-	}
-
-	/************************************************************************/
-	void Entity::Update(WorldState& worldState)
+	void ActionList::Update(WorldState& worldState)
 	{
 		assert(mActionsDatumPtr != nullptr);
-		worldState.SetEntity(this);
-
-		// update actions
+		worldState.SetAction(this);
 		uint32_t size = mActionsDatumPtr->Size();
 		for (uint32_t i = 0; i < size; ++i)
 		{
 			assert((*mActionsDatumPtr)[i].Is(Action::TypeIdClass()));
 			static_cast<Action&>((*mActionsDatumPtr)[i]).Update(worldState);
 		}
-		worldState.SetEntity(nullptr);
+		worldState.SetAction(nullptr);
 	}
 
 	/************************************************************************/
-	void Entity::InitPrescribedAttributes()
+	void ActionList::InitPrescribedAttributes()
 	{
-		AddExternalAttribute(ENTITY_NAME_ENTRY_NAME, &mName, 1);
-		mActionsDatumPtr = &AddEmptyNestedScopeAttribute(ACTIONS_ENTRY_NAME);
+		Action::InitPrescribedAttributes();
+		mActionsDatumPtr = &(AddEmptyNestedScopeAttribute(ACTIONS_ENTRY_NAME));
 	}
 }

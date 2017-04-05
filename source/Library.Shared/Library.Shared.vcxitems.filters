@@ -83,6 +83,15 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)XmlParseHelperEntity.h">
       <Filter>Configuration\XmlParsing</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Action.h">
+      <Filter>Configuration\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)ActionList.h">
+      <Filter>Configuration\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)XmlParseHelperAction.h">
+      <Filter>Configuration\XmlParsing</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp" />
@@ -147,6 +156,15 @@
       <Filter>Configuration\XmlParsing</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)XmlParseHelperEntity.cpp">
+      <Filter>Configuration\XmlParsing</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Action.cpp">
+      <Filter>Configuration\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)ActionList.cpp">
+      <Filter>Configuration\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)XmlParseHelperAction.cpp">
       <Filter>Configuration\XmlParsing</Filter>
     </ClCompile>
   </ItemGroup>

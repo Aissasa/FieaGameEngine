@@ -22,7 +22,8 @@ namespace Library
 			NotParsing,
 			WorldParsing,
 			SectorParsing,
-			EntityParsing
+			EntityParsing,
+			ActionParsing
 		};
 
 		/** WorldSharedData Constructor.

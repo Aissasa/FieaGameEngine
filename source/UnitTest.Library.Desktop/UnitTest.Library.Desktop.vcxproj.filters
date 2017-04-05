@@ -59,6 +59,9 @@
     <ClCompile Include="TestEntity.cpp">
       <Filter>Support Classes\Scripting</Filter>
     </ClCompile>
+    <ClCompile Include="TestAction.cpp">
+      <Filter>Support Classes\Scripting</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Support Classes">
@@ -107,6 +110,9 @@
       <Filter>Support Classes\Factory</Filter>
     </ClInclude>
     <ClInclude Include="TestEntity.h">
+      <Filter>Support Classes\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="TestAction.h">
       <Filter>Support Classes\Scripting</Filter>
     </ClInclude>
   </ItemGroup>

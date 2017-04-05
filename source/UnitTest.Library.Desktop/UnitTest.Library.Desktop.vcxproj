@@ -219,6 +219,7 @@
       </SubType>
     </ClCompile>
     <ClCompile Include="SListTest.cpp" />
+    <ClCompile Include="TestAction.cpp" />
     <ClCompile Include="TestEntity.cpp" />
     <ClCompile Include="TestSharedData.cpp" />
     <ClCompile Include="TestXmlParseHelper.cpp" />
@@ -244,6 +245,7 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="Product1.h" />
     <ClInclude Include="Product2.h" />
+    <ClInclude Include="TestAction.h" />
     <ClInclude Include="TestEntity.h" />
     <ClInclude Include="TestSharedData.h" />
     <ClInclude Include="TestXmlParseHelper.h" />

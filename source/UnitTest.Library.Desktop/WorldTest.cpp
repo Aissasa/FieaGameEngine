@@ -15,6 +15,10 @@
 #include "XmlParseHelperString.h"
 #include "XmlParseHelperVector.h"
 #include "XmlParseHelperMatrix.h"
+#include "TestAction.h"
+#include "ActionList.h"
+#include "AttributedFoo.h"
+#include "XmlParseHelperAction.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 using namespace std;
@@ -79,6 +83,151 @@ namespace UnitTestLibraryDesktop
 #pragma endregion
 
 #pragma region TestMethods
+
+#pragma region Action
+
+		/************************************************************************/
+		TEST_METHOD(ActionTest)
+		{
+			TestAction* action = new TestAction();
+
+			Assert::IsTrue(action->IsPrescribedAttribute("Name"));
+			Assert::IsTrue(action->IsPrescribedAttribute("Number"));
+			Assert::IsTrue(action->Name() == "");
+			action->SetName("Yo");
+			Assert::IsTrue(action->Name() == "Yo");
+
+			WorldState state;
+			action->Update(state);
+			Assert::IsTrue(action->GetNumber() == 1);
+
+			Assert::IsNull(action->GetPredecessor());
+
+			Attributed* attr = new AttributedFoo();
+			auto func = [&action, &attr] { action->SetPredecessor(*attr); };
+			Assert::ExpectException<exception>(func);
+
+			ActionList* actionList = new ActionList();
+			Assert::IsTrue(actionList->Actions().IsEmpty());
+			action->SetPredecessor(*actionList);
+			Assert::IsFalse(actionList->Actions().IsEmpty());
+			Assert::IsTrue(action->GetPredecessor() == actionList);
+
+			TestActionFactory* fact = new TestActionFactory();
+			auto& newAction = actionList->CreateAction("TestAction", "TestAction1");
+			Assert::IsTrue(&actionList->Actions()[1] == &newAction);
+
+			WorldState worldState;
+			actionList->Update(worldState);
+			Assert::IsTrue(action->GetNumber() == 2);
+			Assert::IsTrue(newAction.As<TestAction>()->GetNumber() == 1);
+			
+			delete fact;
+
+			// test create action
+			EntityFactory entityFact;
+			World* world = new World();
+			auto& sector = world->CreateSector("Sector");
+			auto& entity = sector.CreateEntity("Entity", "Entity1");
+
+			auto func1 = [&world] { world->CreateAction("TestAction", "WorldAction1"); };
+			Assert::ExpectException<exception>(func1);
+
+			auto func2 = [&sector] { sector.CreateAction("TestAction", "SectorAction1"); };
+			Assert::ExpectException<exception>(func2);
+
+			auto func3 = [&entity] { entity.CreateAction("TestAction", "EntityAction1"); };
+			Assert::ExpectException<exception>(func3);
+
+			TestActionFactory fact1;
+			auto& worldAction1 = world->CreateAction("TestAction", "WorldAction1");
+			auto& worldAction2 = world->CreateAction("TestAction", "WorldAction2");
+			auto& worldAction3 = world->CreateAction("TestAction", "WorldAction3");
+			auto& sectorAction1 = sector.CreateAction("TestAction", "SectorAction1");
+			auto& sectorAction2 = sector.CreateAction("TestAction", "SectorAction2");
+			auto& sectorAction3 = sector.CreateAction("TestAction", "SectorAction3");
+			auto& entityAction1 = entity.CreateAction("TestAction", "EntityAction1");
+			auto& entityAction2 = entity.CreateAction("TestAction", "EntityAction2");
+			auto& entityAction3 = entity.CreateAction("TestAction", "EntityAction3");
+
+			Assert::IsTrue(&world->Actions()[0] == &worldAction1);
+			Assert::IsTrue(&world->Actions()[1] == &worldAction2);
+			Assert::IsTrue(&world->Actions()[2] == &worldAction3);
+			Assert::IsTrue(&sector.Actions()[0] == &sectorAction1);
+			Assert::IsTrue(&sector.Actions()[1] == &sectorAction2);
+			Assert::IsTrue(&sector.Actions()[2] == &sectorAction3);
+			Assert::IsTrue(&entity.Actions()[0] == &entityAction1);
+			Assert::IsTrue(&entity.Actions()[1] == &entityAction2);
+			Assert::IsTrue(&entity.Actions()[2] == &entityAction3);
+
+			// test set predecessor
+			sectorAction2.SetPredecessor(*world);
+			Assert::IsTrue(&world->Actions()[3] == &sectorAction2);
+			Assert::IsTrue(sector.Actions().Size() == 2u);
+
+			actionList->SetPredecessor(entity);
+			Assert::IsTrue(&entity.Actions()[3] == actionList);
+
+			// test destroy action
+			world->DestroyAction(worldState, "WorldAction2");
+			sector.DestroyAction(worldState, "SectorAction3");
+			entity.DestroyAction(worldState, "EntityAction2");
+			actionList->DestroyAction(worldState, "TestAction1");
+
+			world->Update(worldState);
+			Assert::IsTrue(world->Actions().Size() == 4);
+			Assert::IsTrue(sector.Actions().Size() == 2);
+			Assert::IsTrue(entity.Actions().Size() == 4);
+			Assert::IsTrue(actionList->Actions().Size() == 2);
+
+			world->DestroyAction(worldState, "WorldAction2");
+			sector.DestroyAction(worldState, "SectorAction3");
+			entity.DestroyAction(worldState, "EntityAction2");
+			actionList->DestroyAction(worldState, "TestAction1");
+			world->DestroyAction(worldState, "Test");
+			sector.DestroyAction(worldState, "Test");
+			entity.DestroyAction(worldState, "Test");
+			actionList->DestroyAction(worldState, "Test");
+
+			world->Update(worldState);
+			Assert::IsTrue(world->Actions().Size() == 3);
+			Assert::IsTrue(sector.Actions().Size() == 1);
+			Assert::IsTrue(entity.Actions().Size() == 3);
+			Assert::IsTrue(actionList->Actions().Size() == 1);
+
+			Assert::IsTrue(worldAction1.As<TestAction>()->GetNumber() == 2);
+			Assert::IsTrue(sectorAction1.As<TestAction>()->GetNumber() == 2);
+			Assert::IsTrue(entityAction1.As<TestAction>()->GetNumber() == 2);
+			Assert::IsTrue(action->GetNumber() == 4);
+
+			delete attr;
+			delete actionList;
+			delete world;
+		}
+
+		/************************************************************************/
+		TEST_METHOD(ActionRTTITest)
+		{
+			RTTI* action = new TestAction();
+
+			Assert::IsNotNull(action->As<Attributed>());
+			Assert::IsNotNull(action->As<TestAction>());
+			Assert::IsNull(action->As<Sector>());
+
+			Assert::IsTrue(action->Is("Action"));
+			Assert::IsTrue(action->Is(action->TypeIdInstance()));
+			Assert::IsTrue(action->Is(action->As<Action>()->TypeIdClass()));
+			Assert::IsTrue(action->As<Action>()->TypeName() == "Action");
+
+			Assert::IsTrue(action->QueryInterface(action->TypeIdInstance())->ToString() != "RTTI");
+			Assert::IsNotNull(action->As<Action>());
+
+			Assert::IsTrue(action->As<Action>()->Equals(action));
+
+			delete action;
+		}
+
+#pragma endregion 
 
 #pragma region Entity
 
@@ -430,6 +579,8 @@ namespace UnitTestLibraryDesktop
 			master.AddHelper(*vectorHelper);
 			master.AddHelper(*matrixHelper);
 
+			EntityFactory fact;
+
 			// not under sector
 			xmlToParse = "<Entity Class=\"Entity\" InstanceName=\"Ent\"><Float Name=\"Fl\" Value=\"5.6f\"/></Entity>";
 			auto func2 = [&master, &xmlToParse] { master.Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length())); };
@@ -531,6 +682,131 @@ namespace UnitTestLibraryDesktop
 		}
 
 		/************************************************************************/
+		TEST_METHOD(XmlParseHelperActionTest)
+		{
+			// non working shared data
+			TestSharedData* testSharedData = new TestSharedData();
+			XmlParseMaster master1(testSharedData);
+
+			XmlParseHelperWorld* worldHelper = new XmlParseHelperWorld();
+			XmlParseHelperSector* sectorHelper = new XmlParseHelperSector();
+			XmlParseHelperEntity* entityHelper = new XmlParseHelperEntity();
+			XmlParseHelperAction* actionHelper = new XmlParseHelperAction();
+			XmlParseHelperNumber* numberHelper = new XmlParseHelperNumber();
+			XmlParseHelperString* stringHelper = new XmlParseHelperString();
+			XmlParseHelperVector* vectorHelper = new XmlParseHelperVector();
+			XmlParseHelperMatrix* matrixHelper = new XmlParseHelperMatrix();
+			master1.AddHelper(*worldHelper);
+			master1.AddHelper(*sectorHelper);
+			master1.AddHelper(*entityHelper);
+			master1.AddHelper(*actionHelper);
+			master1.AddHelper(*numberHelper);
+			master1.AddHelper(*stringHelper);
+			master1.AddHelper(*vectorHelper);
+			master1.AddHelper(*matrixHelper);
+
+			string xmlToParse("<World Name=\"Lvl1\"><Sector Name=\"Sec1\"><Entity Class=\"Entity\" InstanceName=\"Ent\"><Float Name=\"Fl\" Value=\"5.6f\"/><Action Class=\"TestAction\" InstanceName=\"Action\"/></Entity></Sector></World>");
+			master1.Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length()));
+			Assert::IsTrue(worldHelper->mStartElementHandlerCount == 0);
+			Assert::IsTrue(worldHelper->mEndElementHandlerCount == 0);
+
+			WorldSharedData* sharedData = new WorldSharedData();
+			XmlParseMaster master(sharedData);
+			master.AddHelper(*worldHelper);
+			master.AddHelper(*sectorHelper);
+			master.AddHelper(*entityHelper);
+			master.AddHelper(*actionHelper);
+			master.AddHelper(*numberHelper);
+			master.AddHelper(*stringHelper);
+			master.AddHelper(*vectorHelper);
+			master.AddHelper(*matrixHelper);
+
+			EntityFactory fact;
+			TestActionFactory testActionFact;
+			ActionListFactory actionListFact;
+
+			// not nested
+			xmlToParse = "<Action Class=\"TestAction\" InstanceName=\"Action\"/>";
+			auto func2 = [&master, &xmlToParse] { master.Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length())); };
+			Assert::ExpectException<exception>(func2);
+
+			// no names
+			xmlToParse = "<World Name=\"Lvl1\"><Sector Name=\"Sec1\"><Entity Class=\"Entity\" InstanceName=\"Ent\"><Float Name=\"Fl\" Value=\"5.6f\"/><Action NonClass=\"TestAction\" InstanceName=\"Action\"/></Entity></Sector></World>";
+			auto func0 = [&master, &xmlToParse] { master.Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length())); };
+			Assert::ExpectException<exception>(func0);
+			// to actually delete the world
+			sharedData->SetScope(*sharedData->GetScope()->As<Entity>()->GetSector()->GetWorld());
+
+			xmlToParse = "<World Name=\"Lvl1\"><Sector Name=\"Sec1\"><Entity Class=\"Entity\" InstanceName=\"Ent\"><Float Name=\"Fl\" Value=\"5.6f\"/><Action Class=\"TestAction\" NonInstanceName=\"Action\"/></Entity></Sector></World>";
+			auto func1 = [&master, &xmlToParse] { master.Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length())); };
+			Assert::ExpectException<exception>(func1);
+			// to actually delete the world
+			sharedData->SetScope(*sharedData->GetScope()->As<Entity>()->GetSector()->GetWorld());
+
+			// simple action
+			xmlToParse = "<World Name=\"Lvl1\"><Sector Name=\"Sec1\"><Entity Class=\"Entity\" InstanceName=\"Ent\"><Action Class=\"TestAction\" InstanceName=\"Action\"><Float Name=\"Fl\" Value=\"5.6f\"/></Action></Entity></Sector></World>";
+			master.Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length()));
+			Assert::IsNotNull(sharedData->GetScope());
+			Assert::IsTrue(sharedData->GetScope()->Is(World::TypeIdClass()));
+			Assert::IsFalse(sharedData->GetScope()->As<World>()->Sectors().IsEmpty());
+			Scope& ent = sharedData->GetScope()->As<World>()->Sectors().operator[](0).As<Sector>()->Entities().operator[](0);
+			Assert::IsTrue(ent.As<Entity>()->Name() == "Ent");
+			Scope& action = ent.As<Entity>()->Actions()[0];
+			Assert::IsTrue(action.As<Action>()->Name() == "Action");
+			Assert::IsTrue(action.As<Action>()->IsAuxiliaryAttribute("Fl"));
+			Assert::IsTrue(action.As<Action>()->Find("Fl")->Get<float>() == 5.6f);
+
+			xmlToParse = "<World Name=\"Lvl1\"><Sector Name=\"Sec1\"><Action Class=\"TestAction\" InstanceName=\"Action\"><Float Name=\"Fl\" Value=\"5.6f\"/></Action><Entity Class=\"Entity\" InstanceName=\"Ent\"></Entity></Sector></World>";
+			master.Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length()));
+			Scope& sect = sharedData->GetScope()->As<World>()->Sectors().operator[](0);
+			Assert::IsTrue(sect.As<Sector>()->Name() == "Sec1");
+			Scope& action1 = sect.As<Sector>()->Actions()[0];
+			Assert::IsTrue(action1.As<Action>()->Name() == "Action");
+			Assert::IsTrue(action1.As<Action>()->IsAuxiliaryAttribute("Fl"));
+			Assert::IsTrue(action1.As<Action>()->Find("Fl")->Get<float>() == 5.6f);
+
+			xmlToParse = "<World Name=\"Lvl1\"><Action Class=\"ActionList\" InstanceName=\"ActionList\"><Float Name=\"Fl\" Value=\"5.6f\"/><Action Class=\"TestAction\" InstanceName=\"Action\"><String Name=\"Str\" Value=\"Yo\"/></Action></Action><Sector Name=\"Sec1\"><Entity Class=\"Entity\" InstanceName=\"Ent\"></Entity></Sector></World>";
+			master.Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length()));
+			Scope& world = *sharedData->GetScope();
+			Scope& actionList = world.As<World>()->Actions()[0];
+			Assert::IsTrue(actionList.As<Action>()->Name() == "ActionList");
+			Assert::IsTrue(actionList.As<Action>()->IsAuxiliaryAttribute("Fl"));
+			Assert::IsTrue(actionList.As<Action>()->Find("Fl")->Get<float>() == 5.6f);
+			Scope& action2 = actionList.As<ActionList>()->Actions()[0];
+			Assert::IsTrue(action2.As<Action>()->Name() == "Action");
+			Assert::IsTrue(action2.As<Action>()->IsAuxiliaryAttribute("Str"));
+			Assert::IsTrue(action2.As<Action>()->Find("Str")->Get<string>() == "Yo");
+
+			// clone helper
+			XmlParseMaster* cloneMaster = master.Clone();
+			cloneMaster->Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length()));
+			auto& cloneSharedData = cloneMaster->GetSharedData();
+			Assert::IsTrue(cloneSharedData.Is(WorldSharedData::TypeIdClass()));
+			WorldSharedData& worldCloneSharedData = static_cast<WorldSharedData&>(cloneSharedData);
+			Assert::IsNotNull(worldCloneSharedData.GetScope());
+			Assert::IsTrue(worldCloneSharedData.GetScope()->Is(World::TypeIdClass()));
+			Assert::IsFalse(worldCloneSharedData.GetScope()->As<World>()->Sectors().IsEmpty());
+			Scope& cloneWorld = *worldCloneSharedData.GetScope();
+			Assert::IsTrue(cloneWorld.As<World>()->Actions()[0].As<Action>()->Name() == "ActionList");
+			Assert::IsTrue(cloneWorld.As<World>()->Actions()[0].As<Attributed>()->IsAuxiliaryAttribute("Fl"));
+			Assert::IsTrue(cloneWorld.As<World>()->Actions()[0].As<ActionList>()->Actions()[0].As<Action>()->Name() == "Action");
+			Assert::IsTrue(cloneWorld.As<World>()->Actions()[0].As<ActionList>()->Actions()[0].As<Action>()->IsAuxiliaryAttribute("Str"));
+
+
+			delete cloneMaster;
+			delete worldHelper;
+			delete sectorHelper;
+			delete entityHelper;
+			delete actionHelper;
+			delete numberHelper;
+			delete stringHelper;
+			delete vectorHelper;
+			delete matrixHelper;
+			delete sharedData;
+			delete testSharedData;
+		}
+
+		/************************************************************************/
 		TEST_METHOD(TableSharedDataRTTITest)
 		{
 			RTTI* sharedData = new WorldSharedData();
@@ -558,6 +834,7 @@ namespace UnitTestLibraryDesktop
 			HelperRTTITestTemplate<XmlParseHelperWorld>("XmlParseHelperWorld");
 			HelperRTTITestTemplate<XmlParseHelperSector>("XmlParseHelperSector");
 			HelperRTTITestTemplate<XmlParseHelperEntity>("XmlParseHelperEntity");
+			HelperRTTITestTemplate<XmlParseHelperAction>("XmlParseHelperAction");
 		}
 
 #pragma endregion 

@@ -46,6 +46,18 @@ namespace Library
 	}
 
 	/************************************************************************/
+	Action* WorldState::GetAction() const
+	{
+		return mAction;
+	}
+
+	/************************************************************************/
+	void WorldState::SetAction(Action* action)
+	{
+		mAction = action;
+	}
+
+	/************************************************************************/
 	GameTime& WorldState::GetGameTime()
 	{
 		return mGameTime;
