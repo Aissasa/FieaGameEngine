@@ -42,8 +42,14 @@ namespace Library
 		*/
 		virtual void Update(WorldState& worldState) = 0;
 
+		/** Gets the predecessor of the Action.
+		* @return Predecessor of the Action.
+		*/
 		virtual Attributed* GetPredecessor() const;
 
+		/** Sets the predecessor of the Action.
+		* @param predecessor: New predecessor of the Action to set.
+		*/
 		virtual void SetPredecessor(Attributed& predecessor);
 		 
 	protected:

@@ -59,6 +59,13 @@ namespace Library
 		*/
 		Action& CreateAction(const std::string& actionClassName, const std::string& actionInstanceName);
 
+		/** Marks an Action in the World for delete.
+		* The action will be deleted at the end of the world update.
+		* @param worldState: worldState used to get the world where the action exist.
+		* @param actionInstanceName: Name of the Action instance to delete.
+		* @return Boolean expressing the success of the delete.
+		* @see Action
+		*/
 		bool DestroyAction(const WorldState& worldState, const std::string& actionInstanceName) const;
 
 		/** Gets the Datum containing the World's Sectors.
