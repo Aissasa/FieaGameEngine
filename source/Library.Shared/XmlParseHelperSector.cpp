@@ -32,6 +32,7 @@ namespace Library
 				throw exception("Sector should be a nested element to world.");
 			}
 
+			worldSharedData.GetPreviousStates().PushBack(worldSharedData.GetCurrentState());
 			worldSharedData.SetCurrentState(WorldSharedData::State::SectorParsing);
 			mIsParsing = true;
 
@@ -77,7 +78,8 @@ namespace Library
 
 			Scope* sector = worldSharedData.GetScope();
 			worldSharedData.SetScope(*sector->As<Sector>()->GetWorld());
-			worldSharedData.SetCurrentState(WorldSharedData::State::WorldParsing);
+			worldSharedData.SetCurrentState(worldSharedData.GetPreviousStates().Back());
+			worldSharedData.GetPreviousStates().PopBack();
 			++mEndElementHandlerCount;
 			mIsParsing = false;
 

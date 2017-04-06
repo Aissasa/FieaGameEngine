@@ -60,6 +60,23 @@ namespace Library
 	}
 
 	/************************************************************************/
+	Action* ActionList::FindNestedActionByName(const std::string& actionInstanceName) const
+	{
+		uint32_t size = mActionsDatumPtr->Size();
+		for (uint32_t i = 0; i < size; ++i)
+		{
+			assert((*mActionsDatumPtr)[i].Is(Action::TypeIdClass()));
+			auto& action = static_cast<Action&>((*mActionsDatumPtr)[i]);
+			if (action.Name() == actionInstanceName)
+			{
+				return &action;
+			}
+		}
+
+		return nullptr;
+	}
+
+	/************************************************************************/
 	void ActionList::Update(WorldState& worldState)
 	{
 		assert(mActionsDatumPtr != nullptr);

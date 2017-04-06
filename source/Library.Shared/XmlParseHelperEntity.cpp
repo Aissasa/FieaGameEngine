@@ -32,6 +32,7 @@ namespace Library
 				throw exception("Entity should be a nested element to Sector.");
 			}
 
+			worldSharedData.GetPreviousStates().PushBack(worldSharedData.GetCurrentState());
 			worldSharedData.SetCurrentState(WorldSharedData::State::EntityParsing);
 			mIsParsing = true;
 
@@ -91,7 +92,8 @@ namespace Library
 
 			Scope* entity = worldSharedData.GetScope();
 			worldSharedData.SetScope(*entity->As<Entity>()->GetSector());
-			worldSharedData.SetCurrentState(WorldSharedData::State::SectorParsing);
+			worldSharedData.SetCurrentState(worldSharedData.GetPreviousStates().Back());
+			worldSharedData.GetPreviousStates().PopBack();
 			++mEndElementHandlerCount;
 			mIsParsing = false;
 

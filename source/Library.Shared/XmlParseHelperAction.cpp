@@ -17,8 +17,7 @@ namespace Library
 	const string XmlParseHelperAction::INSTANCE_NAME_ATTRIBUTE_NAME = "InstanceName";
 
 	/************************************************************************/
-	XmlParseHelperAction::XmlParseHelperAction(): 
-		mPreviousStates()
+	XmlParseHelperAction::XmlParseHelperAction()
 	{
 	}
 
@@ -39,9 +38,6 @@ namespace Library
 			{
 				throw exception("Action should be a nested element.");
 			}
-
-			mPreviousStates.PushBack(worldSharedData.GetCurrentState());
-			worldSharedData.SetCurrentState(WorldSharedData::State::ActionParsing);
 
 			string actionInstanceName;
 			string actionClassName;
@@ -70,12 +66,12 @@ namespace Library
 
 			if (!instanceNamefound)
 			{
-				throw exception("The entity instance needs to have a name.");
+				throw exception("The Action instance needs to have a name.");
 			}
 
 			Action* action;
 
-			switch (mPreviousStates.Back())
+			switch (worldSharedData.GetCurrentState())
 			{
 				case WorldSharedData::State::WorldParsing:
 					action = &worldSharedData.GetScope()->As<World>()->CreateAction(actionClassName, actionInstanceName);
@@ -89,7 +85,7 @@ namespace Library
 					action = &worldSharedData.GetScope()->As<Entity>()->CreateAction(actionClassName, actionInstanceName);
 					break;
 
-				case WorldSharedData::State::ActionParsing: 
+				case WorldSharedData::State::ActionParsing:
 					action = &worldSharedData.GetScope()->As<ActionList>()->CreateAction(actionClassName, actionInstanceName);
 					break;
 
@@ -99,6 +95,10 @@ namespace Library
 
 			assert(action);
 			worldSharedData.SetScope(*action);
+
+			worldSharedData.GetPreviousStates().PushBack(worldSharedData.GetCurrentState());
+			worldSharedData.SetCurrentState(WorldSharedData::State::ActionParsing);
+
 			++mStartElementHandlerCount;
 
 			return true;
@@ -116,8 +116,8 @@ namespace Library
 
 			Scope* action = worldSharedData.GetScope();
 			worldSharedData.SetScope(*action->As<Action>()->GetPredecessor());
-			worldSharedData.SetCurrentState(mPreviousStates.Back());
-			mPreviousStates.PopBack();
+			worldSharedData.SetCurrentState(worldSharedData.GetPreviousStates().Back());
+			worldSharedData.GetPreviousStates().PopBack();
 
 			++mEndElementHandlerCount;
 
@@ -131,6 +131,7 @@ namespace Library
 	IXmlParseHelper* XmlParseHelperAction::Clone()
 	{
 		XmlParseHelperAction* helper = new XmlParseHelperAction();
+
 		helper->mStartElementHandlerCount = mStartElementHandlerCount;
 		helper->mEndElementHandlerCount = mEndElementHandlerCount;
 		helper->mCharDataHandlerCount = mCharDataHandlerCount;

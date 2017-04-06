@@ -21,14 +21,14 @@ namespace Library
 
 		bool DestroyAction(const WorldState& worldState, const std::string& actionInstanceName) const;
 
+		Action* FindNestedActionByName(const std::string& actionInstanceName) const;
+
 		virtual void Update(WorldState& worldState) override;
 
 	protected:
 		void InitPrescribedAttributes() override;
-
-	private:
-
 		Datum* mActionsDatumPtr;
+
 	};
 
 	ActionConcreteFactory(ActionList);

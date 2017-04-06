@@ -61,8 +61,15 @@ namespace Library
 		*/
 		void SetCurrentState(const State current_state);
 
+		/** Gets the previous parsing states.
+		* @return Previous parsing states.
+		*/
+		Vector<State>& GetPreviousStates();
+
 	private:
 
 		State mCurrentState;
+
+		Vector<State> mPreviousStates;
 	};
 }

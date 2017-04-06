@@ -9,7 +9,7 @@ namespace Library
 
 	/************************************************************************/
 	WorldSharedData::WorldSharedData(XmlParseMaster* xmlParseMaster):
-		TableSharedData(xmlParseMaster), mCurrentState(State::NotParsing)
+		TableSharedData(xmlParseMaster), mCurrentState(State::NotParsing), mPreviousStates()
 	{
 	}
 
@@ -22,6 +22,7 @@ namespace Library
 		data->IsParsingMatrix = IsParsingMatrix;
 		data->MatrixVectors = MatrixVectors;
 		data->mCurrentState = mCurrentState;
+		data->mPreviousStates = mPreviousStates;
 
 		return data;
 	}
@@ -31,6 +32,7 @@ namespace Library
 	{
 		TableSharedData::Initialize();
 		mCurrentState = State::NotParsing;
+		mPreviousStates.Empty();
 	}
 
 	/************************************************************************/
@@ -43,5 +45,10 @@ namespace Library
 	void WorldSharedData::SetCurrentState(const State current_state)
 	{
 		mCurrentState = current_state;
+	}
+
+	Vector<WorldSharedData::State>& WorldSharedData::GetPreviousStates()
+	{
+		return mPreviousStates;
 	}
 }
