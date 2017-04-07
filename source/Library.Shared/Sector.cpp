@@ -67,7 +67,7 @@ namespace Library
 				auto& action = static_cast<Action&>((*mActionsDatumPtr)[i]);
 				if (action.Name() == actionInstanceName)
 				{
-					worldState.GetWorld()->AddActionToDestory(*mActionsDatumPtr, i);
+					worldState.GetWorld()->AddActionToDestroy(action);
 					return true;
 				}
 			}

@@ -5,12 +5,12 @@
 
 namespace Library
 {
-	/** XmlParseHelperAction is an implementation of IXmlParseHelper that handles Actions.
-	* This class is used by XmlParseMaster to parse Action elements.
+	/** XmlParseHelperActionIf is an implementation of IXmlParseHelper that handles ActionListIfs.
+	* This class is used by XmlParseMaster to parse ActionListIf elements.
 	* @see RTTI
 	* @see IXmlParseHelper
 	* @see XmlParseMaster
-	* @see Action
+	* @see ActionListIf
 	*/
 	class XmlParseHelperActionIf final : public IXmlParseHelper
 	{
@@ -42,8 +42,7 @@ namespace Library
 
 		/** Handles the StartElementHandler method of XmlParseMaster, and by extension, StartElement callback of Expat.
 		* This is called to try handling the start of an If Xml element.
-		* @exception An exception is thrown if the element does not have a name attribute.
-		* @exception An exception is thrown if the element is not the root element.
+		* @exception An exception is thrown if the element is not nested.
 		* @param sharedData: SharedData of the XmlParseMaster and its handlers.
 		* @param el: Name of the current element in the Xml.
 		* @param attributes: The attributes contained within the current element.
@@ -56,7 +55,6 @@ namespace Library
 
 		/** Handles the EndElementHandler method of XmlParseMaster, and by extension, EndElement callback of Expat.
 		* This is called to try handling the end of an If Xml element.
-		* @exception An exception is thrown if the helper is not already parsing an If element.
 		* @param sharedData: SharedData of the XmlParseMaster and its handlers.
 		* @param el: Name of the current element in the Xml.
 		* @return Boolean representing if the handler was able to handle XmlParseMaster request.

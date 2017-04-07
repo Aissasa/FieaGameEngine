@@ -53,7 +53,7 @@ namespace Library
 				throw exception("The sector needs to have a name.");
 			}
 
-			// urgent refactor in a way that allows less classes, think hashmap and lamda expressions
+			// urgent refactor in a way that allows less classes
 			Sector& sector = worldSharedData.GetScope()->As<World>()->CreateSector(sectorName);
 			worldSharedData.SetScope(sector);
 			++mStartElementHandlerCount;

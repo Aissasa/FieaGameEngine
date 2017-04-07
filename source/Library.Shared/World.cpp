@@ -66,7 +66,7 @@ namespace Library
 				auto& action = static_cast<Action&>((*mActionsDatumPtr)[i]);
 				if (action.Name() == actionInstanceName)
 				{
-					worldState.GetWorld()->AddActionToDestory(*mActionsDatumPtr, i);
+					worldState.GetWorld()->AddActionToDestroy(action);
 					return true;
 				}
 			}
@@ -94,9 +94,9 @@ namespace Library
 	}
 
 	/************************************************************************/
-	void World::AddActionToDestory(Datum& datumContainingAction, const std::uint32_t index)
+	void World::AddActionToDestroy(Action& actionToDestroy)
 	{
-		mActionsToDestroy.PushBack(DatumAndIndexPair(&datumContainingAction, index));
+		mActionsToDestroy.PushBack(&actionToDestroy);
 	}
 
 	/************************************************************************/
@@ -137,14 +137,9 @@ namespace Library
 	/************************************************************************/
 	void World::DeleteActions()
 	{
-		for (auto& datumAndIndexPair : mActionsToDestroy)
+		for (auto& action : mActionsToDestroy)
 		{
-			Datum* datum = datumAndIndexPair.first;
-			uint32_t index = datumAndIndexPair.second;
-
-			Scope& actionToDestroy = (*datum)[index];
-			assert(actionToDestroy.Is(Action::TypeIdClass()));
-			delete &actionToDestroy;
+			delete action;
 		}
 		mActionsToDestroy.Empty();
 	}

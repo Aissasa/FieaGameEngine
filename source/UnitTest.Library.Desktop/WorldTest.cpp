@@ -21,6 +21,9 @@
 #include "XmlParseHelperAction.h"
 #include "ActionListIf.h"
 #include "XmlParseHelperActionIf.h"
+#include "ActionCreateAction.h"
+#include "ActionDestroyAction.h"
+#include "XmlParseHelperActionCreateAndDestroyAction.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 using namespace std;
@@ -257,6 +260,70 @@ namespace UnitTestLibraryDesktop
 		}
 
 		/************************************************************************/
+		TEST_METHOD(ActionCreateAndDestroyTest)
+		{
+			World* world = new World();
+			ActionListFactory listFact;
+
+			Action& actionList = world->CreateAction("ActionList", "ActionList1");
+			ActionCreateActionFactory fact;
+			Action& createAction = actionList.As<ActionList>()->CreateAction("ActionCreateAction", "Create");
+
+			Assert::IsTrue(createAction.Is(ActionCreateAction::TypeIdClass()));
+			Assert::IsTrue(createAction.Name() == "Create");
+			Assert::IsTrue(createAction.As<ActionCreateAction>()->GetClassName() == "");
+			Assert::IsTrue(createAction.As<ActionCreateAction>()->GetInstanceName() == "");
+
+			WorldState state;
+			auto func = [&actionList, &state] { actionList.Update(state); };
+			Assert::ExpectException<exception>(func);
+			
+			createAction.As<ActionCreateAction>()->SetClassName("TestAction");
+			createAction.As<ActionCreateAction>()->SetInstanceName("Test");
+			TestActionFactory testFact;
+			actionList.Update(state);
+			Action* createdAction = actionList.As<ActionList>()->FindNestedActionByName("Test");
+			Assert::IsTrue(createdAction->Is(TestAction::TypeIdClass()));
+			Assert::IsTrue(actionList.As<ActionList>()->Actions().Size() == 2);
+
+			createAction.As<ActionCreateAction>()->SetClassName("ActionList");
+			createAction.As<ActionCreateAction>()->SetInstanceName("List");
+			actionList.Update(state);
+			Action* createdActionList = actionList.As<ActionList>()->FindNestedActionByName("List");
+			Assert::IsTrue(createdActionList->Is(ActionList::TypeIdClass()));
+			Assert::IsTrue(actionList.As<ActionList>()->Actions().Size() == 3);
+
+
+			ActionDestroyActionFactory destFact;
+			Action& destAction = actionList.As<ActionList>()->CreateAction("ActionDestroyAction", "Destroy");
+
+			Assert::IsTrue(destAction.Is(ActionDestroyAction::TypeIdClass()));
+			Assert::IsTrue(destAction.Name() == "Destroy");
+			Assert::IsTrue(destAction.As<ActionDestroyAction>()->GetInstanceName() == "");
+
+			destAction.As<ActionDestroyAction>()->SetInstanceName("Create");
+			actionList.Update(state);
+			Assert::IsTrue(actionList.As<ActionList>()->Actions().Size() == 5);
+			Assert::IsNotNull(actionList.As<ActionList>()->FindNestedActionByName("Create"));
+
+			world->Update(state);
+			Assert::IsTrue(actionList.As<ActionList>()->Actions().Size() == 5);
+			Assert::IsNull(actionList.As<ActionList>()->FindNestedActionByName("Create"));
+
+			destAction.As<ActionDestroyAction>()->SetInstanceName("Test");
+			world->Update(state);
+			Assert::IsTrue(actionList.As<ActionList>()->Actions().Size() == 4);
+			destAction.As<ActionDestroyAction>()->SetInstanceName("List");
+			world->Update(state);
+			Assert::IsTrue(actionList.As<ActionList>()->Actions().Size() == 3);
+			world->Update(state);
+			Assert::IsTrue(actionList.As<ActionList>()->Actions().Size() == 2);
+			Assert::IsNull(actionList.As<ActionList>()->FindNestedActionByName("Test"));
+
+			delete world;
+		}
+
+		/************************************************************************/
 		TEST_METHOD(ActionRTTITest)
 		{
 			RTTI* action = new TestAction();
@@ -318,6 +385,50 @@ namespace UnitTestLibraryDesktop
 			Assert::IsNotNull(action->As<ActionList>());
 
 			Assert::IsTrue(action->As<ActionListIf>()->Equals(action));
+
+			delete action;
+		}
+
+		/************************************************************************/
+		TEST_METHOD(ActionCreateActionRTTITest)
+		{
+			RTTI* action = new ActionCreateAction();
+
+			Assert::IsNotNull(action->As<Attributed>());
+			Assert::IsNotNull(action->As<ActionCreateAction>());
+			Assert::IsNull(action->As<Sector>());
+
+			Assert::IsTrue(action->Is("ActionCreateAction"));
+			Assert::IsTrue(action->Is(action->TypeIdInstance()));
+			Assert::IsTrue(action->Is(action->As<ActionCreateAction>()->TypeIdClass()));
+			Assert::IsTrue(action->As<ActionCreateAction>()->TypeName() == "ActionCreateAction");
+
+			Assert::IsTrue(action->QueryInterface(action->TypeIdInstance())->ToString() != "RTTI");
+			Assert::IsNotNull(action->As<ActionCreateAction>());
+
+			Assert::IsTrue(action->As<ActionCreateAction>()->Equals(action));
+
+			delete action;
+		}
+
+		/************************************************************************/
+		TEST_METHOD(ActionDestroyActionRTTITest)
+		{
+			RTTI* action = new ActionDestroyAction();
+
+			Assert::IsNotNull(action->As<Attributed>());
+			Assert::IsNotNull(action->As<ActionDestroyAction>());
+			Assert::IsNull(action->As<Sector>());
+
+			Assert::IsTrue(action->Is("ActionDestroyAction"));
+			Assert::IsTrue(action->Is(action->TypeIdInstance()));
+			Assert::IsTrue(action->Is(action->As<ActionDestroyAction>()->TypeIdClass()));
+			Assert::IsTrue(action->As<ActionDestroyAction>()->TypeName() == "ActionDestroyAction");
+
+			Assert::IsTrue(action->QueryInterface(action->TypeIdInstance())->ToString() != "RTTI");
+			Assert::IsNotNull(action->As<ActionDestroyAction>());
+
+			Assert::IsTrue(action->As<ActionDestroyAction>()->Equals(action));
 
 			delete action;
 		}
@@ -1032,6 +1143,190 @@ namespace UnitTestLibraryDesktop
 		}
 
 		/************************************************************************/
+		TEST_METHOD(XmlParseHelperActionCreateAndDestroyTest)
+		{
+			// non working shared data
+			TestSharedData* testSharedData = new TestSharedData();
+			XmlParseMaster master1(testSharedData);
+
+			XmlParseHelperWorld* worldHelper = new XmlParseHelperWorld();
+			XmlParseHelperSector* sectorHelper = new XmlParseHelperSector();
+			XmlParseHelperEntity* entityHelper = new XmlParseHelperEntity();
+			XmlParseHelperAction* actionHelper = new XmlParseHelperAction();
+			XmlParseHelperActionCreateAndDestroyAction* actioncreateAndDestroyHelper = new XmlParseHelperActionCreateAndDestroyAction();
+			XmlParseHelperNumber* numberHelper = new XmlParseHelperNumber();
+			XmlParseHelperString* stringHelper = new XmlParseHelperString();
+			XmlParseHelperVector* vectorHelper = new XmlParseHelperVector();
+			XmlParseHelperMatrix* matrixHelper = new XmlParseHelperMatrix();
+			master1.AddHelper(*worldHelper);
+			master1.AddHelper(*sectorHelper);
+			master1.AddHelper(*entityHelper);
+			master1.AddHelper(*actionHelper);
+			master1.AddHelper(*actioncreateAndDestroyHelper);
+			master1.AddHelper(*numberHelper);
+			master1.AddHelper(*stringHelper);
+			master1.AddHelper(*vectorHelper);
+			master1.AddHelper(*matrixHelper);
+
+			string xmlToParse("<World Name=\"Lvl1\"><Sector Name=\"Sec1\"><Entity Class=\"Entity\" InstanceName=\"Ent\"><ActionCreateAction Name=\"Create\" ClassName=\"TestAction\" InstanceName=\"Test\"/></Entity></Sector></World>");
+			master1.Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length()));
+			Assert::IsTrue(actioncreateAndDestroyHelper->mStartElementHandlerCount == 0);
+			Assert::IsTrue(actioncreateAndDestroyHelper->mEndElementHandlerCount == 0);
+
+			WorldSharedData* sharedData = new WorldSharedData();
+			XmlParseMaster master(sharedData);
+			master.AddHelper(*worldHelper);
+			master.AddHelper(*sectorHelper);
+			master.AddHelper(*entityHelper);
+			master.AddHelper(*actionHelper);
+			master.AddHelper(*actioncreateAndDestroyHelper);
+			master.AddHelper(*numberHelper);
+			master.AddHelper(*stringHelper);
+			master.AddHelper(*vectorHelper);
+			master.AddHelper(*matrixHelper);
+
+			EntityFactory fact;
+			TestActionFactory testActionFact;
+			ActionListFactory actionListFact;
+			ActionCreateActionFactory actionCreateFact;
+			ActionDestroyActionFactory actionDestroyFact;
+
+			// not nested
+			xmlToParse = "<ActionCreateAction Name=\"Create\" ClassName=\"TestAction\" InstanceName=\"Test\"/>";
+			auto func0 = [&master, &xmlToParse] { master.Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length())); };
+			Assert::ExpectException<exception>(func0);
+
+			// create no names
+			xmlToParse = "<World Name=\"Lvl1\"><Sector Name=\"Sec1\"><Entity Class=\"Entity\" InstanceName=\"Ent\"><ActionCreateAction NotName=\"Create\" ClassName=\"TestAction\" InstanceName=\"Test\"/></Entity></Sector></World>";
+			auto func1 = [&master, &xmlToParse] { master.Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length())); };
+			Assert::ExpectException<exception>(func1);
+			// to actually delete the world
+			sharedData->SetScope(*sharedData->GetScope()->As<Entity>()->GetSector()->GetWorld());
+
+			xmlToParse = "<World Name=\"Lvl1\"><Sector Name=\"Sec1\"><ActionCreateAction Name=\"Create\" NotClassName=\"TestAction\" InstanceName=\"Test\"/><Entity Class=\"Entity\" InstanceName=\"Ent\"></Entity></Sector></World>";
+			auto func2 = [&master, &xmlToParse] { master.Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length())); };
+			Assert::ExpectException<exception>(func2);
+			// to actually delete the world
+			sharedData->SetScope(*sharedData->GetScope()->As<Sector>()->GetWorld());
+
+			xmlToParse = "<World Name=\"Lvl1\"><ActionCreateAction Name=\"Create\" ClassName=\"TestAction\" NotInstanceName=\"Test\"/><Sector Name=\"Sec1\"><Entity Class=\"Entity\" InstanceName=\"Ent\"></Entity></Sector></World>";
+			auto func3 = [&master, &xmlToParse] { master.Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length())); };
+			Assert::ExpectException<exception>(func3);
+
+			// destroy no names
+			xmlToParse = "<World Name=\"Lvl1\"><Sector Name=\"Sec1\"><Entity Class=\"Entity\" InstanceName=\"Ent\"><ActionDestroyAction NotName=\"Destroy\" InstanceName=\"Test\"/></Entity></Sector></World>";
+			auto func5 = [&master, &xmlToParse] { master.Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length())); };
+			Assert::ExpectException<exception>(func5);
+			// to actually delete the world
+			sharedData->SetScope(*sharedData->GetScope()->As<Entity>()->GetSector()->GetWorld());
+
+			xmlToParse = "<World Name=\"Lvl1\"><Sector Name=\"Sec1\"><Entity Class=\"Entity\" InstanceName=\"Ent\"><ActionDestroyAction Name=\"Destroy\" NotInstanceName=\"Test\"/></Entity></Sector></World>";
+			auto func6 = [&master, &xmlToParse] { master.Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length())); };
+			Assert::ExpectException<exception>(func6);
+			// to actually delete the world
+			sharedData->SetScope(*sharedData->GetScope()->As<Entity>()->GetSector()->GetWorld());
+
+
+			// simple create action
+			xmlToParse = "<World Name=\"Lvl1\"><Sector Name=\"Sec1\"><Entity Class=\"Entity\" InstanceName=\"Ent\"><ActionCreateAction Name=\"Create\" ClassName=\"TestAction\" InstanceName=\"Test\"/></Entity></Sector></World>";
+			master.Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length()));
+			Scope& ent = sharedData->GetScope()->As<World>()->Sectors().operator[](0).As<Sector>()->Entities().operator[](0);
+			Scope& action = ent.As<Entity>()->Actions()[0];
+			Assert::IsTrue(action.As<Action>()->Name() == "Create");
+			Assert::IsTrue(action.Is(ActionCreateAction::TypeIdClass()));
+			Assert::IsTrue(action.As<ActionCreateAction>()->GetClassName() == "TestAction");
+			Assert::IsTrue(action.As<ActionCreateAction>()->GetInstanceName() == "Test");
+
+			xmlToParse = "<World Name=\"Lvl1\"><Sector Name=\"Sec1\"><ActionCreateAction Name=\"Create\" ClassName=\"TestAction\" InstanceName=\"Test\"/><Entity Class=\"Entity\" InstanceName=\"Ent\"></Entity></Sector></World>";
+			master.Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length()));
+			Scope& sect = sharedData->GetScope()->As<World>()->Sectors().operator[](0);
+			Scope& action1 = sect.As<Sector>()->Actions()[0];
+			Assert::IsTrue(action1.As<Action>()->Name() == "Create");
+			Assert::IsTrue(action1.Is(ActionCreateAction::TypeIdClass()));
+			Assert::IsTrue(action1.As<ActionCreateAction>()->GetClassName() == "TestAction");
+			Assert::IsTrue(action1.As<ActionCreateAction>()->GetInstanceName() == "Test");
+
+			xmlToParse = "<World Name=\"Lvl1\"><ActionCreateAction Name=\"Create\" ClassName=\"TestAction\" InstanceName=\"Test\"/><Sector Name=\"Sec1\"><Entity Class=\"Entity\" InstanceName=\"Ent\"></Entity></Sector></World>";
+			master.Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length()));
+			Scope& world = *sharedData->GetScope();
+			Scope& action2 = world.As<World>()->Actions()[0];
+			Assert::IsTrue(action2.As<Action>()->Name() == "Create");
+			Assert::IsTrue(action2.Is(ActionCreateAction::TypeIdClass()));
+			Assert::IsTrue(action2.As<ActionCreateAction>()->GetClassName() == "TestAction");
+			Assert::IsTrue(action2.As<ActionCreateAction>()->GetInstanceName() == "Test");
+
+			xmlToParse = "<World Name=\"Lvl1\"><Action Class=\"ActionList\" InstanceName=\"ActionList\"><ActionCreateAction Name=\"Create\" ClassName=\"TestAction\" InstanceName=\"Test\"/></Action><Sector Name=\"Sec1\"><Entity Class=\"Entity\" InstanceName=\"Ent\"></Entity></Sector></World>";
+			master.Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length()));
+			Scope& world1 = *sharedData->GetScope();
+			Scope& action3 = world1.As<World>()->Actions()[0].As<ActionList>()->Actions()[0];
+			Assert::IsTrue(action3.As<Action>()->Name() == "Create");
+			Assert::IsTrue(action3.Is(ActionCreateAction::TypeIdClass()));
+			Assert::IsTrue(action3.As<ActionCreateAction>()->GetClassName() == "TestAction");
+			Assert::IsTrue(action3.As<ActionCreateAction>()->GetInstanceName() == "Test");
+
+			// simple destroy action
+			xmlToParse = "<World Name=\"Lvl1\"><Sector Name=\"Sec1\"><Entity Class=\"Entity\" InstanceName=\"Ent\"><ActionDestroyAction Name=\"Destroy\" InstanceName=\"Test\"/></Entity></Sector></World>";
+			master.Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length()));
+			Scope& ent1 = sharedData->GetScope()->As<World>()->Sectors().operator[](0).As<Sector>()->Entities().operator[](0);
+			Scope& action4 = ent1.As<Entity>()->Actions()[0];
+			Assert::IsTrue(action4.As<Action>()->Name() == "Destroy");
+			Assert::IsTrue(action4.Is(ActionDestroyAction::TypeIdClass()));
+			Assert::IsTrue(action4.As<ActionDestroyAction>()->GetInstanceName() == "Test");
+
+			xmlToParse = "<World Name=\"Lvl1\"><Sector Name=\"Sec1\"><ActionDestroyAction Name=\"Destroy\" InstanceName=\"Test\"/><Entity Class=\"Entity\" InstanceName=\"Ent\"></Entity></Sector></World>";
+			master.Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length()));
+			Scope& sect2 = sharedData->GetScope()->As<World>()->Sectors().operator[](0);
+			Scope& action5 = sect2.As<Sector>()->Actions()[0];
+			Assert::IsTrue(action5.As<Action>()->Name() == "Destroy");
+			Assert::IsTrue(action5.Is(ActionDestroyAction::TypeIdClass()));
+			Assert::IsTrue(action5.As<ActionDestroyAction>()->GetInstanceName() == "Test");
+
+			xmlToParse = "<World Name=\"Lvl1\"><ActionDestroyAction Name=\"Destroy\" InstanceName=\"Test\"/><Sector Name=\"Sec1\"><Entity Class=\"Entity\" InstanceName=\"Ent\"></Entity></Sector></World>";
+			master.Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length()));
+			Scope& world2 = *sharedData->GetScope();
+			Scope& action6 = world2.As<World>()->Actions()[0];
+			Assert::IsTrue(action6.As<Action>()->Name() == "Destroy");
+			Assert::IsTrue(action6.Is(ActionDestroyAction::TypeIdClass()));
+			Assert::IsTrue(action6.As<ActionDestroyAction>()->GetInstanceName() == "Test");
+
+			xmlToParse = "<World Name=\"Lvl1\"><Action Class=\"ActionList\" InstanceName=\"ActionList\"><ActionDestroyAction Name=\"Destroy\" InstanceName=\"Test\"/></Action><Sector Name=\"Sec1\"><Entity Class=\"Entity\" InstanceName=\"Ent\"></Entity></Sector></World>";
+			master.Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length()));
+			Scope& world3 = *sharedData->GetScope();
+			Scope& action7 = world3.As<World>()->Actions()[0].As<ActionList>()->Actions()[0];
+			Assert::IsTrue(action7.As<Action>()->Name() == "Destroy");
+			Assert::IsTrue(action7.Is(ActionDestroyAction::TypeIdClass()));
+			Assert::IsTrue(action7.As<ActionDestroyAction>()->GetInstanceName() == "Test");
+
+			// clone helper
+			XmlParseMaster* cloneMaster = master.Clone();
+			cloneMaster->Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length()));
+			auto& cloneSharedData = cloneMaster->GetSharedData();
+			Assert::IsTrue(cloneSharedData.Is(WorldSharedData::TypeIdClass()));
+			WorldSharedData& worldCloneSharedData = static_cast<WorldSharedData&>(cloneSharedData);
+			Assert::IsNotNull(worldCloneSharedData.GetScope());
+			Assert::IsTrue(worldCloneSharedData.GetScope()->Is(World::TypeIdClass()));
+			Assert::IsFalse(worldCloneSharedData.GetScope()->As<World>()->Sectors().IsEmpty());
+			Scope& cloneWorld = *worldCloneSharedData.GetScope();
+			Scope& action9 = cloneWorld.As<World>()->Actions()[0].As<ActionList>()->Actions()[0];
+			Assert::IsTrue(action9.As<Action>()->Name() == "Destroy");
+			Assert::IsTrue(action9.Is(ActionDestroyAction::TypeIdClass()));
+			Assert::IsTrue(action9.As<ActionDestroyAction>()->GetInstanceName() == "Test");
+
+			delete cloneMaster;
+			delete worldHelper;
+			delete sectorHelper;
+			delete entityHelper;
+			delete actionHelper;
+			delete actioncreateAndDestroyHelper;
+			delete numberHelper;
+			delete stringHelper;
+			delete vectorHelper;
+			delete matrixHelper;
+			delete sharedData;
+			delete testSharedData;
+		}
+
+		/************************************************************************/
 		TEST_METHOD(TableSharedDataRTTITest)
 		{
 			RTTI* sharedData = new WorldSharedData();
@@ -1061,6 +1356,7 @@ namespace UnitTestLibraryDesktop
 			HelperRTTITestTemplate<XmlParseHelperEntity>("XmlParseHelperEntity");
 			HelperRTTITestTemplate<XmlParseHelperAction>("XmlParseHelperAction");
 			HelperRTTITestTemplate<XmlParseHelperActionIf>("XmlParseHelperActionIf");
+			HelperRTTITestTemplate<XmlParseHelperActionCreateAndDestroyAction>("XmlParseHelperActionCreateAndDestroyAction");
 		}
 
 #pragma endregion 

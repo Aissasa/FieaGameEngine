@@ -98,6 +98,15 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)XmlParseHelperActionIf.h">
       <Filter>Configuration\XmlParsing</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)ActionCreateAction.h">
+      <Filter>Configuration\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)ActionDestroyAction.h">
+      <Filter>Configuration\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)XmlParseHelperActionCreateAndDestroyAction.h">
+      <Filter>Configuration\XmlParsing</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp" />
@@ -177,6 +186,15 @@
       <Filter>Configuration\Scripting</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)XmlParseHelperActionIf.cpp">
+      <Filter>Configuration\XmlParsing</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)ActionCreateAction.cpp">
+      <Filter>Configuration\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)ActionDestroyAction.cpp">
+      <Filter>Configuration\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)XmlParseHelperActionCreateAndDestroyAction.cpp">
       <Filter>Configuration\XmlParsing</Filter>
     </ClCompile>
   </ItemGroup>

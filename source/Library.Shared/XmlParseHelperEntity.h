@@ -35,7 +35,8 @@ namespace Library
 		/** Handles the StartElementHandler method of XmlParseMaster, and by extension, StartElement callback of Expat.
 		* This is called to try handling the start of a Entity Xml element.
 		* @exception An exception is thrown if the element does not have a name attribute.
-		* @exception An exception is thrown if the element is not the root element.
+		* @exception An exception is thrown if the element does not have a class name attribute.
+		* @exception An exception is thrown if the element is not nested under a sector.
 		* @param sharedData: SharedData of the XmlParseMaster and its handlers.
 		* @param el: Name of the current element in the Xml.
 		* @param attributes: The attributes contained within the current element.

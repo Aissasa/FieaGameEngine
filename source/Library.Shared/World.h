@@ -17,8 +17,6 @@ namespace Library
 	{
 		RTTI_DECLARATIONS(World, Attributed);
 
-		typedef std::pair<Datum*, std::uint32_t> DatumAndIndexPair;
-
 	public:
 
 		/** World Constructor.
@@ -61,9 +59,9 @@ namespace Library
 
 		/** Marks an Action in the World for delete.
 		* The action will be deleted at the end of the world update.
-		* @param worldState: worldState used to get the world where the action exist.
+		* @param worldState: worldState used to get the world where the action exists.
 		* @param actionInstanceName: Name of the Action instance to delete.
-		* @return Boolean expressing the success of the delete.
+		* @return Boolean expressing the success of the mark for delete.
 		* @see Action
 		*/
 		bool DestroyAction(const WorldState& worldState, const std::string& actionInstanceName) const;
@@ -84,13 +82,13 @@ namespace Library
 
 		/** Marks a certain action for delete.
 		* The delete operation of the actions added happens after the updates are done.
-		* @param action: A datum and index pair representing the action to destroy.
+		* @param actionToDestroy: Action to destroy.
 		* @see Action
 		* @see Datum
 		*/
-		void AddActionToDestory(Datum& datumContainingAction, const std::uint32_t index);
+		void AddActionToDestroy(Action& actionToDestroy);
 
-		/** Iterates through the contained Sectors and calls their update method.
+		/** Iterates through the contained Sectors and calls their update methods.
 		* @param worldState: Wolrd state to use for updates.
 		* @see Sector
 		* @see WorldState
@@ -113,7 +111,7 @@ namespace Library
 
 		Datum* mActionsDatumPtr;
 		Datum* mSectorsDatumPtr;
-		Vector<DatumAndIndexPair> mActionsToDestroy;
+		Vector<Action*> mActionsToDestroy;
 
 		void DeleteActions();
 	};

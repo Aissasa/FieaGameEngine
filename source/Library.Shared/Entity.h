@@ -58,7 +58,7 @@ namespace Library
 		* The action will be deleted at the end of the world update.
 		* @param worldState: worldState used to get the world where the action exist.
 		* @param actionInstanceName: Name of the Action instance to delete.
-		* @return Boolean expressing the success of the delete.
+		* @return Boolean expressing the success of the mark for delete.
 		* @see Action
 		*/
 		bool DestroyAction(const WorldState& worldState, const std::string& actionInstanceName) const;
@@ -75,7 +75,7 @@ namespace Library
 		*/
 		void SetSector(Sector& sector);
 
-		/** Entity's update method.
+		/** Entity's update method. Iterates through the contained Action and calls their update methods.
 		* @param worldState: Wolrd state to use.
 		* @see WorldState
 		*/

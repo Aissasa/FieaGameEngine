@@ -113,7 +113,8 @@ namespace Library
 			if (attr.first == INSTANCE_NAME_ATTRIBUTE_NAME)
 			{
 				instanceNamefound = true;
-				actionInstanceName = attr.second;;
+				actionInstanceName = attr.second;
+				break;
 			}
 		}
 
