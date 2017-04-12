@@ -107,6 +107,18 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)XmlParseHelperActionCreateAndDestroyAction.h">
       <Filter>Configuration\XmlParsing</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)EventPublisher.h">
+      <Filter>Event System</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)EventSubscriber.h">
+      <Filter>Event System</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Event.h">
+      <Filter>Event System</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)EventQueue.h">
+      <Filter>Event System</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp" />
@@ -197,6 +209,15 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)XmlParseHelperActionCreateAndDestroyAction.cpp">
       <Filter>Configuration\XmlParsing</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)EventPublisher.cpp">
+      <Filter>Event System</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)EventSubscriber.cpp">
+      <Filter>Event System</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)EventQueue.cpp">
+      <Filter>Event System</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Containers">
@@ -220,6 +241,9 @@
     <Filter Include="Misc">
       <UniqueIdentifier>{5a04737e-47d2-4e0e-a554-1cb1c29b79d1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Event System">
+      <UniqueIdentifier>{b4910b8a-6c19-432f-8f2a-a0496cab8b81}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)SList.inl">
@@ -233,6 +257,9 @@
     </None>
     <None Include="$(MSBuildThisFileDirectory)Factory.inl">
       <Filter>Configuration\Factory</Filter>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)Event.inl">
+      <Filter>Event System</Filter>
     </None>
   </ItemGroup>
 </Project>

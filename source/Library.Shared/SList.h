@@ -110,12 +110,25 @@ namespace Library
 		 */
 		SList(const SList& rhs);
 
+		/** Singly-linked list move constructor.
+		* It makes a deep copy of the right hand side list and empties it.
+		* @param rhs: Singly-linked list to move.
+		*/
+		SList(SList&& rhs);
+
 		/** Singly-linked list assignment operator overloading method.
 		 * It allows the assignment operator to create a deep copy of the assignee list.
 		 * @param rhs: Singly-linked list to copy.
 		 * @return Result list copy.
 		 */
 		SList& operator=(const SList& rhs);
+
+		/** Singly-linked list move assignment operator overloading method.
+		* It allows the assignment operator to create a deep copy of the assignee list and empties the latter.
+		* @param rhs: Singly-linked list to move.
+		* @return Result list copy.
+		*/
+		SList& operator=(SList&& rhs);
 
 		/** Singly-linked list destructor.
 		 * It destroys the list and its elements.

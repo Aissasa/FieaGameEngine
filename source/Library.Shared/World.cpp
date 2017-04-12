@@ -16,7 +16,7 @@ namespace Library
 
 	/************************************************************************/
 	World::World():
-		mActionsDatumPtr(nullptr) ,mSectorsDatumPtr(nullptr), mActionsToDestroy()
+		mActionsDatumPtr(nullptr) ,mSectorsDatumPtr(nullptr), mActionsToDestroy(), mEventQueue(QUEUE_LENTGH)
 	{
 		InitPrescribedAttributes();
 	}
@@ -104,6 +104,10 @@ namespace Library
 	{
 		assert(mActionsDatumPtr != nullptr);
 		assert(mSectorsDatumPtr != nullptr);
+
+		// update the events queue
+		mEventQueue.Update(worldState.GetGameTime());
+
 		worldState.SetWorld(this);
 
 		// update actions

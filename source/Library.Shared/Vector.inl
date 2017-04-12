@@ -161,6 +161,14 @@ Vector<T>::Vector(const Vector & rhs) :
 }
 
 /************************************************************************/
+template <typename T>
+Vector<T>::Vector(Vector&& rhs)
+{
+	DeepCopy(rhs);
+	rhs.Clear();
+}
+
+/************************************************************************/
 template<typename T>
 Vector<T> & Vector<T>::operator=(const Vector & rhs)
 {
@@ -169,6 +177,21 @@ Vector<T> & Vector<T>::operator=(const Vector & rhs)
 		Clear();
 		Reserve(rhs.mCapacity);
 		DeepCopy(rhs);
+	}
+
+	return *this;
+}
+
+/************************************************************************/
+template <typename T>
+Vector<T>& Vector<T>::operator=(Vector&& rhs)
+{
+	if (this != &rhs)
+	{
+		Clear();
+		Reserve(rhs.mCapacity);
+		DeepCopy(rhs);
+		rhs.Clear();
 	}
 
 	return *this;

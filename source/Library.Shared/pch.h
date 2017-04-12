@@ -15,6 +15,8 @@
 #include <iostream>
 #include <fstream>
 #include <cassert>
+#include <chrono>
+#include <memory>
 
 // glm includes
 #include <glm/glm.hpp>

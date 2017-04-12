@@ -130,12 +130,26 @@ namespace Library
 		 */
 		Vector(const Vector & rhs);
 
+		/** Vector move constructor.
+		* It makes a deep copy of the right hand side vector and clears the latter.
+		* @param rhs: Vector to move.
+		* @see Clear()
+		*/
+		Vector(Vector && rhs);
+
 		/** Vector assignment operator overloading method.
 		 * It allows the assignment operator to create a deep copy of the assignee vector.
 		 * @param rhs: Vector to copy.
 		 * @return Result vector copy.
 		 */
 		Vector& operator=(const Vector& rhs);
+
+		/** Vector move assignment operator overloading method.
+		* It allows the assignment operator to create a deep copy of the assignee vector and clear the latter.
+		* @param rhs: Vector to move.
+		* @return Result vector copy.
+		*/
+		Vector& operator=(Vector&& rhs);
 
 		/** Determines if the vector is empty.
 		 */

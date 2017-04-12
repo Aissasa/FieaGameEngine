@@ -1,5 +1,6 @@
 #pragma once
 #include "Attributed.h"
+#include "EventQueue.h"
 
 namespace Library
 {
@@ -112,6 +113,9 @@ namespace Library
 		Datum* mActionsDatumPtr;
 		Datum* mSectorsDatumPtr;
 		Vector<Action*> mActionsToDestroy;
+
+		const static std::uint32_t QUEUE_LENTGH = 10;
+		EventQueue mEventQueue;
 
 		void DeleteActions();
 	};

@@ -24,12 +24,33 @@ SList<T>::SList(const SList& rhs) :
 
 /************************************************************************/
 template <typename T>
+SList<T>::SList(SList&& rhs)
+{
+	DeepCopy(rhs);
+	rhs.Clear();
+}
+
+/************************************************************************/
+template <typename T>
 SList<T>& SList<T>::operator=(const SList& rhs)
 {
 	if (this != &rhs)
 	{
 		Clear();
 		DeepCopy(rhs);
+	}
+	return *this;
+}
+
+/************************************************************************/
+template <typename T>
+SList<T>& SList<T>::operator=(SList&& rhs)
+{
+	if (this != &rhs)
+	{
+		Clear();
+		DeepCopy(rhs);
+		rhs.Clear();
 	}
 	return *this;
 }
