@@ -11,15 +11,15 @@ namespace Library
 
 	public:
 
-		explicit Event(const T& message, bool deleteAfterPublish = true);
+		explicit Event(const T& message);
 		~Event() = default;
 		Event(const Event & rhs) = default;
 		Event(Event && rhs);
 		Event& operator=(const Event& rhsS) = default;
 		Event& operator=(Event&& rhs);
 
-		static void Subscribe(const EventSubscriber& eventSubscriber);
-		static void Unsubscribe(const EventSubscriber& eventSubscriber);
+		static void Subscribe(EventSubscriber& eventSubscriber);
+		static void Unsubscribe(EventSubscriber& eventSubscriber);
 		static void UnsubscribeAll();
 
 		T& Message();

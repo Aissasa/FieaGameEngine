@@ -5,18 +5,17 @@
 #include <SDKDDKVer.h>
 
 // Standard libraries
-#include <vector>
 #include <cstdint>
-#include <algorithm>
-#include <functional>
 #include <cstring>
-#include <exception>
-#include <new>
 #include <iostream>
 #include <fstream>
 #include <cassert>
 #include <chrono>
 #include <memory>
+#include <algorithm>
+#include <functional>
+#include <exception>
+#include <new>
 
 // glm includes
 #include <glm/glm.hpp>

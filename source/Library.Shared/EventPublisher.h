@@ -2,6 +2,8 @@
 
 #include "RTTI.h"
 #include "Vector.h"
+#include <chrono>
+#include <memory>
 
 namespace Library
 {
@@ -20,17 +22,16 @@ namespace Library
 		EventPublisher& operator=(EventPublisher&& rhs);
 
 		void SetTime(const std::chrono::high_resolution_clock::time_point& currentTime, const std::chrono::milliseconds& delay = std::chrono::milliseconds::zero());
-		std::chrono::high_resolution_clock::time_point TimeEnqueued();
+		std::chrono::high_resolution_clock::time_point TimeEnqueued() const;
 
-		std::chrono::milliseconds Delay();
-		bool IsExpired(const std::chrono::high_resolution_clock::time_point& currentTime);
+		std::chrono::milliseconds Delay() const;
+		bool IsExpired(const std::chrono::high_resolution_clock::time_point& currentTime) const;
 
-		void Deliver();
+		void Deliver() const;
 
 	protected:
 
-		EventPublisher(Vector<EventSubscriber*>& subscribers, bool deleteAfterPublish = true);
-		bool mDeleteAfterPublish;
+		EventPublisher(Vector<EventSubscriber*>& subscribers);
 
 	private:
 

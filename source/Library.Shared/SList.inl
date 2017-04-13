@@ -26,8 +26,13 @@ SList<T>::SList(const SList& rhs) :
 template <typename T>
 SList<T>::SList(SList&& rhs)
 {
-	DeepCopy(rhs);
-	rhs.Clear();
+	mFront = rhs.mFront;
+	mBack = rhs.mBack;
+	mSize = rhs.mSize;
+
+	rhs.mFront = nullptr;
+	rhs.mBack = nullptr;
+	rhs.mSize = 0;
 }
 
 /************************************************************************/
@@ -48,9 +53,13 @@ SList<T>& SList<T>::operator=(SList&& rhs)
 {
 	if (this != &rhs)
 	{
-		Clear();
-		DeepCopy(rhs);
-		rhs.Clear();
+		mFront = rhs.mFront;
+		mBack = rhs.mBack;
+		mSize = rhs.mSize;
+
+		rhs.mFront = nullptr;
+		rhs.mBack = nullptr;
+		rhs.mSize = 0;
 	}
 	return *this;
 }

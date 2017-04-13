@@ -5,10 +5,13 @@ namespace Library
 	template <typename T>
 	RTTI_DEFINITIONS(Event<T>);
 
+	template <typename T>
+	Vector<EventSubscriber*> Event<T>::sSubscribers = Vector<EventSubscriber*>();
+
 	/************************************************************************/
 	template <typename T>
-	Event<T>::Event(const T& message, bool deleteAfterPublish) :
-		EventPublisher(sSubscribers, deleteAfterPublish), mMessage(message)
+	Event<T>::Event(const T& message) :
+		EventPublisher(sSubscribers), mMessage(message)
 	{
 	}
 
@@ -17,7 +20,6 @@ namespace Library
 	Event<T>::Event(Event&& rhs) :
 		EventPublisher(rhs)
 	{
-		sSubscribers = std::move(rhs.sSubscribers);
 		mMessage = std::move(rhs.mMessage);
 	}
 
@@ -28,7 +30,6 @@ namespace Library
 		if (this != &rhs)
 		{
 			EventPublisher::operator=(rhs);
-			sSubscribers = std::move(rhs.sSubscribers);
 			mMessage = std::move(rhs.mMessage);
 		}
 
@@ -37,14 +38,14 @@ namespace Library
 
 	/************************************************************************/
 	template <typename T>
-	void Event<T>::Subscribe(const EventSubscriber& eventSubscriber)
+	void Event<T>::Subscribe(EventSubscriber& eventSubscriber)
 	{
 		sSubscribers.PushBack(&eventSubscriber);
 	}
 
 	/************************************************************************/
 	template <typename T>
-	void Event<T>::Unsubscribe(const EventSubscriber& eventSubscriber)
+	void Event<T>::Unsubscribe(EventSubscriber& eventSubscriber)
 	{
 		sSubscribers.Remove(&eventSubscriber); 
 	}
@@ -62,6 +63,4 @@ namespace Library
 	{
 		return mMessage;
 	}
-
-
 }

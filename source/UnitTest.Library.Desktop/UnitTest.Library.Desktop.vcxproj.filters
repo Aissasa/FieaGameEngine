@@ -62,6 +62,12 @@
     <ClCompile Include="TestAction.cpp">
       <Filter>Support Classes\Scripting</Filter>
     </ClCompile>
+    <ClCompile Include="BarEventSubscriber.cpp">
+      <Filter>Support Classes\Event System</Filter>
+    </ClCompile>
+    <ClCompile Include="EventSystemTest.cpp">
+      <Filter>Test Classes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Support Classes">
@@ -78,6 +84,9 @@
     </Filter>
     <Filter Include="Support Classes\Scripting">
       <UniqueIdentifier>{6a919a1a-323e-4d6c-a1c8-644318fdc0c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Support Classes\Event System">
+      <UniqueIdentifier>{581256fc-f4b5-4aee-a2ce-cd059972f15f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -114,6 +123,9 @@
     </ClInclude>
     <ClInclude Include="TestAction.h">
       <Filter>Support Classes\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="BarEventSubscriber.h">
+      <Filter>Support Classes\Event System</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

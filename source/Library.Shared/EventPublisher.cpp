@@ -10,8 +10,8 @@ namespace Library
 	RTTI_DEFINITIONS(EventPublisher);
 
 	/************************************************************************/
-	EventPublisher::EventPublisher(Vector<EventSubscriber*>& subscribers, bool deleteAfterPublish) :
-		mSubscribersListPtr(&subscribers), mEnqueuedTime(high_resolution_clock::now()), mDeleteAfterPublish(deleteAfterPublish)
+	EventPublisher::EventPublisher(Vector<EventSubscriber*>& subscribers) :
+		mSubscribersListPtr(&subscribers), mEnqueuedTime(high_resolution_clock::now())
 	{
 	}
 
@@ -42,29 +42,30 @@ namespace Library
 	}
 
 	/************************************************************************/
-	high_resolution_clock::time_point EventPublisher::TimeEnqueued()
+	high_resolution_clock::time_point EventPublisher::TimeEnqueued() const
 	{
 		return mEnqueuedTime;
 	}
 
 	/************************************************************************/
-	milliseconds EventPublisher::Delay()
+	milliseconds EventPublisher::Delay() const
 	{
 		return mDelay;
 	}
 
 	/************************************************************************/
-	bool EventPublisher::IsExpired(const high_resolution_clock::time_point& currentTime)
+	bool EventPublisher::IsExpired(const high_resolution_clock::time_point& currentTime) const
 	{
 		return currentTime > (mEnqueuedTime + mDelay);
 	}
 
 	/************************************************************************/
-	void EventPublisher::Deliver()
+	void EventPublisher::Deliver() const
 	{
 		for (auto& subscriber : *mSubscribersListPtr)
 		{
 			subscriber->Notify(*this);
 		}
 	}
+
 }

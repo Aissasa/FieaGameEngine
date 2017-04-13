@@ -20,7 +20,7 @@ namespace Library
 
 		void Reset();
 
-	private:
+	protected:
 
 		bool mIsNotified;
 	};

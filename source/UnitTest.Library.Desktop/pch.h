@@ -11,6 +11,7 @@
 #include <iostream>
 #include <fstream>
 #include <cassert>
+#include <chrono>
 
 // glm includes
 #include <glm/glm.hpp>
@@ -20,6 +21,6 @@
 //// C RunTime Header Files
 //#include <stdlib.h>
 //#include <malloc.h>
-//#include <memory.h>
+#include <memory.h>
 //#include <tchar.h>
 #include <functional>
