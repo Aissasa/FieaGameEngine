@@ -248,7 +248,6 @@ namespace UnitTestLibraryDesktop
 			Assert::IsNotNull(barEvent->As<Event<Bar>>());
 
 			Assert::IsTrue(barEvent->As<Event<Bar>>()->Equals(barEvent.get()));
-
 		}
 
 #pragma endregion

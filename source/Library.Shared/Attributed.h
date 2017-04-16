@@ -68,6 +68,9 @@ namespace Library
 		*/
 		static void ClearCashedPrescribedAttributes();
 
+		/** Copies the auxialary attributes of an Attribued.
+		* @param attributed: Attributed to copy from.
+		*/
 		virtual void CopyAuxiliaryAttributes(Attributed& attributed);
 
 	protected:

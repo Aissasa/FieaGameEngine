@@ -21,8 +21,6 @@ namespace Library
 
 		typedef std::function<void(WorldSharedData&, const HashMap<std::string, std::string>&)> StartFunc;
 		typedef std::pair < std::string, StartFunc> StartFuncPair;
-		typedef std::function<void(WorldSharedData&)> EndFunc;
-		typedef std::pair < std::string, EndFunc> EndFuncPair;
 
 		/** XmlParseHelperActionCreateAndDestroyAction constructor.
 		*/

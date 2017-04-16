@@ -10,6 +10,11 @@
 #include "Event.h"
 #include "Bar.h"
 #include "ActionEvent.h"
+#include "XmlParseHelperWorld.h"
+#include "XmlParseHelperSector.h"
+#include "XmlParseHelperAction.h"
+#include "XmlParseHelperNumber.h"
+#include "XmlParseHelperEntity.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 using namespace std;
@@ -137,16 +142,24 @@ namespace UnitTestLibraryDesktop
 			unique_ptr<RTTI> reaction = make_unique<ReactionAttributed>();
 
 			Assert::IsNotNull(reaction->As<ReactionAttributed>());
+			Assert::IsNotNull(reaction->As<Reaction>());
 			Assert::IsNotNull(reaction->As<Attributed>());
 			Assert::IsNull(reaction->As<EventMessageAttributed>());
 
 			Assert::IsTrue(reaction->Is("ReactionAttributed"));
+			Assert::IsTrue(reaction->Is("Reaction"));
 			Assert::IsTrue(reaction->Is(reaction->TypeIdInstance()));
 			Assert::IsTrue(reaction->Is(reaction->As<ReactionAttributed>()->TypeIdClass()));
+			Assert::IsTrue(reaction->Is(reaction->As<Reaction>()->TypeIdClass()));
+			Assert::IsTrue(reaction->Is(ReactionAttributed::TypeIdClass()));
+			Assert::IsTrue(reaction->Is(Reaction::TypeIdClass()));
+
 			Assert::IsTrue(reaction->As<ReactionAttributed>()->TypeName() == "ReactionAttributed");
+			Assert::IsTrue(reaction->As<Reaction>()->TypeName() == "Reaction");
 
 			Assert::IsTrue(reaction->QueryInterface(reaction->TypeIdInstance())->ToString() != "RTTI");
 			Assert::IsNotNull(reaction->As<ReactionAttributed>());
+			Assert::IsNotNull(reaction->As<Reaction>());
 
 			Assert::IsTrue(reaction->As<ReactionAttributed>()->Equals(reaction.get()));
 		}
@@ -206,6 +219,115 @@ namespace UnitTestLibraryDesktop
 			Assert::IsNotNull(action->As<ActionEvent>());
 
 			Assert::IsTrue(action->As<ActionEvent>()->Equals(action.get()));
+		}
+
+		/************************************************************************/
+		TEST_METHOD(EventRTTITest)
+		{
+			unique_ptr<EventMessageAttributed> eventMessage = make_unique<EventMessageAttributed>();
+			unique_ptr<RTTI> event = make_unique<Event<EventMessageAttributed>>(*eventMessage);
+
+			Assert::IsNotNull(event->As<Event<EventMessageAttributed>>());
+			Assert::IsNotNull(event->As<EventPublisher>());
+			Assert::IsNull(event->As<TableSharedData>());
+
+			Assert::IsTrue(event->Is(event->TypeIdInstance()));
+			Assert::IsTrue(event->Is(Event<EventMessageAttributed>::TypeIdClass()));
+			Assert::IsTrue(event->Is(EventPublisher::TypeIdClass()));
+			Assert::IsTrue(event->Is(event->As<EventPublisher>()->TypeIdClass()));
+
+			Assert::IsTrue(event->QueryInterface(event->TypeIdInstance())->ToString() == "RTTI");
+			Assert::IsNotNull(event->As<Event<EventMessageAttributed>>());
+
+			Assert::IsTrue(event->As<Event<EventMessageAttributed>>()->Equals(event.get()));
+
+		}
+
+		/************************************************************************/
+		TEST_METHOD(XmlParsingTest)
+		{
+			XmlParseHelperWorld* worldHelper = new XmlParseHelperWorld();
+			XmlParseHelperSector* sectorHelper = new XmlParseHelperSector();
+			XmlParseHelperEntity* entityHelper = new XmlParseHelperEntity();
+			XmlParseHelperAction* actionHelper = new XmlParseHelperAction();
+			XmlParseHelperNumber* numberHelper = new XmlParseHelperNumber();
+
+			WorldSharedData* sharedData = new WorldSharedData();
+			XmlParseMaster master(sharedData);
+			master.AddHelper(*worldHelper);
+			master.AddHelper(*sectorHelper);
+			master.AddHelper(*entityHelper);
+			master.AddHelper(*actionHelper);
+			master.AddHelper(*numberHelper);
+
+			EntityFactory entityFactory;
+			ActionEventFactory actionEventFactory;
+
+			// no names
+			string xmlToParse = "<World Name=\"Lvl1\"><Sector Name=\"Sec1\"><Entity Class=\"Entity\" InstanceName=\"Ent\"><Float Name=\"Fl\" Value=\"5.6f\"/><ActionEvent NonInstanceName=\"ActionEvent\"/></Entity></Sector></World>";
+			auto func0 = [&master, &xmlToParse] { master.Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length())); };
+			Assert::ExpectException<exception>(func0);
+			// to actually delete the world
+			sharedData->SetScope(*sharedData->GetScope()->As<Entity>()->GetSector()->GetWorld());
+
+			xmlToParse = "<World Name=\"Lvl1\"><Reaction NonClass=\"ReactionAttributed\" InstanceName=\"Reaction\" Subtype=\"Type\" /><Sector Name=\"Sec1\"><Entity Class=\"Entity\" InstanceName=\"Ent\"><Float Name=\"Fl\" Value=\"5.6f\"/></Entity></Sector></World>";
+			auto func1 = [&master, &xmlToParse] { master.Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length())); };
+			Assert::ExpectException<exception>(func1);
+
+			xmlToParse = "<World Name=\"Lvl1\"><Reaction Class=\"ReactionAttributed\" NonInstanceName=\"Reaction\" Subtype=\"Type\" /><Sector Name=\"Sec1\"><Entity Class=\"Entity\" InstanceName=\"Ent\"><Float Name=\"Fl\" Value=\"5.6f\"/></Entity></Sector></World>";
+			auto func2 = [&master, &xmlToParse] { master.Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length())); };
+			Assert::ExpectException<exception>(func2);
+
+			// fact
+			xmlToParse = "<World Name=\"Lvl1\"><Reaction Class=\"ReactionAttributed\" InstanceName=\"Reaction\" Subtype=\"Type\" /><Sector Name=\"Sec1\"><Entity Class=\"Entity\" InstanceName=\"Ent\"><Float Name=\"Fl\" Value=\"5.6f\"/></Entity></Sector></World>";
+			auto func3 = [&master, &xmlToParse] { master.Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length())); };
+			Assert::ExpectException<exception>(func3);
+
+			ReactionAttributedFactory reactionAttributedFactory;
+
+			// normal case
+			xmlToParse = "<World Name=\"Lvl1\"><ActionEvent InstanceName=\"ActionEvent\" Subtype=\"Type\" Delay=\"50\"><Float Name=\"Fl\" Value=\"5.6f\"/></ActionEvent><Sector Name=\"Sec1\"><Entity Class=\"Entity\" InstanceName=\"Ent\"><Reaction Class=\"ReactionAttributed\" InstanceName=\"Reaction\" Subtype=\"Type\" /></Entity></Sector></World>";
+			master.Parse(xmlToParse.c_str(), static_cast<uint32_t>(xmlToParse.length()));
+			
+			World* world = sharedData->GetScope()->As<World>();
+			Scope& action = world->Actions()[0];
+			Assert::IsTrue(action.Is(ActionEvent::TypeIdClass()));
+			ActionEvent& actionEvent = static_cast<ActionEvent&>(action);
+			Assert::IsTrue(actionEvent.GetSubType() == "Type");
+			Assert::AreEqual(actionEvent.GetDelay(), 50);
+			Assert::IsTrue(actionEvent.IsAuxiliaryAttribute("Fl"));
+			Assert::IsTrue(actionEvent.Find("Fl")->Get<float>(0) == 5.6f);
+
+			Scope& scope = world->Sectors().operator[](0).As<Sector>()->Entities().operator[](0);
+			Assert::IsTrue(scope.Is(Entity::TypeIdClass()));
+			Entity& entity = static_cast<Entity&>(scope);
+			Assert::IsTrue(entity.IsAuxiliaryAttribute("Reaction"));
+			auto& scope1 = entity.Find("Reaction")[0][0];
+			Assert::IsTrue(scope1.Is(ReactionAttributed::TypeIdClass()));
+			ReactionAttributed& reactionAttributed = static_cast<ReactionAttributed&>(scope1);
+			Assert::IsTrue(reactionAttributed.GetSubType() == "Type");
+
+			shared_ptr<WorldState> worldState = make_shared<WorldState>();
+			worldState->SetWorld(world);
+			shared_ptr<GameTime> gameTime = make_shared<GameTime>();
+			high_resolution_clock::time_point startPoint = high_resolution_clock::now();
+			gameTime->SetCurrentTime(startPoint);
+			worldState->SetGameTime(*gameTime);
+
+			actionEvent.Update(*worldState);
+			Assert::IsFalse(reactionAttributed.GetIsNotified());
+			worldState->GetGameTime().SetCurrentTime(startPoint + milliseconds(30000));
+
+			world->Update(*worldState);
+			Assert::IsTrue(reactionAttributed.GetIsNotified());
+
+
+			delete worldHelper;
+			delete sectorHelper;
+			delete entityHelper;
+			delete actionHelper;
+			delete numberHelper;
+			delete sharedData;
 		}
 
 #pragma endregion

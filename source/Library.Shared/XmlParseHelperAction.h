@@ -18,6 +18,12 @@ namespace Library
 
 	public:
 
+		typedef std::function<void(WorldSharedData&, const HashMap<std::string, std::string>&)> StartFunc;
+		typedef std::pair < std::string, StartFunc> StartFuncPair;
+		typedef std::function<void(WorldSharedData&)> EndFunc;
+		typedef std::pair < std::string, EndFunc> EndFuncPair;
+
+
 		/** XmlParseHelperAction constructor.
 		*/
 		XmlParseHelperAction();
@@ -69,7 +75,19 @@ namespace Library
 	private:
 
 		const static std::string ACTION_ELEMENT_NAME;
+		const static std::string REACTION_ELEMENT_NAME;
+		const static std::string ACTION_EVENT_ELEMENT_NAME;
 		const static std::string CLASS_NAME_ATTRIBUTE_NAME;
 		const static std::string INSTANCE_NAME_ATTRIBUTE_NAME;
+		const static std::string SUB_TYPE_ATTRIBUTE_NAME;
+		const static std::string DELAY_ATTRIBUTE_NAME;
+
+		HashMap<std::string, StartFunc> mStartFunctionsMap;
+
+		void InitializeFunctionsMaps();
+
+		static void HandleActionElementStart(WorldSharedData& sharedData, const HashMap<std::string, std::string>& attributes);
+		static void HandleReactionElementStart(WorldSharedData& sharedData, const HashMap<std::string, std::string>& attributes);
+		static void HandleActionEventElementStart(WorldSharedData& sharedData, const HashMap<std::string, std::string>& attributes);
 	};
 }
