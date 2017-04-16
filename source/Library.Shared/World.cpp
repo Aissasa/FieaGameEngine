@@ -33,6 +33,11 @@ namespace Library
 		mName = name;
 	}
 
+	EventQueue& World::GetEventQueue()
+	{
+		return mEventQueue;
+	}
+
 	/************************************************************************/
 	Datum& World::Actions() const
 	{
@@ -46,7 +51,7 @@ namespace Library
 		Action* action = Factory<Action>::Create(actionClassName);
 		if (!action)
 		{
-			throw exception("The correspondant factory needs to be initialized.");
+			throw exception("The correspondent factory needs to be initialized.");
 		}
 		action->SetName(actionInstanceName);
 		Adopt(*action, ACTIONS_ENTRY_NAME);
@@ -133,6 +138,7 @@ namespace Library
 	/************************************************************************/
 	void World::InitPrescribedAttributes()
 	{
+		AddInternalAttribute("this", static_cast<RTTI*>(this));
 		AddExternalAttribute(WORLD_NAME_ENTRY_NAME, &mName, 1);
 		mActionsDatumPtr = &(AddEmptyNestedScopeAttribute(ACTIONS_ENTRY_NAME));
 		mSectorsDatumPtr = &(AddEmptyNestedScopeAttribute(SECTORS_ENTRY_NAME));

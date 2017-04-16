@@ -1,4 +1,5 @@
 #pragma once
+
 #include "Action.h"
 #include "Factory.h"
 
@@ -65,6 +66,7 @@ namespace Library
 		virtual void Update(WorldState& worldState) override;
 
 	protected:
+
 		void InitPrescribedAttributes() override;
 		Datum* mActionsDatumPtr;
 

@@ -144,6 +144,7 @@ namespace Library
 	/************************************************************************/
 	void Sector::InitPrescribedAttributes()
 	{
+		AddInternalAttribute("this", static_cast<RTTI*>(this));
 		AddExternalAttribute(SECTOR_NAME_ENTRY_NAME, &mName, 1);
 		mActionsDatumPtr = &AddEmptyNestedScopeAttribute(ACTIONS_ENTRY_NAME);
 		mEntitiesDatumPtr = &AddEmptyNestedScopeAttribute(ENTITIES_ENTRY_NAME);

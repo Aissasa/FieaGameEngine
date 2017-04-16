@@ -145,7 +145,12 @@ namespace Library
 		*/
 		bool Equals(const RTTI* rhs) const override;
 
+	protected:
+
+		HashMap<std::string, Datum>& GetTable();
+
 	private:
+
 		HashMap<std::string, Datum> mTable;
 		Vector<HashMap<std::string, Datum>::Iterator> mVect;
 

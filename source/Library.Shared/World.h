@@ -1,4 +1,5 @@
 #pragma once
+
 #include "Attributed.h"
 #include "EventQueue.h"
 
@@ -41,6 +42,12 @@ namespace Library
 		*/
 		void SetName(const std::string& name);
 
+		/** Gets the event queue used in the World.
+		* @return Event queue used in the world.
+		* @see EventQueue
+		*/
+		EventQueue& GetEventQueue();
+
 		/** Gets the Datum containing the World's Actions.
 		* @return World Actions.
 		* @see Action
@@ -49,7 +56,7 @@ namespace Library
 		Datum& Actions() const;
 
 		/** Creates a new Action and adopts it into the World.
-		* Needs the existance of the correspondant factory to work successfully.
+		* Needs the existence of the correspondent factory to work successfully.
 		* @exception An exception is thrown if the Action creation fails.
 		* @param actionClassName: Name of the Action class to create an instance from.
 		* @param actionInstanceName: Name of the new Action instance.
@@ -90,7 +97,7 @@ namespace Library
 		void AddActionToDestroy(Action& actionToDestroy);
 
 		/** Iterates through the contained Sectors and calls their update methods.
-		* @param worldState: Wolrd state to use for updates.
+		* @param worldState: World state to use for updates.
 		* @see Sector
 		* @see WorldState
 		*/
@@ -102,6 +109,7 @@ namespace Library
 		const static std::string SECTORS_ENTRY_NAME;
 
 	protected:
+
 		void InitPrescribedAttributes() override;
 
 	private:

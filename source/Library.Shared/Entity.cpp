@@ -113,6 +113,7 @@ namespace Library
 	/************************************************************************/
 	void Entity::InitPrescribedAttributes()
 	{
+		AddInternalAttribute("this", static_cast<RTTI*>(this));
 		AddExternalAttribute(ENTITY_NAME_ENTRY_NAME, &mName, 1);
 		mActionsDatumPtr = &AddEmptyNestedScopeAttribute(ACTIONS_ENTRY_NAME);
 	}

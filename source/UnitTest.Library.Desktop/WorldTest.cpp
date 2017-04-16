@@ -49,6 +49,7 @@ namespace UnitTestLibraryDesktop
 			World::ClearCashedPrescribedAttributes();
 			Sector::ClearCashedPrescribedAttributes();
 			Entity::ClearCashedPrescribedAttributes();
+			Action::ClearCashedPrescribedAttributes();
 
 			_CrtMemState endMemState, diffMemState;
 			_CrtMemCheckpoint(&endMemState);

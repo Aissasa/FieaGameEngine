@@ -212,6 +212,10 @@
     </ClCompile>
     <ClCompile Include="Product1.cpp" />
     <ClCompile Include="Product2.cpp" />
+    <ClCompile Include="ReactionTest.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="ScopeTest.cpp">
       <SubType>
       </SubType>

@@ -60,7 +60,7 @@ namespace Library
 	}
 
 	/************************************************************************/
-	void EventPublisher::Deliver() const
+	void EventPublisher::Deliver()
 	{
 		for (auto& subscriber : *mSubscribersListPtr)
 		{

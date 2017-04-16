@@ -59,6 +59,7 @@ namespace Library
 	/************************************************************************/
 	void Action::InitPrescribedAttributes()
 	{
+		AddInternalAttribute("this", static_cast<RTTI*>(this));
 		AddExternalAttribute(ACTION_NAME_ENTRY_NAME, &mName, 1);
 	}
 }

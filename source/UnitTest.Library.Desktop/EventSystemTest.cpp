@@ -229,7 +229,6 @@ namespace UnitTestLibraryDesktop
 			Assert::IsTrue(barEvent6->Message().GetFloat() == 6.0f);
 		}
 
-
 		/************************************************************************/
 		TEST_METHOD(EventRTTITest)
 		{

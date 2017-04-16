@@ -68,6 +68,7 @@ namespace Library
 	/************************************************************************/
 	void ActionDestroyAction::InitPrescribedAttributes()
 	{
+		Action::InitPrescribedAttributes();
 		AddExternalAttribute(INSTANCE_NAME_ENTRY_NAME, &mInstanceName, 1);
 	}
 }

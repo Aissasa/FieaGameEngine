@@ -68,6 +68,8 @@ namespace Library
 		*/
 		static void ClearCashedPrescribedAttributes();
 
+		virtual void CopyAuxiliaryAttributes(Attributed& attributed);
+
 	protected:
 
 		/** Initializes the attributed prescribed attributes.
@@ -228,7 +230,6 @@ namespace Library
 		* @see Scope
 		*/
 		Datum& AddEmptyNestedScopeAttribute(const std::string& name);
-
 
 	private:
 

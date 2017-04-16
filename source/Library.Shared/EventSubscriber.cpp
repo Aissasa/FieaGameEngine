@@ -14,4 +14,10 @@ namespace Library
 	{
 		mIsNotified = false;
 	}
+
+	/************************************************************************/
+	bool EventSubscriber::GetIsNotified() const
+	{
+		return mIsNotified;
+	}
 }

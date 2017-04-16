@@ -16,7 +16,7 @@ namespace UnitTestLibraryDesktop
 	}
 
 	/************************************************************************/
-	void BarEventSubscriber::Notify(const Library::EventPublisher& eventPublisher)
+	void BarEventSubscriber::Notify(Library::EventPublisher& eventPublisher)
 	{
 		if (!mIsNotified)
 		{

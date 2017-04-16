@@ -43,7 +43,12 @@ namespace Library
 		* @param eventPublisher: The event that got fired.
 		* @see EventPublisher
 		*/
-		virtual void Notify(const EventPublisher& eventPublisher) = 0;
+		virtual void Notify(EventPublisher& eventPublisher) = 0;
+
+		/** Returns if the subscriber is notified.
+		* @return Bool representing if the subscriber is notified.
+		*/
+		bool GetIsNotified() const;
 
 		/** Resets the subscriber as not notified.
 		*/

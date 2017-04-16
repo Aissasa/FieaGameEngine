@@ -14,7 +14,7 @@ namespace UnitTestLibraryDesktop
 		BarEventSubscriber(const BarEventSubscriber & rhs) = default;
 		BarEventSubscriber& operator=(const BarEventSubscriber& rhs) = default;
 
-		virtual void Notify(const Library::EventPublisher& eventPublisher) override;
+		virtual void Notify(Library::EventPublisher& eventPublisher) override;
 
 		std::float_t GetFloat() const;
 

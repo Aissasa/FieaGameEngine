@@ -65,7 +65,7 @@ namespace Library
 		/** Notifies all of the subscribers of the Event.
 		* @see EventSubscriber
 		*/
-		void Deliver() const;
+		void Deliver();
 
 	protected:
 

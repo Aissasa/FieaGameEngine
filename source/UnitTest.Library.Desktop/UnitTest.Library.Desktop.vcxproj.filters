@@ -68,6 +68,9 @@
     <ClCompile Include="EventSystemTest.cpp">
       <Filter>Test Classes</Filter>
     </ClCompile>
+    <ClCompile Include="ReactionTest.cpp">
+      <Filter>Test Classes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Support Classes">

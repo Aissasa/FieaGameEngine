@@ -317,6 +317,12 @@ namespace Library
 	}
 
 	/************************************************************************/
+	HashMap<std::string, Datum>& Scope::GetTable()
+	{
+		return mTable;
+	}
+
+	/************************************************************************/
 	Scope& Scope::AppendScope(const string& str, Scope* scope)
 	{
 		if (str.empty())

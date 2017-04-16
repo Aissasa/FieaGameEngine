@@ -89,6 +89,21 @@ namespace Library
 	}
 
 	/************************************************************************/
+	void Attributed::CopyAuxiliaryAttributes(Attributed& attributed)
+	{
+		auto& table = attributed.GetTable();
+
+		for (auto& pair : table)
+		{
+			if (attributed.IsAuxiliaryAttribute(pair.first))
+			{
+				auto& dat = AppendAuxiliaryAttribute(pair.first);
+				dat = pair.second;
+			}
+		}
+	}
+
+	/************************************************************************/
 	Datum & Attributed::AddInternalAttribute(const std::string & name, const std::int32_t initValue, const std::uint32_t size)
 	{
 		if (name.empty())

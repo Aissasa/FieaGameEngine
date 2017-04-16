@@ -53,6 +53,7 @@ namespace Library
 		virtual void SetPredecessor(Attributed& predecessor);
 		 
 	protected:
+
 		void InitPrescribedAttributes() override;
 		const static std::string ACTIONS_ENTRY_NAME;
 

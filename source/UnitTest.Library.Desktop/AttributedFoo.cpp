@@ -40,6 +40,8 @@ namespace UnitTestLibraryDesktop
 	/************************************************************************/
 	void AttributedFoo::InitPrescribedAttributes()
 	{
+		AddInternalAttribute("this", static_cast<RTTI*>(this));
+
 		AddExternalAttribute("mExternalInteger", &mExternalInteger, 1);
 		AddExternalAttribute("mExternalFloat", &mExternalFloat, 1);
 		AddExternalAttribute("mExternalVector", &mExternalVector, 1);

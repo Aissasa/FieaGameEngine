@@ -72,6 +72,7 @@ namespace Library
 	/************************************************************************/
 	void ActionCreateAction::InitPrescribedAttributes()
 	{
+		Action::InitPrescribedAttributes();
 		AddExternalAttribute(CLASS_NAME_ENTRY_NAME, &mClassName, 1);
 		AddExternalAttribute(INSTANCE_NAME_ENTRY_NAME, &mInstanceName, 1);
 	}
