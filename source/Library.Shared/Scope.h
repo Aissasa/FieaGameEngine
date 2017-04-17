@@ -147,7 +147,7 @@ namespace Library
 
 	protected:
 
-		HashMap<std::string, Datum>& GetTable();
+		const HashMap<std::string, Datum>& GetTable() const;
 
 	private:
 

@@ -56,7 +56,7 @@ namespace Library
 		/** Returns the payload of the event.
 		* @return Payload contained by the event.
 		*/
-		T& Message();
+		const T& Message() const;
 
 	private:
 

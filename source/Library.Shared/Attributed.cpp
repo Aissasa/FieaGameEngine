@@ -89,7 +89,7 @@ namespace Library
 	}
 
 	/************************************************************************/
-	void Attributed::CopyAuxiliaryAttributes(Attributed& attributed)
+	void Attributed::CopyAuxiliaryAttributes(const Attributed& attributed)
 	{
 		auto& table = attributed.GetTable();
 

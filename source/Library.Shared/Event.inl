@@ -59,7 +59,7 @@ namespace Library
 
 	/************************************************************************/
 	template <typename T>
-	T& Event<T>::Message()
+	const T& Event<T>::Message() const
 	{
 		return mMessage;
 	}

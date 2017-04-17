@@ -71,7 +71,7 @@ namespace Library
 		/** Copies the auxialary attributes of an Attribued.
 		* @param attributed: Attributed to copy from.
 		*/
-		virtual void CopyAuxiliaryAttributes(Attributed& attributed);
+		virtual void CopyAuxiliaryAttributes(const Attributed& attributed);
 
 	protected:
 

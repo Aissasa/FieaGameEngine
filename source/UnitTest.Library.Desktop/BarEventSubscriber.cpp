@@ -21,7 +21,7 @@ namespace UnitTestLibraryDesktop
 		if (!mIsNotified)
 		{
 			assert(eventPublisher.Is(Event<Bar>::TypeIdClass()));
-			Bar& bar = eventPublisher.As<Event<Bar>>()->Message();
+			auto& bar = eventPublisher.As<Event<Bar>>()->Message();
 			mFloat += bar.GetFloat();
 			mIsNotified = true;
 		}

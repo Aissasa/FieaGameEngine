@@ -25,6 +25,7 @@ namespace UnitTestLibraryDesktop
 
 		TEST_METHOD_CLEANUP(Cleanup)
 		{
+			Event<Bar>::UnsubscribeAll();
 			_CrtMemState endMemState, diffMemState;
 			_CrtMemCheckpoint(&endMemState);
 			if (_CrtMemDifference(&diffMemState, &sStartMemState, &endMemState))
@@ -40,17 +41,16 @@ namespace UnitTestLibraryDesktop
 		/************************************************************************/
 		TEST_METHOD(SubscriberTest)
 		{
-			unique_ptr<Bar> bar = make_unique<Bar>();
+			unique_ptr<Bar> bar = make_unique<Bar>(2.0f);
 			unique_ptr<Event<Bar>> barEvent = make_unique<Event<Bar>>(*bar);
 			unique_ptr<BarEventSubscriber> barEventSubscriber = make_unique<BarEventSubscriber>();
 
-			barEvent->Message().SetFloat(2.0f);
-			Assert::AreEqual(bar->GetFloat(), 0.0f);
+			Assert::AreEqual(bar->GetFloat(), 2.0f);
 			Assert::AreEqual(barEvent->Message().GetFloat(), 2.0f);
 			Assert::AreEqual(barEventSubscriber->GetFloat(), 0.0f);
 
 			barEventSubscriber->Notify(*barEvent);
-			Assert::AreEqual(bar->GetFloat(), 0.0f);
+			Assert::AreEqual(bar->GetFloat(), 2.0f);
 			Assert::AreEqual(barEvent->Message().GetFloat(), 2.0f);
 			Assert::AreEqual(barEventSubscriber->GetFloat(), 2.0f);
 
@@ -65,14 +65,13 @@ namespace UnitTestLibraryDesktop
 		/************************************************************************/
 		TEST_METHOD(EventBarTest)
 		{
-			unique_ptr<Bar> bar = make_unique<Bar>();
-			unique_ptr<Event<Bar>> barEvent1 = make_unique<Event<Bar>>(*bar);
-			unique_ptr<Event<Bar>> barEvent2 = make_unique<Event<Bar>>(*bar);
+			unique_ptr<Bar> bar1 = make_unique<Bar>(1.0f);
+			unique_ptr<Bar> bar2 = make_unique<Bar>(2.0f);
+			unique_ptr<Event<Bar>> barEvent1 = make_unique<Event<Bar>>(*bar1);
+			unique_ptr<Event<Bar>> barEvent2 = make_unique<Event<Bar>>(*bar2);
 			unique_ptr<BarEventSubscriber> barEventSubscriber0 = make_unique<BarEventSubscriber>();
 			unique_ptr<BarEventSubscriber> barEventSubscriber3 = make_unique<BarEventSubscriber>();
 
-			barEvent1->Message().SetFloat(1.0f);
-			barEvent2->Message().SetFloat(2.0f);
 			barEventSubscriber0->SetFloat(1);
 			barEventSubscriber3->SetFloat(5);
 
@@ -108,29 +107,27 @@ namespace UnitTestLibraryDesktop
 			Assert::AreEqual(barEventSubscriber0->GetFloat(), 5.0f);
 			Assert::AreEqual(barEventSubscriber3->GetFloat(), 8.0f);
 
-			//Event<Bar>::Subscribe(*barEventSubscriber3);
-			//barEvent1->Deliver();
-			//barEventSubscriber0->Reset();
-			//barEventSubscriber3->Reset();
-			//barEvent2->Deliver();
-			//Assert::AreEqual(barEventSubscriber0->GetFloat(), 5.0f);
-			//Assert::AreEqual(barEventSubscriber3->GetFloat(), 11.0f);		
+			Event<Bar>::Subscribe(*barEventSubscriber3);
+			barEvent1->Deliver();
+			barEventSubscriber0->Reset();
+			barEventSubscriber3->Reset();
+			barEvent2->Deliver();
+			Assert::AreEqual(barEventSubscriber0->GetFloat(), 5.0f);
+			Assert::AreEqual(barEventSubscriber3->GetFloat(), 11.0f);		
 		}
 
 		/************************************************************************/
 		TEST_METHOD(EventQueueTest)
 		{
-			unique_ptr<Bar> bar = make_unique<Bar>();
-			shared_ptr<Event<Bar>> barEvent4 = make_shared<Event<Bar>>(*bar);
-			shared_ptr<Event<Bar>> barEvent5 = make_shared<Event<Bar>>(*bar);
-			shared_ptr<Event<Bar>> barEvent6 = make_shared<Event<Bar>>(*bar);
+			unique_ptr<Bar> bar1 = make_unique<Bar>(1.0f);
+			unique_ptr<Bar> bar2 = make_unique<Bar>(2.0f);
+			unique_ptr<Bar> bar3 = make_unique<Bar>(3.0f);
+			shared_ptr<Event<Bar>> barEvent1 = make_shared<Event<Bar>>(*bar1);
+			shared_ptr<Event<Bar>> barEvent2 = make_shared<Event<Bar>>(*bar2);
+			shared_ptr<Event<Bar>> barEvent3 = make_shared<Event<Bar>>(*bar3);
 			unique_ptr<BarEventSubscriber> barEventSubscriber1 = make_unique<BarEventSubscriber>();
 			unique_ptr<BarEventSubscriber> barEventSubscriber2 = make_unique<BarEventSubscriber>();
 			unique_ptr<EventQueue> eventQueue = make_unique<EventQueue>();
-
-			barEvent4->Message().SetFloat(1.0f);
-			barEvent5->Message().SetFloat(2.0f);
-			barEvent6->Message().SetFloat(3.0f);
 
 			barEventSubscriber1->SetFloat(1);
 			barEventSubscriber2->SetFloat(5);
@@ -142,19 +139,19 @@ namespace UnitTestLibraryDesktop
 			high_resolution_clock::time_point startPoint = high_resolution_clock::now();
 			gameTime->SetCurrentTime(startPoint);
 
-			eventQueue->Enqueue(barEvent4, *gameTime);
-			eventQueue->Enqueue(barEvent5, *gameTime, milliseconds(200));
+			eventQueue->Enqueue(barEvent1, *gameTime);
+			eventQueue->Enqueue(barEvent2, *gameTime, milliseconds(200));
 			Assert::IsFalse(eventQueue->IsEmpty());
 			Assert::IsTrue(eventQueue->Size() == 2u);
 
-			eventQueue->Send(barEvent6);
+			eventQueue->Send(barEvent3);
 			Assert::IsTrue(barEventSubscriber1->GetFloat() == 1.0f);
 			Assert::IsTrue(barEventSubscriber2->GetFloat() == 5.0f);
 			Assert::IsTrue(eventQueue->Size() == 2u);
 
-			eventQueue->Enqueue(barEvent6, *gameTime, milliseconds(3000));
+			eventQueue->Enqueue(barEvent3, *gameTime, milliseconds(3000));
 
-			eventQueue->Send(barEvent5);
+			eventQueue->Send(barEvent2);
 			Assert::IsTrue(barEventSubscriber1->GetFloat() == 3.0f);
 			Assert::IsTrue(barEventSubscriber2->GetFloat() == 7.0f);
 			Assert::IsTrue(eventQueue->Size() == 2u);
@@ -162,7 +159,7 @@ namespace UnitTestLibraryDesktop
 			barEventSubscriber1->Reset();
 			barEventSubscriber2->Reset();
 
-			eventQueue->Enqueue(barEvent5, *gameTime, milliseconds(2500));
+			eventQueue->Enqueue(barEvent2, *gameTime, milliseconds(2500));
 			gameTime->SetCurrentTime(startPoint + milliseconds(50));
 
 			eventQueue->Update(*gameTime);
@@ -173,9 +170,9 @@ namespace UnitTestLibraryDesktop
 			barEventSubscriber1->Reset();
 			barEventSubscriber2->Reset();
 
-			barEvent5->SetTime(startPoint, milliseconds(2600));
-			Assert::IsTrue(barEvent5->Delay() == milliseconds(2600));
-			Assert::IsTrue(barEvent5->TimeEnqueued() == startPoint);
+			barEvent2->SetTime(startPoint, milliseconds(2600));
+			Assert::IsTrue(barEvent2->Delay() == milliseconds(2600));
+			Assert::IsTrue(barEvent2->TimeEnqueued() == startPoint);
 
 			gameTime->SetCurrentTime(startPoint + milliseconds(2605));
 			eventQueue->Update(*gameTime);
@@ -197,15 +194,14 @@ namespace UnitTestLibraryDesktop
 		/************************************************************************/
 		TEST_METHOD(EventMoveSemanticsTest)
 		{
-			unique_ptr<Bar> bar = make_unique<Bar>();
-			unique_ptr<Event<Bar>> barEvent1 = make_unique<Event<Bar>>(*bar);
-			unique_ptr<Event<Bar>> barEvent2 = make_unique<Event<Bar>>(*bar);
-			unique_ptr<Event<Bar>> barEvent3 = make_unique<Event<Bar>>(*bar);
+			unique_ptr<Bar> bar1 = make_unique<Bar>(1.0f);
+			unique_ptr<Bar> bar2 = make_unique<Bar>(2.0f);
+			unique_ptr<Event<Bar>> barEvent1 = make_unique<Event<Bar>>(*bar1);
+			unique_ptr<Event<Bar>> barEvent2 = make_unique<Event<Bar>>(*bar2);
+			unique_ptr<Event<Bar>> barEvent3 = make_unique<Event<Bar>>(*bar2);
 			unique_ptr<BarEventSubscriber> barEventSubscriber1 = make_unique<BarEventSubscriber>();
 			unique_ptr<BarEventSubscriber> barEventSubscriber2 = make_unique<BarEventSubscriber>();
 
-			barEvent1->Message().SetFloat(1.0f);
-			barEvent2->Message().SetFloat(2.0f);
 			barEventSubscriber1->SetFloat(1);
 			barEventSubscriber2->SetFloat(5);
 
@@ -218,15 +214,12 @@ namespace UnitTestLibraryDesktop
 			unique_ptr<Event<Bar>> barEvent4 = make_unique<Event<Bar>>(*barEvent2);
 			Assert::IsTrue(barEvent4->Message().GetFloat() == 2.0f);
 
-			barEvent1->Message().SetFloat(5.0f);
-			barEvent2->Message().SetFloat(6.0f);
-
 			unique_ptr<Event<Bar>> barEvent5 = make_unique<Event<Bar>>(move(*barEvent1));
-			Assert::IsTrue(barEvent5->Message().GetFloat() == 5.0f);
+			Assert::IsTrue(barEvent5->Message().GetFloat() == 1.0f);
 
-			unique_ptr<Event<Bar>> barEvent6 = make_unique<Event<Bar>>(*bar);
+			unique_ptr<Event<Bar>> barEvent6 = make_unique<Event<Bar>>(*bar1);
 			*barEvent6 = move(*barEvent2);
-			Assert::IsTrue(barEvent6->Message().GetFloat() == 6.0f);
+			Assert::IsTrue(barEvent6->Message().GetFloat() == 2.0f);
 		}
 
 		/************************************************************************/

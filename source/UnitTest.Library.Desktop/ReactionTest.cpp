@@ -97,37 +97,35 @@ namespace UnitTestLibraryDesktop
 		/************************************************************************/
 		TEST_METHOD(ReactionAttributedTest)
 		{
-			unique_ptr<Bar> bar = make_unique<Bar>();
+			unique_ptr<Bar> bar = make_unique<Bar>(2.0f);
 			shared_ptr<Event<Bar>> barEvent = make_shared<Event<Bar>>(*bar);
 
 			unique_ptr<EventMessageAttributed> eventMsg = make_unique<EventMessageAttributed>();
+			eventMsg->SetSubType("Type1");
+			auto& dat = eventMsg->AppendAuxiliaryAttribute("Float");
+			dat.PushBack(5.6f);
+			shared_ptr<WorldState> worldState = make_shared<WorldState>();
+			eventMsg->SetWorldState(*worldState);
+
 			shared_ptr<Event<EventMessageAttributed>> event = make_shared<Event<EventMessageAttributed>>(*eventMsg);
 			unique_ptr<ReactionAttributed> reactionAttr = make_unique<ReactionAttributed>("Type0");
 
 			Assert::IsTrue(reactionAttr->GetSubType() == "Type0");
 
-			barEvent->Message().SetFloat(2.0f);
 			reactionAttr->Notify(*barEvent);
 			Assert::IsFalse(reactionAttr->GetIsNotified());
 
-			auto& message = event->Message();
-			message.SetSubType("Type1");
 			reactionAttr->Notify(*event);
 			Assert::IsFalse(reactionAttr->GetIsNotified());
-
-			auto& dat = message.AppendAuxiliaryAttribute("Float");
-			dat.PushBack(5.6f);
 
 			reactionAttr->SetSubType("Type1");
 			reactionAttr->Notify(*event);
-			Assert::IsFalse(reactionAttr->GetIsNotified());
+			Assert::IsTrue(reactionAttr->GetIsNotified());
 			Assert::IsTrue(reactionAttr->IsAuxiliaryAttribute("Float"));
 			Assert::IsTrue(reactionAttr->operator[]("Float") == 5.6f);
 
 			shared_ptr<World> world = make_shared<World>();
-			shared_ptr<WorldState> worldState = make_shared<WorldState>();
 			worldState->SetWorld(world.get());
-			message.SetWorldState(*worldState);
 			reactionAttr->Notify(*event);
 			Assert::IsTrue(reactionAttr->GetIsNotified());
 

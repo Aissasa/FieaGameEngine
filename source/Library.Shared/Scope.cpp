@@ -317,7 +317,7 @@ namespace Library
 	}
 
 	/************************************************************************/
-	HashMap<std::string, Datum>& Scope::GetTable()
+	const HashMap<std::string, Datum>& Scope::GetTable() const
 	{
 		return mTable;
 	}
