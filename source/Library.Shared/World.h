@@ -122,7 +122,6 @@ namespace Library
 		Datum* mSectorsDatumPtr;
 		Vector<Action*> mActionsToDestroy;
 
-		const static std::uint32_t QUEUE_LENTGH = 10;
 		EventQueue mEventQueue;
 
 		void DeleteActions();

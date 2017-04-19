@@ -16,7 +16,7 @@ namespace Library
 
 		/** EventQueue constructor.
 		*/
-		EventQueue(std::uint32_t length = QUEUE_LENGTH);
+		EventQueue();
 
 		/** EventQueue destructor.
 		*/
@@ -39,6 +39,12 @@ namespace Library
 		*/
 		void Enqueue(const std::shared_ptr<EventPublisher>& eventPublisher, const GameTime& gameTime, const std::chrono::milliseconds& delay = std::chrono::milliseconds::zero());
 		
+		/** Removes an Event from the queue.
+		* @param eventPublisher: Event to dequeue.
+		* @see EventPublisher
+		*/
+		void Dequeue(const std::shared_ptr<EventPublisher>& eventPublisher);
+
 		/** Delivers an Event on the queue and removes it from the latter.
 		* @param eventPublisher: Event to deliver.
 		* @see EventPublisher
@@ -68,8 +74,6 @@ namespace Library
 
 	private:
 
-		const static std::uint32_t QUEUE_LENGTH = 4;
-		
-		Vector<std::shared_ptr<EventPublisher>> mEvents;
+		std::vector<std::shared_ptr<EventPublisher>> mEvents;
 	};
 }

@@ -16,7 +16,7 @@ namespace Library
 
 	/************************************************************************/
 	World::World():
-		mActionsDatumPtr(nullptr) ,mSectorsDatumPtr(nullptr), mActionsToDestroy(), mEventQueue(QUEUE_LENTGH)
+		mActionsDatumPtr(nullptr) ,mSectorsDatumPtr(nullptr), mActionsToDestroy(), mEventQueue()
 	{
 		InitPrescribedAttributes();
 	}

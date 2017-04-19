@@ -16,6 +16,7 @@ namespace UnitTestLibraryDesktop
 	TEST_CLASS(EventSystemTest)
 	{
 	public:
+
 #pragma region Memory leak check
 		TEST_METHOD_INITIALIZE(Initialize)
 		{
@@ -26,6 +27,7 @@ namespace UnitTestLibraryDesktop
 		TEST_METHOD_CLEANUP(Cleanup)
 		{
 			Event<Bar>::UnsubscribeAll();
+
 			_CrtMemState endMemState, diffMemState;
 			_CrtMemCheckpoint(&endMemState);
 			if (_CrtMemDifference(&diffMemState, &sStartMemState, &endMemState))
@@ -69,51 +71,51 @@ namespace UnitTestLibraryDesktop
 			unique_ptr<Bar> bar2 = make_unique<Bar>(2.0f);
 			unique_ptr<Event<Bar>> barEvent1 = make_unique<Event<Bar>>(*bar1);
 			unique_ptr<Event<Bar>> barEvent2 = make_unique<Event<Bar>>(*bar2);
-			unique_ptr<BarEventSubscriber> barEventSubscriber0 = make_unique<BarEventSubscriber>();
-			unique_ptr<BarEventSubscriber> barEventSubscriber3 = make_unique<BarEventSubscriber>();
+			unique_ptr<BarEventSubscriber> barEventSubscriber1 = make_unique<BarEventSubscriber>();
+			unique_ptr<BarEventSubscriber> barEventSubscriber2 = make_unique<BarEventSubscriber>();
 
-			barEventSubscriber0->SetFloat(1);
-			barEventSubscriber3->SetFloat(5);
+			barEventSubscriber1->SetFloat(1);
+			barEventSubscriber2->SetFloat(5);
 
-			Event<Bar>::Subscribe(*barEventSubscriber0);
-			Event<Bar>::Subscribe(*barEventSubscriber3);
+			Event<Bar>::Subscribe(*barEventSubscriber1);
+			Event<Bar>::Subscribe(*barEventSubscriber2);
 
 			barEvent1->Deliver();
 			Assert::AreEqual(barEvent1->Message().GetFloat(), 1.0f);
-			Assert::AreEqual(barEventSubscriber0->GetFloat(), 2.0f);
-			Assert::AreEqual(barEventSubscriber3->GetFloat(), 6.0f);
+			Assert::AreEqual(barEventSubscriber1->GetFloat(), 2.0f);
+			Assert::AreEqual(barEventSubscriber2->GetFloat(), 6.0f);
 
-			barEventSubscriber0->Reset();
-			barEventSubscriber3->Reset();
+			barEventSubscriber1->Reset();
+			barEventSubscriber2->Reset();
 
 			barEvent2->Deliver();
 			Assert::AreEqual(barEvent2->Message().GetFloat(), 2.0f);
-			Assert::AreEqual(barEventSubscriber0->GetFloat(), 4.0f);
-			Assert::AreEqual(barEventSubscriber3->GetFloat(), 8.0f);
+			Assert::AreEqual(barEventSubscriber1->GetFloat(), 4.0f);
+			Assert::AreEqual(barEventSubscriber2->GetFloat(), 8.0f);
 
-			barEventSubscriber0->Reset();
-			barEventSubscriber3->Reset();
-			Event<Bar>::Unsubscribe(*barEventSubscriber3);
+			barEventSubscriber1->Reset();
+			barEventSubscriber2->Reset();
+			Event<Bar>::Unsubscribe(*barEventSubscriber2);
 
 			barEvent1->Deliver();
-			Assert::AreEqual(barEventSubscriber0->GetFloat(), 5.0f);
-			Assert::AreEqual(barEventSubscriber3->GetFloat(), 8.0f);
+			Assert::AreEqual(barEventSubscriber1->GetFloat(), 5.0f);
+			Assert::AreEqual(barEventSubscriber2->GetFloat(), 8.0f);
 
-			barEventSubscriber0->Reset();
-			barEventSubscriber3->Reset();
+			barEventSubscriber1->Reset();
+			barEventSubscriber2->Reset();
 			Event<Bar>::UnsubscribeAll();
 
 			barEvent2->Deliver();
-			Assert::AreEqual(barEventSubscriber0->GetFloat(), 5.0f);
-			Assert::AreEqual(barEventSubscriber3->GetFloat(), 8.0f);
+			Assert::AreEqual(barEventSubscriber1->GetFloat(), 5.0f);
+			Assert::AreEqual(barEventSubscriber2->GetFloat(), 8.0f);
 
-			Event<Bar>::Subscribe(*barEventSubscriber3);
+			Event<Bar>::Subscribe(*barEventSubscriber2);
 			barEvent1->Deliver();
-			barEventSubscriber0->Reset();
-			barEventSubscriber3->Reset();
+			barEventSubscriber1->Reset();
+			barEventSubscriber2->Reset();
 			barEvent2->Deliver();
-			Assert::AreEqual(barEventSubscriber0->GetFloat(), 5.0f);
-			Assert::AreEqual(barEventSubscriber3->GetFloat(), 11.0f);		
+			Assert::AreEqual(barEventSubscriber1->GetFloat(), 5.0f);
+			Assert::AreEqual(barEventSubscriber2->GetFloat(), 11.0f);		
 		}
 
 		/************************************************************************/
@@ -152,9 +154,9 @@ namespace UnitTestLibraryDesktop
 			eventQueue->Enqueue(barEvent3, *gameTime, milliseconds(3000));
 
 			eventQueue->Send(barEvent2);
-			Assert::IsTrue(barEventSubscriber1->GetFloat() == 3.0f);
-			Assert::IsTrue(barEventSubscriber2->GetFloat() == 7.0f);
-			Assert::IsTrue(eventQueue->Size() == 2u);
+			Assert::AreEqual(barEventSubscriber1->GetFloat(), 3.0f);
+			Assert::AreEqual(barEventSubscriber2->GetFloat(), 7.0f);
+			Assert::AreEqual(eventQueue->Size(), 2u);
 
 			barEventSubscriber1->Reset();
 			barEventSubscriber2->Reset();
@@ -163,9 +165,9 @@ namespace UnitTestLibraryDesktop
 			gameTime->SetCurrentTime(startPoint + milliseconds(50));
 
 			eventQueue->Update(*gameTime);
-			Assert::IsTrue(barEventSubscriber1->GetFloat() == 4.0f);
-			Assert::IsTrue(barEventSubscriber2->GetFloat() == 8.0f);
-			Assert::IsTrue(eventQueue->Size() == 2u);
+			Assert::AreEqual(barEventSubscriber1->GetFloat(), 4.0f);
+			Assert::AreEqual(barEventSubscriber2->GetFloat(), 8.0f);
+			Assert::AreEqual(eventQueue->Size(), 2u);
 
 			barEventSubscriber1->Reset();
 			barEventSubscriber2->Reset();
@@ -244,7 +246,6 @@ namespace UnitTestLibraryDesktop
 		}
 
 #pragma endregion
-
 
 	private:
 		static _CrtMemState sStartMemState;

@@ -7,6 +7,7 @@
 // Standard libraries
 #include <cstdint>
 #include <cstring>
+#include <vector>
 #include <iostream>
 #include <fstream>
 #include <cassert>

@@ -40,7 +40,10 @@ namespace Library
 	template <typename T>
 	void Event<T>::Subscribe(EventSubscriber& eventSubscriber)
 	{
-		sSubscribers.PushBack(&eventSubscriber);
+		if (sSubscribers.Find(&eventSubscriber) == sSubscribers.end())
+		{
+			sSubscribers.PushBack(&eventSubscriber);
+		}
 	}
 
 	/************************************************************************/
