@@ -1,6 +1,7 @@
 #pragma once
 
 #include "EventPublisher.h"
+#include <mutex>
 
 namespace Library
 {
@@ -61,6 +62,7 @@ namespace Library
 	private:
 
 		static Vector<EventSubscriber*> sSubscribers;
+		static std::mutex sMutex;
 		T mMessage;
 	};
 }

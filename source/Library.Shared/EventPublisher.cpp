@@ -10,8 +10,8 @@ namespace Library
 	RTTI_DEFINITIONS(EventPublisher);
 
 	/************************************************************************/
-	EventPublisher::EventPublisher(Vector<EventSubscriber*>& subscribers) :
-		mSubscribersListPtr(&subscribers), mEnqueuedTime(high_resolution_clock::now())
+	EventPublisher::EventPublisher(Vector<EventSubscriber*>& subscribers, std::mutex& mutex) :
+		mSubscribersListPtr(&subscribers), mMutexPtr(&mutex), mEnqueuedTime(high_resolution_clock::now())
 	{
 	}
 
@@ -19,7 +19,9 @@ namespace Library
 	EventPublisher::EventPublisher(EventPublisher&& rhs)
 	{
 		mSubscribersListPtr = rhs.mSubscribersListPtr;
+		mMutexPtr = rhs.mMutexPtr;
 		rhs.mSubscribersListPtr = nullptr;
+		rhs.mMutexPtr = nullptr;
 	}
 
 	/************************************************************************/
@@ -28,7 +30,9 @@ namespace Library
 		if (this != &rhs)
 		{
 			mSubscribersListPtr = rhs.mSubscribersListPtr;
+			mMutexPtr = rhs.mMutexPtr;
 			rhs.mSubscribersListPtr = nullptr;
+			rhs.mMutexPtr = nullptr;
 		}
 
 		return *this;
@@ -62,9 +66,24 @@ namespace Library
 	/************************************************************************/
 	void EventPublisher::Deliver()
 	{
-		for (auto& subscriber : *mSubscribersListPtr)
+		//auto copyVect = *mSubscribersListPtr;
+
+		vector<future<void>> futures;
+
 		{
-			subscriber->Notify(*this);
+			lock_guard<std::mutex> lock(*mMutexPtr);
+			for (auto& subscriber : *mSubscribersListPtr)
+			{
+				futures.push_back(async(launch::async, [&subscriber, this]()
+				{
+					return subscriber->Notify(*this);
+				}));
+			}
+		}
+
+		for (auto& future : futures)
+		{
+			future.get();
 		}
 	}
 

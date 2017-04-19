@@ -1,6 +1,7 @@
 #pragma once
 #include "EventPublisher.h"
 #include "GameTime.h"
+#include <mutex>
 
 namespace Library
 {
@@ -22,13 +23,13 @@ namespace Library
 		*/
 		~EventQueue() = default;
 
-		/** EventQueue copy constructor.
+		/** EventQueue copy constructor deleted.
 		*/
-		EventQueue(const EventQueue & rhs) = default;
+		EventQueue(const EventQueue & rhs) = delete;
 
-		/** EventQueue copy assignment operator.
+		/** EventQueue copy assignment operator deleted.
 		*/
-		EventQueue& operator=(const EventQueue& rhs)= default;
+		EventQueue& operator=(const EventQueue& rhs)= delete;
 
 		/** Adds an Event to the queue and sets its enqueue time and the its delay.
 		* @param eventPublisher: Event to enqueue.
@@ -75,5 +76,7 @@ namespace Library
 	private:
 
 		std::vector<std::shared_ptr<EventPublisher>> mEvents;
+
+		std::mutex mEventQueueMutex;
 	};
 }

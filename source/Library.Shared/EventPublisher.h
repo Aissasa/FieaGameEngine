@@ -4,6 +4,7 @@
 #include "Vector.h"
 #include <chrono>
 #include <memory>
+#include <mutex>
 
 namespace Library
 {
@@ -69,11 +70,12 @@ namespace Library
 
 	protected:
 
-		EventPublisher(Vector<EventSubscriber*>& subscribers);
+		EventPublisher(Vector<EventSubscriber*>& subscribers, std::mutex& mutex);
 
 	private:
 
 		Vector<EventSubscriber*>* mSubscribersListPtr;
+		std::mutex* mMutexPtr;
 		std::chrono::high_resolution_clock::time_point mEnqueuedTime;
 		std::chrono::milliseconds mDelay;
 	};

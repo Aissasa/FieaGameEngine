@@ -18,13 +18,12 @@
 #include <exception>
 #include <new>
 
+
+// multithreading
+#include <thread>
+#include <future>
+#include <mutex>
+
 // glm includes
 #include <glm/glm.hpp>
 #include <glm/gtx/string_cast.hpp>
-
-//// C RunTime Header Files
-//#include <stdlib.h>
-//#include <malloc.h>
-//#include <memory.h>
-//#include <tchar.h>
-
