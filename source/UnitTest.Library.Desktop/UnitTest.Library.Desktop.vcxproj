@@ -183,6 +183,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AbstractProductTest.cpp" />
+    <ClCompile Include="AsynchEventTest.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="AttributedFoo.cpp" />
     <ClCompile Include="AttributedTestcpp.cpp">
       <SubType>
@@ -194,7 +198,9 @@
       <SubType>
       </SubType>
     </ClCompile>
+    <ClCompile Include="EventSubscriberSub.cpp" />
     <ClCompile Include="EventSystemTest.cpp" />
+    <ClCompile Include="EventUnsubscriber.cpp" />
     <ClCompile Include="FactoryTest.cpp">
       <SubType>
       </SubType>
@@ -248,6 +254,8 @@
     <ClInclude Include="Bar.h" />
     <ClInclude Include="BarEventSubscriber.h" />
     <ClInclude Include="ConcreteFactoriesTest.h" />
+    <ClInclude Include="EventSubscriberSub.h" />
+    <ClInclude Include="EventUnsubscriber.h" />
     <ClInclude Include="Foo.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Product1.h" />

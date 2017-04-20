@@ -72,4 +72,11 @@ namespace Library
 	{
 		return mMessage;
 	}
+
+	/************************************************************************/
+	template <typename T>
+	void Event<T>::Init(std::uint32_t capacity)
+	{
+		sSubscribers = Vector<EventSubscriber*>(capacity);
+	}
 }

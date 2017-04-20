@@ -66,8 +66,6 @@ namespace Library
 	/************************************************************************/
 	void EventPublisher::Deliver()
 	{
-		//auto copyVect = *mSubscribersListPtr;
-
 		vector<future<void>> futures;
 
 		{

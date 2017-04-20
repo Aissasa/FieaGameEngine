@@ -71,6 +71,15 @@
     <ClCompile Include="ReactionTest.cpp">
       <Filter>Test Classes</Filter>
     </ClCompile>
+    <ClCompile Include="EventSubscriberSub.cpp">
+      <Filter>Support Classes\Event System\Async</Filter>
+    </ClCompile>
+    <ClCompile Include="EventUnsubscriber.cpp">
+      <Filter>Support Classes\Event System\Async</Filter>
+    </ClCompile>
+    <ClCompile Include="AsynchEventTest.cpp">
+      <Filter>Test Classes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Support Classes">
@@ -90,6 +99,9 @@
     </Filter>
     <Filter Include="Support Classes\Event System">
       <UniqueIdentifier>{581256fc-f4b5-4aee-a2ce-cd059972f15f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Support Classes\Event System\Async">
+      <UniqueIdentifier>{e665944a-1bfe-4f39-a5e8-e1a796dcd2a3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -129,6 +141,12 @@
     </ClInclude>
     <ClInclude Include="BarEventSubscriber.h">
       <Filter>Support Classes\Event System</Filter>
+    </ClInclude>
+    <ClInclude Include="EventSubscriberSub.h">
+      <Filter>Support Classes\Event System\Async</Filter>
+    </ClInclude>
+    <ClInclude Include="EventUnsubscriber.h">
+      <Filter>Support Classes\Event System\Async</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

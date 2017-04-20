@@ -6,7 +6,7 @@
 
 /************************************************************************/
 template<typename T>
-Vector<T>::Iterator::Iterator(const Vector* owner, std::uint32_t index) :
+Vector<T>::Iterator::Iterator(const Vector* owner, uint32_t index) :
 	mOwner(owner), mIndex(index)
 {
 }
@@ -124,7 +124,7 @@ const T & Vector<T>::Iterator::operator*() const
 template<typename T>
 T & Vector<T>::Iterator::operator*()
 {
-	return const_cast<T&>(const_cast<const Vector<T>::Iterator&>(*this).operator*());
+	return const_cast<T&>(const_cast<const Iterator&>(*this).operator*());
 }
 
 #pragma endregion
@@ -132,8 +132,8 @@ T & Vector<T>::Iterator::operator*()
 #pragma region Vector
 /************************************************************************/
 template<typename T>
-Vector<T>::Vector(std::uint32_t initCapacity, bool fixedSize) :
-	mSize(0), mCapacity(0), mFront(nullptr)
+Vector<T>::Vector(uint32_t initCapacity, bool fixedSize) :
+	mFront(nullptr), mSize(0), mCapacity(0)
 {
 	Reserve(initCapacity);
 	if (fixedSize)
@@ -214,22 +214,26 @@ inline bool Vector<T>::IsEmpty() const
 
 /************************************************************************/
 template<typename T>
-inline std::uint32_t Vector<T>::Size() const
+inline uint32_t Vector<T>::Size() const
 {
 	return mSize;
 }
 
 /************************************************************************/
 template<typename T>
-inline std::uint32_t Vector<T>::Capacity() const
+inline uint32_t Vector<T>::Capacity() const
 {
 	return mCapacity;
 }
 
 /************************************************************************/
 template<typename T>
-bool Vector<T>::Reserve(std::uint32_t newCapacity)
+bool Vector<T>::Reserve(uint32_t newCapacity)
 {
+	if (!newCapacity)
+	{
+		return false;
+	}
 	if (newCapacity < mCapacity)
 	{
 		return false;
@@ -245,7 +249,7 @@ bool Vector<T>::Reserve(std::uint32_t newCapacity)
 
 /************************************************************************/
 template<typename T>
-const T & Vector<T>::operator[](std::uint32_t index) const
+const T & Vector<T>::operator[](uint32_t index) const
 {
 	if (IsEmpty())
 	{
@@ -262,21 +266,21 @@ const T & Vector<T>::operator[](std::uint32_t index) const
 
 /************************************************************************/
 template<typename T>
-T & Vector<T>::operator[](std::uint32_t index)
+T & Vector<T>::operator[](uint32_t index)
 {
 	return const_cast<T&>(const_cast<const Vector&>(*this).operator[](index));
 }
 
 /************************************************************************/
 template<typename T>
-const T & Vector<T>::At(const std::uint32_t index) const
+const T & Vector<T>::At(const uint32_t index) const
 {
 	return operator[](index);
 }
 
 /************************************************************************/
 template<typename T>
-T & Vector<T>::At(const std::uint32_t index)
+T & Vector<T>::At(const uint32_t index)
 {
 	return const_cast<T&>(const_cast<const Vector&>(*this).At(index));
 }
@@ -414,7 +418,7 @@ bool Vector<T>::Remove(const Iterator & first, const Iterator & last)
 		}
 	}
 
-	for (std::uint32_t i = 0; i < count; ++i)
+	for (uint32_t i = 0; i < count; ++i)
 	{
 		PopBack();
 	}

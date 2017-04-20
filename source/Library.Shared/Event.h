@@ -59,6 +59,11 @@ namespace Library
 		*/
 		const T& Message() const;
 
+		/** Initializes the EventSubscribers List to a certain capacity.
+		* @param capacity: Capacity for the event list.
+		*/
+		static void Init(std::uint32_t capacity);
+
 	private:
 
 		static Vector<EventSubscriber*> sSubscribers;
