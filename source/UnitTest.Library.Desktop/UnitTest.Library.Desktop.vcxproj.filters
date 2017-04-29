@@ -80,6 +80,12 @@
     <ClCompile Include="AsynchEventTest.cpp">
       <Filter>Test Classes</Filter>
     </ClCompile>
+    <ClCompile Include="AsynchQueueTester.cpp">
+      <Filter>Support Classes\Event System\Async</Filter>
+    </ClCompile>
+    <ClCompile Include="EventSubExceptionThrower.cpp">
+      <Filter>Support Classes\Event System\Async</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Support Classes">
@@ -146,6 +152,12 @@
       <Filter>Support Classes\Event System\Async</Filter>
     </ClInclude>
     <ClInclude Include="EventUnsubscriber.h">
+      <Filter>Support Classes\Event System\Async</Filter>
+    </ClInclude>
+    <ClInclude Include="AsynchQueueTester.h">
+      <Filter>Support Classes\Event System\Async</Filter>
+    </ClInclude>
+    <ClInclude Include="EventSubExceptionThrower.h">
       <Filter>Support Classes\Event System\Async</Filter>
     </ClInclude>
   </ItemGroup>

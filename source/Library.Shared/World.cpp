@@ -101,6 +101,7 @@ namespace Library
 	/************************************************************************/
 	void World::AddActionToDestroy(Action& actionToDestroy)
 	{
+		lock_guard<mutex> lock(mMutex);
 		mActionsToDestroy.PushBack(&actionToDestroy);
 	}
 
@@ -147,6 +148,7 @@ namespace Library
 	/************************************************************************/
 	void World::DeleteActions()
 	{
+		lock_guard<mutex> lock(mMutex);
 		for (auto& action : mActionsToDestroy)
 		{
 			delete action;

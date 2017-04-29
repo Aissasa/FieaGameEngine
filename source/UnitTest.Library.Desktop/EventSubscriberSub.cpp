@@ -10,16 +10,19 @@ using namespace Library;
 
 namespace UnitTestLibraryDesktop
 {
+	/************************************************************************/
 	EventSubscriberSub::EventSubscriberSub():
 		mBarEventSubscriber(make_shared<BarEventSubscriber>())
 	{
 	}
 
+	/************************************************************************/
 	void EventSubscriberSub::Notify(EventPublisher& eventPublisher)
 	{
+		UNREFERENCED_PARAMETER(eventPublisher);
+
 		if (!mIsNotified)
 		{
-			assert(eventPublisher.Is(Event<Bar>::TypeIdClass()));
 			Event<Bar>::Subscribe(*mBarEventSubscriber);
 			mIsNotified = true;
 		}

@@ -63,7 +63,7 @@ namespace Library
 		*/
 		bool IsExpired(const std::chrono::high_resolution_clock::time_point& currentTime) const;
 
-		/** Notifies all of the subscribers of the Event.
+		/** Notifies all of the subscribers of the Event asynchronously.
 		* @see EventSubscriber
 		*/
 		void Deliver();

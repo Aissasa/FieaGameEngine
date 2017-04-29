@@ -1,6 +1,5 @@
 #pragma once
 
-#pragma once
 #include "EventSubscriber.h"
 
 namespace UnitTestLibraryDesktop

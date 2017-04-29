@@ -12,6 +12,7 @@
 #include <fstream>
 #include <cassert>
 #include <chrono>
+#include <exception>
 
 // glm includes
 #include <glm/glm.hpp>

@@ -2,6 +2,7 @@
 
 #include "Attributed.h"
 #include "EventQueue.h"
+#include <mutex>
 
 namespace Library
 {
@@ -123,6 +124,7 @@ namespace Library
 		Vector<Action*> mActionsToDestroy;
 
 		EventQueue mEventQueue;
+		std::mutex mMutex;
 
 		void DeleteActions();
 	};

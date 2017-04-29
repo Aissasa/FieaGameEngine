@@ -1,8 +1,6 @@
 #include "pch.h"
-#include "EventUnsubscriber.h"
+#include "EventSubExceptionThrower.h"
 #include "EventPublisher.h"
-#include "Event.h"
-#include "Bar.h"
 
 using namespace std;
 using namespace Library;
@@ -10,14 +8,14 @@ using namespace Library;
 namespace UnitTestLibraryDesktop
 {
 	/************************************************************************/
-	void EventUnsubscriber::Notify(EventPublisher& eventPublisher)
+	void EventSubExceptionThrower::Notify(EventPublisher& eventPublisher)
 	{
 		UNREFERENCED_PARAMETER(eventPublisher);
 
 		if (!mIsNotified)
 		{
-			Event<Bar>::UnsubscribeAll();
 			mIsNotified = true;
+			throw runtime_error("Hihi");
 		}
 	}
 }

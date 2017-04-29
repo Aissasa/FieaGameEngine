@@ -187,6 +187,7 @@
       <SubType>
       </SubType>
     </ClCompile>
+    <ClCompile Include="AsynchQueueTester.cpp" />
     <ClCompile Include="AttributedFoo.cpp" />
     <ClCompile Include="AttributedTestcpp.cpp">
       <SubType>
@@ -198,6 +199,7 @@
       <SubType>
       </SubType>
     </ClCompile>
+    <ClCompile Include="EventSubExceptionThrower.cpp" />
     <ClCompile Include="EventSubscriberSub.cpp" />
     <ClCompile Include="EventSystemTest.cpp" />
     <ClCompile Include="EventUnsubscriber.cpp" />
@@ -250,10 +252,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AbstractProductTest.h" />
+    <ClInclude Include="AsynchQueueTester.h" />
     <ClInclude Include="AttributedFoo.h" />
     <ClInclude Include="Bar.h" />
     <ClInclude Include="BarEventSubscriber.h" />
     <ClInclude Include="ConcreteFactoriesTest.h" />
+    <ClInclude Include="EventSubExceptionThrower.h" />
     <ClInclude Include="EventSubscriberSub.h" />
     <ClInclude Include="EventUnsubscriber.h" />
     <ClInclude Include="Foo.h" />

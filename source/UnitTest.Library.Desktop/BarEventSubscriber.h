@@ -9,6 +9,7 @@ namespace UnitTestLibraryDesktop
 	{
 
 	public:
+
 		BarEventSubscriber();
 		~BarEventSubscriber() = default;
 		BarEventSubscriber(const BarEventSubscriber & rhs) = default;

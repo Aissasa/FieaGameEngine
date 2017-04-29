@@ -91,6 +91,6 @@ namespace Library
 	/************************************************************************/
 	uint32_t EventQueue::Size() const
 	{
-		return mEvents.size();
+		return static_cast<uint32_t>(mEvents.size());
 	}
 }

@@ -52,7 +52,7 @@ namespace Library
 		*/
 		void Send(const std::shared_ptr<EventPublisher>& eventPublisher);
 
-		/** Updates the queue by delivering and removing the expired events, based on the passed GameTime.
+		/** Updates the queue by delivering asynchronously and removing the expired events, based on the passed GameTime.
 		* @param gameTime: GameTime to get the current time from.
 		* @see GameTime
 		* @see EventPublisher
